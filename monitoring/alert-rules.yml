@@ -1,0 +1,296 @@
+# PROMETHEUS ALERT RULES FOR WARUNGIN POS
+#
+# Purpose: Define conditions that trigger alerts
+# Severity: Critical for production financial transactions
+#
+# Alert levels:
+#   - CRITICAL: Immediate action required, service impact
+#   - WARNING: Review required, potential impact
+#   - INFO: Informational, for monitoring
+
+groups:
+  - name: warungin_alerts
+    interval: 30s
+    alert: []
+    rules:
+      # ======================================================================
+      # CRITICAL ALERTS - Service Degradation
+      # ======================================================================
+      
+      - alert: BackendServiceDown
+        expr: up{job="nestjs-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "Backend API service is DOWN"
+          description: "NestJS backend has been unavailable for more than 1 minute"
+          action: "Check backend logs, verify port 3000, restart if needed"
+      
+      - alert: DatabaseConnectionFailed
+        expr: |
+          pg_up{job="postgres"} == 0 or 
+          (pg_stat_activity{query='<unknown>',database='warungin'} == 0 and 
+           pg_database_size_bytes{datname='warungin'} == 0)
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection FAILED"
+          description: "Cannot connect to PostgreSQL database 'warungin'"
+          action: "Check PostgreSQL status, verify connection string, restart if needed"
+      
+      - alert: HighErrorRate
+        expr: |
+          (sum(rate(http_requests_total{status=~"5.."}[1m])) / 
+           sum(rate(http_requests_total[1m]))) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "High error rate detected (>5%)"
+          description: "API error rate is {{ $value }}% - possible data corruption or service failure"
+          action: "Review application logs, check for deployment issues, consider rollback"
+          dashboard: "http://grafana.warungin.id:3000/d/api-health"
+      
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          pg_stat_activity_count{database='warungin'} > 90
+        for: 2m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "{{ $value }} of 100 max connections in use - at {{ humanizePercentage (($value)/100) }} capacity"
+          action: "Investigate long-running queries, optimize connection usage, scale if needed"
+      
+      - alert: DiskSpaceCritical
+        expr: |
+          (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lowerfs|squashfs|vfat"} / 
+           node_filesystem_size_bytes) * 100 < 5
+        for: 1m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: Disk space < 5%"
+          description: "Partition {{ $labels.device }} has only {{ $value }}% free space"
+          action: "Immediately free up disk space - system may crash if full"
+      
+      # ======================================================================
+      # WARNING ALERTS - Performance Degradation
+      # ======================================================================
+      
+      - alert: HighResponseTime
+        expr: |
+          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High API response time (p95 > 2s)"
+          description: "API p95 response time is {{ $value }}s - may be slow database or high load"
+          action: "Check database query performance, review slow query logs, consider caching"
+          dashboard: "http://grafana.warungin.id:3000/d/api-health"
+      
+      - alert: HighCPUUsage
+        expr: |
+          (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "CPU usage above 80%"
+          description: "Average CPU usage is {{ $value }}% on {{ $labels.instance }}"
+          action: "Identify and optimize resource-heavy processes, consider scaling"
+      
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Memory usage above 85%"
+          description: "Memory consumption is {{ $value }}% on {{ $labels.instance }}"
+          action: "Check for memory leaks, optimize application, increase system memory"
+      
+      - alert: DiskSpaceWarning
+        expr: |
+          (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lowerfs|squashfs|vfat"} / 
+           node_filesystem_size_bytes) * 100 < 20
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Low disk space (< 20%)"
+          description: "Partition {{ $labels.device }} has {{ $value }}% free space"
+          action: "Clean up old logs, backups; plan storage upgrade"
+      
+      - alert: SlowDatabaseQueries
+        expr: |
+          pg_stat_statements_mean_time_seconds > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries detected (>1s average)"
+          description: "Average query time is {{ $value }}s - performance degradation"
+          action: "Review slow query logs, optimize indexes, consider query rewrite"
+      
+      - alert: NginxHighErrorRate
+        expr: |
+          (sum(rate(nginx_http_requests_total{status=~"5.."}[5m])) / 
+           sum(rate(nginx_http_requests_total[5m]))) * 100 > 2
+        for: 2m
+        labels:
+          severity: warning
+          component: nginx
+        annotations:
+          summary: "NGINX error rate elevated (>2%)"
+          description: "NGINX error rate is {{ $value }}% - check backend health"
+          action: "Verify backend is responding, check NGINX error logs"
+      
+      - alert: CacheHitRateLow
+        expr: |
+          (redis_stats_keyspace_hits_total / 
+           (redis_stats_keyspace_hits_total + redis_stats_keyspace_misses_total)) < 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Cache hit rate below 50%"
+          description: "Cache efficiency is {{ $value }}% - consider caching strategy"
+          action: "Review cache configuration, increase cache size if needed"
+      
+      # ======================================================================
+      # INFO ALERTS - Operational
+      # ======================================================================
+      
+      - alert: SSLCertificateExpiringSoon
+        expr: |
+          (ssl_certificate_not_after_seconds - time()) / (24 * 3600) < 30
+        for: 1h
+        labels:
+          severity: warning
+          component: ssl
+        annotations:
+          summary: "SSL certificate expires in {{ $value }} days"
+          description: "Certificate for {{ $labels.domain }} expires soon"
+          action: "Renew SSL certificate immediately to avoid service interruption"
+      
+      - alert: SSLCertificateExpired
+        expr: |
+          ssl_certificate_not_after_seconds < time()
+        for: 1m
+        labels:
+          severity: critical
+          component: ssl
+        annotations:
+          summary: "SSL certificate EXPIRED"
+          description: "Certificate for {{ $labels.domain }} has expired"
+          action: "EMERGENCY: Renew certificate immediately - encrypted traffic may fail"
+      
+      - alert: BackendRestartRecent
+        expr: |
+          (time() - process_start_time_seconds{job="nestjs-backend"}) < 300
+        for: 1m
+        labels:
+          severity: info
+          component: backend
+        annotations:
+          summary: "Backend restarted recently"
+          description: "Backend has been running for only {{ $value }}s - recent restart detected"
+          action: "Monitor logs for restart cause, check for memory leaks or crashes"
+      
+      - alert: UnusualTrafficPattern
+        expr: |
+          abs(rate(http_requests_total[5m]) - rate(http_requests_total offset 5m[5m])) / 
+          rate(http_requests_total offset 5m[5m]) > 0.5
+        for: 5m
+        labels:
+          severity: info
+          component: backend
+        annotations:
+          summary: "Unusual traffic pattern detected"
+          description: "Request rate changed significantly: {{ $value }}%"
+          action: "Review traffic sources, check for DDoS or legitimate traffic spike"
+      
+      # ======================================================================
+      # BUSINESS ALERTS - Revenue-impacting
+      # ======================================================================
+      
+      - alert: NoOrdersProcessed
+        expr: |
+          rate(orders_processed_total[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: business
+        annotations:
+          summary: "CRITICAL: No orders being processed"
+          description: "Order processing has stopped - potential data loss or system failure"
+          action: "Check backend service, verify database connectivity, restart services if needed"
+      
+      - alert: HighOrderFailureRate
+        expr: |
+          (sum(rate(orders_failed_total[5m])) / 
+           sum(rate(orders_processed_total[5m]))) * 100 > 10
+        for: 2m
+        labels:
+          severity: critical
+          component: business
+        annotations:
+          summary: "High order failure rate (>10%)"
+          description: "{{ $value }}% of orders are failing - revenue may be lost"
+          action: "Investigate order processing, check payment gateway, review error logs"
+      
+      - alert: PostgresBackupNotRecent
+        expr: |
+          (time() - postgres_backup_timestamp_seconds) > 86400
+        for: 1h
+        labels:
+          severity: warning
+          component: backup
+        annotations:
+          summary: "Database backup is older than 24 hours"
+          description: "Last backup: {{ $value }} seconds ago"
+          action: "Verify backup script is running, check for backup failures"
+
+  # Additional rule groups can be added for specific modules
+  
+  - name: warungin_recording_rules
+    interval: 30s
+    rules:
+      # Precompute aggregate metrics for performance
+      
+      - record: job:http_requests:rate5m
+        expr: sum(rate(http_requests_total[5m])) by (job)
+      
+      - record: job:http_errors:rate5m
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)
+      
+      - record: job:latency:p95
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) by (job)
+      
+      - record: job:latency:p99
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) by (job)
+      
+      - record: instance:cpu:usage
+        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100))
+      
+      - record: instance:memory:usage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+      
+      - record: instance:disk:usage
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100

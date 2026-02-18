@@ -398,14 +398,15 @@ const canOpenStoreShift = computed(() => {
 
 const availableShifts = computed(() => {
     const defaultShifts = [
-        { name: 'pagi', label: 'Pagi (06:00 - 14:00)' },
-        { name: 'siang', label: 'Siang (14:00 - 22:00)' },
-        { name: 'malam', label: 'Malam (22:00 - 06:00)' }
+        { name: 'pagi', label: 'Pagi (06:00 - 12:00)' },
+        { name: 'siang', label: 'Siang (12:00 - 17:00)' },
+        { name: 'sore', label: 'Sore (17:00 - 21:00)' },
+        { name: 'malam', label: 'Malam (21:00 - 06:00)' }
     ];
 
     if (currentOutlet.value && Array.isArray(currentOutlet.value.shiftConfig) && currentOutlet.value.shiftConfig.length > 0) {
         return currentOutlet.value.shiftConfig.map((s: any) => ({
-            name: s.name,
+            name: s.name.toLowerCase(),
             label: `${s.name} (${s.startTime} - ${s.endTime})`
         }));
     }
@@ -456,41 +457,88 @@ const calculateSelisih = (): number => {
 const loadData = async () => {
     loading.value = true;
     try {
-        const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId') || authStore.user?.tenantId;
+        // Resolve storeId with proper fallback chain
+        let selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
         
-        // 0. Load Outlet Config
-        if (selectedStoreId) {
-            try {
-                const res = await api.get(`/outlets/${selectedStoreId}`);
-                currentOutlet.value = res.data?.data || res.data;
-            } catch (e) {
-                console.warn('Could not load specific outlet details', e);
+        // Fallback: try user permissions assignedStoreId for CASHIER/KITCHEN
+        if (!selectedStoreId && authStore.user) {
+            const perms = (authStore.user as any).permissions;
+            if (perms?.assignedStoreId) {
+                selectedStoreId = perms.assignedStoreId;
+                authStore.setSelectedStore(selectedStoreId);
+            }
+        }
+        
+        // Timeout wrapper (15s) - prevents infinite "Memuat data shift..."
+        const withTimeout = <T>(promise: Promise<T>, ms: number, label: string): Promise<T> => {
+            return Promise.race([
+                promise,
+                new Promise<T>((_, reject) => 
+                    setTimeout(() => reject(new Error(`${label} timeout (${ms}ms)`)), ms)
+                ),
+            ]);
+        };
+        
+        // Fire only essential API calls in parallel for fastest loading
+        const [storeShiftResult, cashShiftResult] = await Promise.allSettled([
+            // 1. Load Store Shift (skip if no outlet)
+            selectedStoreId 
+                ? withTimeout(api.get('/store-shift/current', { params: { outletId: selectedStoreId } }), 15000, 'store-shift')
+                : Promise.reject(new Error('no-store')),
+            // 2. Load Cash Shift
+            withTimeout(api.get('/cash-shift/current'), 15000, 'cash-shift'),
+        ]);
+
+        // Process store shift result
+        const storeShiftError = storeShiftResult.status === 'rejected' ? storeShiftResult.reason : null;
+        if (storeShiftResult.status === 'fulfilled') {
+            currentStoreShift.value = storeShiftResult.value.data?.data || storeShiftResult.value.data || null;
+        } else {
+            currentStoreShift.value = null;
+            if (storeShiftError && storeShiftError?.message !== 'no-store') {
+                console.warn('[OpenShift] store-shift error:', storeShiftError?.message);
             }
         }
 
-        // 1. Load Store Shift
-        if (selectedStoreId) {
+        // Process cash shift result
+        const cashShiftError = cashShiftResult.status === 'rejected' ? cashShiftResult.reason : null;
+        if (cashShiftResult.status === 'fulfilled') {
+            const shift = cashShiftResult.value.data?.data || cashShiftResult.value.data;
+            if (shift && shift.status === 'open' && !shift.shiftEnd) {
+                currentShift.value = shift;
+            } else {
+                currentShift.value = null;
+            }
+        } else {
+            currentShift.value = null;
+            if (cashShiftError) {
+                const msg = cashShiftError?.response?.data?.message || cashShiftError?.message;
+                if (msg?.includes('timeout')) {
+                    await showError('Koneksi timeout saat memuat shift. Periksa koneksi dan coba lagi.');
+                }
+            }
+        }
+
+        // Auto-redirect to POS if both store shift AND cash shift are already open
+        if (currentStoreShift.value && currentShift.value) {
+            router.push('/pos');
+            return;
+        }
+
+        // Load outlet info for header (when we have store)
+        if (selectedStoreId && !currentOutlet.value) {
             try {
-                const res = await api.get('/store-shift/current', { params: { outletId: selectedStoreId } });
-                currentStoreShift.value = res.data?.data || res.data || null;
-            } catch (e) { currentStoreShift.value = null; }
+                const outletRes = await api.get(`/outlets/${selectedStoreId}`);
+                currentOutlet.value = outletRes.data?.data || outletRes.data || null;
+            } catch {
+                currentOutlet.value = null;
+            }
         }
 
-        // 2. Load Cash Shift
-        try {
-             const res = await api.get('/cash-shift/current');
-             const shift = res.data?.data || res.data;
-             // Check both status and shiftEnd to ensure shift is truly active
-             if (shift && shift.status === 'open' && !shift.shiftEnd) {
-                 currentShift.value = shift;
-             } else {
-                 currentShift.value = null;
-             }
-        } catch (e) { 
-            console.warn('Error loading cash shift:', e);
-            currentShift.value = null; 
-        }
-
+    } catch (err: any) {
+        const msg = err?.message || err?.response?.data?.message || 'Gagal memuat data shift';
+        const isTimeout = msg?.includes('timeout');
+        await showError(isTimeout ? 'Koneksi timeout. Periksa koneksi dan coba lagi.' : msg);
     } finally {
         loading.value = false;
     }
@@ -501,12 +549,13 @@ const handleOpenStoreShift = async () => {
   processingStore.value = true;
   try {
     const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
-    await api.post('/store-shift', {
+    const response = await api.post('/store-shift/open', {
       outletId: selectedStoreId,
       shiftType: storeShiftForm.value.shiftType,
     });
-    await showSuccess('Shift toko berhasil dibuka');
-    await loadData();
+    // Directly set state from response — no need to reload all data
+    currentStoreShift.value = response.data?.data || response.data;
+    showSuccess('Shift toko berhasil dibuka');
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal membuka shift toko');
   } finally {

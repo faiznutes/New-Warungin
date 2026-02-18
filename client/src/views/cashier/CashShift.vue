@@ -450,6 +450,159 @@
             </div>
           </div>
         </div>
+
+        <!-- Cash Shift History -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 border border-slate-200 dark:border-slate-700">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-green-600">payments</span>
+              Riwayat Shift Kasir
+            </h3>
+
+            <!-- Period Filter Buttons -->
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="p in [{ key: 'today', label: 'Hari Ini' }, { key: 'week', label: 'Minggu Ini' }, { key: 'month', label: 'Bulan Ini' }, { key: 'custom', label: 'Custom' }]"
+                :key="p.key"
+                @click="changeCashShiftPeriod(p.key as any)"
+                :class="[
+                  'px-3 py-1.5 rounded-lg text-xs font-bold border transition-all',
+                  cashShiftPeriod === p.key
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600'
+                ]"
+              >
+                {{ p.label }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Custom Date Range -->
+          <div v-if="cashShiftPeriod === 'custom'" class="flex flex-wrap items-end gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div class="flex-1 min-w-[140px]">
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Dari Tanggal</label>
+              <input
+                v-model="cashShiftCustomStart"
+                type="date"
+                class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              />
+            </div>
+            <div class="flex-1 min-w-[140px]">
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Sampai Tanggal</label>
+              <input
+                v-model="cashShiftCustomEnd"
+                type="date"
+                class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              />
+            </div>
+            <button
+              @click="loadCashShiftHistory()"
+              :disabled="!cashShiftCustomStart && !cashShiftCustomEnd"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+            >
+              <span class="material-symbols-outlined text-[16px]">search</span>
+              Cari
+            </button>
+          </div>
+
+          <!-- Loading -->
+          <div v-if="cashShiftHistoryLoading" class="text-center py-12">
+            <div class="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          </div>
+
+          <!-- Empty -->
+          <div v-else-if="cashShiftHistory.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+            <span class="material-symbols-outlined text-[40px] text-slate-300 dark:text-slate-600 mb-2">payments</span>
+            <p>Belum ada riwayat shift kasir untuk periode ini</p>
+          </div>
+
+          <!-- Table -->
+          <div v-else class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead class="bg-slate-50 dark:bg-slate-900/50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Kasir</th>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dibuka</th>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ditutup</th>
+                  <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Modal Awal</th>
+                  <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Penjualan</th>
+                  <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Selisih</th>
+                  <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                <tr
+                  v-for="cs in cashShiftHistory"
+                  :key="cs.id"
+                  class="hover:bg-green-50/50 dark:hover:bg-slate-700/30 transition-colors"
+                >
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <div class="flex items-center gap-2">
+                      <span class="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-xs font-bold text-green-700 dark:text-green-300">
+                        {{ cs.kasir?.name?.charAt(0) || '?' }}
+                      </span>
+                      <span class="font-medium text-slate-900 dark:text-white">{{ cs.kasir?.name || '-' }}</span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300">
+                    {{ formatDateTime(cs.shiftStart) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                    {{ cs.shiftEnd ? formatDateTime(cs.shiftEnd) : '-' }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-right font-medium text-slate-900 dark:text-white">
+                    {{ formatCurrency(cs.modalAwal || 0) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-right font-bold text-green-600 dark:text-green-400">
+                    {{ formatCurrency(cs.totalPenjualan || 0) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-right font-bold"
+                    :class="[
+                      (cs.selisih || 0) > 0 ? 'text-green-600' : (cs.selisih || 0) < 0 ? 'text-red-600' : 'text-slate-500'
+                    ]">
+                    {{ cs.selisih != null ? formatCurrency(cs.selisih) : '-' }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-center">
+                    <span
+                      :class="[
+                        'px-2.5 py-0.5 text-xs font-bold rounded-full border',
+                        cs.status === 'open'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
+                          : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                      ]"
+                    >
+                      {{ cs.status === 'open' ? 'Open' : 'Closed' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Cash Shift Pagination -->
+          <div v-if="cashShiftHistoryPagination.totalPages > 1" class="mt-4 flex items-center justify-between">
+            <div class="text-sm text-slate-600 dark:text-slate-400">
+              Hal {{ cashShiftHistoryPagination.page }} dari {{ cashShiftHistoryPagination.totalPages }}
+              <span class="text-slate-400">({{ cashShiftHistoryPagination.total }} total)</span>
+            </div>
+            <div class="flex gap-2">
+              <button
+                @click="changeCashShiftHistoryPage(cashShiftHistoryPagination.page - 1)"
+                :disabled="cashShiftHistoryPagination.page === 1"
+                class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors"
+              >
+                Sebelumnya
+              </button>
+              <button
+                @click="changeCashShiftHistoryPage(cashShiftHistoryPagination.page + 1)"
+                :disabled="cashShiftHistoryPagination.page === cashShiftHistoryPagination.totalPages"
+                class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors"
+              >
+                Selanjutnya
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -867,6 +1020,19 @@ const shiftDetailFilters = ref({
   includeProductAdjustments: true,
 });
 
+// Cash Shift History
+const cashShiftHistory = ref<any[]>([]);
+const cashShiftHistoryLoading = ref(false);
+const cashShiftHistoryPagination = ref({
+  page: 1,
+  limit: 20,
+  total: 0,
+  totalPages: 0,
+});
+const cashShiftPeriod = ref<'today' | 'week' | 'month' | 'custom'>('today');
+const cashShiftCustomStart = ref('');
+const cashShiftCustomEnd = ref('');
+
 const pollingInterval = ref<any>(null);
 
 const openShiftForm = ref({
@@ -896,7 +1062,17 @@ const historyPagination = ref({
 
 const loadCurrentStoreShift = async () => {
   try {
-    const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+    let selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+    
+    // Fallback: try user permissions assignedStoreId for CASHIER/KITCHEN
+    if (!selectedStoreId && authStore.user) {
+      const perms = (authStore.user as any).permissions;
+      if (perms?.assignedStoreId) {
+        selectedStoreId = perms.assignedStoreId;
+        authStore.setSelectedStore(selectedStoreId);
+      }
+    }
+    
     if (!selectedStoreId) {
       currentStoreShift.value = null;
       return;
@@ -1247,6 +1423,77 @@ const changeStoreShiftHistoryPage = (page: number) => {
   loadStoreShiftHistory();
 };
 
+// === Cash Shift History ===
+const getCashShiftDateRange = () => {
+  const now = new Date();
+  let startDate: string | undefined;
+  let endDate: string | undefined;
+
+  switch (cashShiftPeriod.value) {
+    case 'today': {
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      startDate = today.toISOString();
+      endDate = now.toISOString();
+      break;
+    }
+    case 'week': {
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday
+      const weekStart = new Date(now.getFullYear(), now.getMonth(), diff);
+      startDate = weekStart.toISOString();
+      endDate = now.toISOString();
+      break;
+    }
+    case 'month': {
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      startDate = monthStart.toISOString();
+      endDate = now.toISOString();
+      break;
+    }
+    case 'custom': {
+      if (cashShiftCustomStart.value) startDate = new Date(cashShiftCustomStart.value).toISOString();
+      if (cashShiftCustomEnd.value) endDate = new Date(cashShiftCustomEnd.value).toISOString();
+      break;
+    }
+  }
+  return { startDate, endDate };
+};
+
+const loadCashShiftHistory = async () => {
+  cashShiftHistoryLoading.value = true;
+  try {
+    const { startDate, endDate } = getCashShiftDateRange();
+    const response = await api.get('/cash-shift/history', {
+      params: {
+        page: cashShiftHistoryPagination.value.page,
+        limit: cashShiftHistoryPagination.value.limit,
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+      },
+    });
+    cashShiftHistory.value = response.data.data || [];
+    cashShiftHistoryPagination.value = response.data.pagination || {
+      page: 1, limit: 20, total: 0, totalPages: 0,
+    };
+  } catch (error: any) {
+    console.error('Error loading cash shift history:', error);
+    cashShiftHistory.value = [];
+  } finally {
+    cashShiftHistoryLoading.value = false;
+  }
+};
+
+const changeCashShiftPeriod = (period: 'today' | 'week' | 'month' | 'custom') => {
+  cashShiftPeriod.value = period;
+  cashShiftHistoryPagination.value.page = 1;
+  if (period !== 'custom') loadCashShiftHistory();
+};
+
+const changeCashShiftHistoryPage = (page: number) => {
+  cashShiftHistoryPagination.value.page = page;
+  loadCashShiftHistory();
+};
+
 const viewShiftDetails = async (shiftId: string) => {
   selectedShiftId.value = shiftId;
   showShiftDetailModal.value = true;
@@ -1278,25 +1525,38 @@ watch(activeTab, (newTab) => {
     loadTodayShifts();
   } else if (newTab === 'history') {
     loadStoreShiftHistory();
+    loadCashShiftHistory();
   }
 });
 
 onMounted(async () => {
   loading.value = true;
+  
+  // Step 1: Load ONLY essential shift state (fast — 2 calls)
   await Promise.all([
     loadCurrentStoreShift(),
     loadCurrentShift(),
-    loadShiftHistory(),
-    loadTodayShifts(),
   ]);
   loading.value = false;
 
-  // Smart Default: Pre-fill Modal Awal from last shift
-  if (!currentShift.value && shiftHistory.value.length > 0) {
+  // Step 2: Lazy-load supplementary data AFTER page renders (non-blocking)
+  // This ensures the page appears instantly with shift status
+  loadShiftHistory().then(() => {
+    // Smart Default: Pre-fill Modal Awal from last shift
+    if (!currentShift.value && shiftHistory.value.length > 0) {
       const lastShift = shiftHistory.value[0];
       if (lastShift && lastShift.uangFisikTutup) {
-          openShiftForm.value.modalAwal = lastShift.uangFisikTutup;
+        openShiftForm.value.modalAwal = lastShift.uangFisikTutup;
       }
+    }
+  });
+  
+  // Load tab-specific data based on active tab
+  if (activeTab.value === 'today') {
+    loadTodayShifts();
+  } else if (activeTab.value === 'history') {
+    loadStoreShiftHistory();
+    loadCashShiftHistory();
   }
 
   // Auto-refresh current shift data every 30 seconds

@@ -478,8 +478,12 @@ watch(dateRange, async () => {
     });
 });
 
-// Check subscription expiry warning (7 days before)
+// Check subscription expiry warning (7 days before) — only for ADMIN_TENANT
 const checkSubscriptionExpiry = () => {
+  // Only admin tenant handles billing — cashier/spv/kitchen don't need this warning
+  const role = authStore.user?.role;
+  if (role !== 'ADMIN_TENANT') return;
+
   if (!currentLangganan.value?.subscription?.endDate) return;
   
   const endDate = new Date(currentLangganan.value.subscription.endDate);

@@ -428,7 +428,7 @@ const pagination = ref({
 // Debounce to prevent rate limiting
 let loadCustomersTimeout: ReturnType<typeof setTimeout> | null = null;
 
-const loadCustomers = async (page = 1) => {
+const loadCustomers = async (page = 1, forceRefresh = false) => {
   // Check if tenant selection is needed (modal as fallback)
   if (needsTenantSelection.value) {
     if (page === 1) {
@@ -447,8 +447,8 @@ const loadCustomers = async (page = 1) => {
   // Clear existing timeout
   if (loadCustomersTimeout) clearTimeout(loadCustomersTimeout);
   
-  // Debounce API call
-  loadCustomersTimeout = setTimeout(async () => {
+  // Immediate load - no debounce for fast data display
+  const doLoad = async () => {
     // For non-super-admin, ensure tenantId is available
     if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
       console.error('Tenant ID not available for non-super-admin user');
@@ -462,6 +462,7 @@ const loadCustomers = async (page = 1) => {
         page,
         limit: pagination.value.limit,
         ...(filters.value.search && { search: filters.value.search }),
+        ...(forceRefresh && { skipCache: '1' }), // Bypass cache after create/update
       };
       
       // Ensure tenantId is set in params for SUPER_ADMIN
@@ -480,7 +481,9 @@ const loadCustomers = async (page = 1) => {
     } finally {
       loading.value = false;
     }
-  }, page === 1 ? 100 : 0); // Only debounce on first load
+  };
+  
+  doLoad();
 };
 
 const editCustomer = (customer: Customer) => {
@@ -505,7 +508,7 @@ const handleSaveCustomer = async (customerData: Partial<Customer>) => {
       await showSuccess('Customer added successfully');
     }
     closeModal();
-    await loadCustomers(pagination.value.page);
+    await loadCustomers(pagination.value.page, true); // forceRefresh = true to bypass cache
   } catch (error: any) {
     console.error('Error saving customer:', error);
     await showError(error.response?.data?.message || 'Failed to save customer');

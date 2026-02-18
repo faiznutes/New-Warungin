@@ -305,6 +305,7 @@
                                             <th class="px-6 py-4">Tanggal Tagihan</th>
                                             <th class="px-6 py-4">Nama Paket</th>
                                             <th class="px-6 py-4">Jumlah</th>
+                                            <th class="px-6 py-4">Dibeli oleh</th>
                                             <th class="px-6 py-4">Status</th>
                                             <th class="px-6 py-4 text-right">Aksi</th>
                                         </tr>
@@ -312,17 +313,26 @@
                                     <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
                                         <template v-if="loadingBilling">
                                             <tr v-for="i in 3" :key="i" class="animate-pulse">
-                                                <td colspan="6" class="px-6 py-4"><div class="h-4 bg-slate-100 dark:bg-slate-700 rounded w-full"></div></td>
+                                                <td colspan="7" class="px-6 py-4"><div class="h-4 bg-slate-100 dark:bg-slate-700 rounded w-full"></div></td>
                                             </tr>
                                         </template>
                                         <tr v-else-if="billingHistory.length === 0">
-                                            <td colspan="6" class="px-6 py-12 text-center text-slate-500 italic font-medium">Belum ada riwayat tagihan</td>
+                                            <td colspan="7" class="px-6 py-12 text-center text-slate-500 italic font-medium">Belum ada riwayat tagihan</td>
                                         </tr>
                                         <tr v-for="invoice in billingHistory" :key="invoice.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors group">
                                             <td class="px-6 py-4 font-bold text-slate-900 dark:text-white font-mono">#{{ invoice.invoiceNumber || invoice.id.substring(0, 8).toUpperCase() }}</td>
                                             <td class="px-6 py-4 text-slate-500 font-medium">{{ formatDate(invoice.createdAt) }}</td>
                                             <td class="px-6 py-4 text-slate-900 dark:text-white font-bold">{{ getPlanName(invoice.planType || invoice.plan) }}</td>
                                             <td class="px-6 py-4 text-slate-900 dark:text-white font-mono">Rp {{ invoice.price?.toLocaleString() || invoice.amount?.toLocaleString() || '0' }}</td>
+                                            <td class="px-6 py-4">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase"
+                                                      :class="invoice.purchasedBy === 'ADMIN'
+                                                        ? 'bg-blue-50 text-blue-700 border border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800'
+                                                        : 'bg-slate-50 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'">
+                                                    <span class="material-symbols-outlined text-[12px]">{{ invoice.purchasedBy === 'ADMIN' ? 'admin_panel_settings' : 'person' }}</span>
+                                                    {{ invoice.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
+                                                </span>
+                                            </td>
                                             <td class="px-6 py-4">
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-colors shadow-sm"
                                                       :class="invoice.status === 'ACTIVE' || invoice.reverted === false 
@@ -379,9 +389,15 @@
                                     </div>
                                     <div>
                                         <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight">{{ addon.addonName }}</h3>
-                                        <div class="flex items-center gap-1.5 mt-1">
+                                        <div class="flex items-center gap-2 mt-1">
                                             <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Aktif</span>
+                                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase"
+                                                  :class="addon.purchasedBy === 'ADMIN'
+                                                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                                                    : 'bg-slate-50 text-slate-500 dark:bg-slate-700 dark:text-slate-400'">
+                                                {{ addon.purchasedBy === 'ADMIN' ? 'Admin' : 'Self' }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -535,6 +551,7 @@
     </div>
 
     <!-- Modal: Add User -->
+    <Teleport to="body">
     <div v-if="showAddUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddUserModal = false">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-6">
@@ -581,59 +598,18 @@
             </form>
         </div>
     </div>
-
-    <!-- Modal: Edit User -->
-    <Teleport to="body">
-        <div v-if="showEditUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showEditUserModal = false">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit User</h3>
-                    <button @click="showEditUserModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <form @submit.prevent="handleSaveUser" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama *</label>
-                        <input v-model="editUserForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Nama user" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Email *</label>
-                        <input v-model="editUserForm.email" type="email" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="email@example.com" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Role</label>
-                        <select v-model="editUserForm.role" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
-                            <option value="ADMIN_TENANT">Admin Tenant</option>
-                            <option value="SUPERVISOR">Supervisor</option>
-                            <option value="CASHIER">Kasir</option>
-                            <option value="KITCHEN">Dapur</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Status</label>
-                        <select v-model="editUserForm.isActive" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
-                            <option :value="true">Aktif</option>
-                            <option :value="false">Nonaktif</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Password Baru (kosongkan jika tidak diubah)</label>
-                        <input v-model="editUserForm.password" type="password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="••••••••" />
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" @click="showEditUserModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
-                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-                            {{ saving ? 'Menyimpan...' : 'Simpan' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </Teleport>
 
+    <!-- Modal: Edit User (using shared UserEditModal component) -->
+    <UserEditModal
+      :show="showEditUserModal"
+      :user="editingUser"
+      @close="showEditUserModal = false; editingUser = null"
+      @save="handleSaveUserFromModal"
+    />
+
     <!-- Modal: Add Store -->
-    <!-- Modal: Add Store -->
+    <Teleport to="body">
     <div v-if="showAddStoreModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddStoreModal = false">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center gap-3 mb-4">
@@ -715,41 +691,94 @@
             </form>
         </div>
     </div>
+    </Teleport>
 
     <!-- Modal: Edit Store -->
     <Teleport to="body">
         <div v-if="showEditStoreModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showEditStoreModal = false">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit Toko</h3>
                     <button @click="showEditStoreModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
-                <form @submit.prevent="handleSaveStore" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama Toko *</label>
-                        <input v-model="editStoreForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Nama toko/outlet" />
+                <form @submit.prevent="handleSaveStore" class="space-y-5">
+                    <!-- Informasi Dasar -->
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-5">
+                        <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">📋 Informasi Dasar</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama Toko *</label>
+                                <input v-model="editStoreForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nama toko/outlet" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alamat Lengkap</label>
+                                <textarea v-model="editStoreForm.address" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Jl. Raya No. 123, Kota, Provinsi"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nomor Telepon</label>
+                                <input v-model="editStoreForm.phone" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="08xxxxxxxxxx" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Status</label>
+                                <select v-model="editStoreForm.isActive" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
+                                    <option :value="true">Aktif</option>
+                                    <option :value="false">Nonaktif</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alamat</label>
-                        <textarea v-model="editStoreForm.address" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none" placeholder="Alamat lengkap toko"></textarea>
+
+                    <!-- Jam Operasional -->
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-5">
+                        <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">🕐 Jam Operasional</h4>
+                        <div class="space-y-3">
+                            <div v-for="day in ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']" :key="day" class="flex items-center gap-3">
+                                <label class="w-20 text-sm font-medium text-slate-600 dark:text-slate-300">{{ day }}</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" v-model="editStoreForm.operatingHours[day.toLowerCase()].isOpen" class="rounded" />
+                                    <input v-model="editStoreForm.operatingHours[day.toLowerCase()].open" type="time" :disabled="!editStoreForm.operatingHours[day.toLowerCase()].isOpen" class="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm disabled:opacity-50" />
+                                    <span class="text-slate-500">-</span>
+                                    <input v-model="editStoreForm.operatingHours[day.toLowerCase()].close" type="time" :disabled="!editStoreForm.operatingHours[day.toLowerCase()].isOpen" class="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm disabled:opacity-50" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nomor Telepon</label>
-                        <input v-model="editStoreForm.phone" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="08xxxxxxxxxx" />
+
+                    <!-- Konfigurasi Shift -->
+                    <div class="pb-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300">👥 Konfigurasi Shift</h4>
+                            <button type="button" @click="addEditShift" class="text-xs px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">+ Tambah Shift</button>
+                        </div>
+                        <div v-if="editStoreForm.shiftConfig.length === 0" class="text-sm text-slate-500 dark:text-slate-400 text-center py-4 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg">
+                            Belum ada shift. Klik "+ Tambah Shift" untuk menambahkan.
+                        </div>
+                        <div v-else class="space-y-3">
+                            <div v-for="(shift, index) in editStoreForm.shiftConfig" :key="index" class="p-3 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <input v-model="shift.name" type="text" placeholder="Nama shift (Pagi, Siang, Malam, etc)" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" />
+                                    <button type="button" @click="removeEditShift(index)" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-slate-500 dark:text-slate-400 w-20">Jam Mulai</span>
+                                    <input v-model="shift.startTime" type="time" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" />
+                                    <span class="text-xs text-slate-500 dark:text-slate-400 w-20 text-right">Jam Selesai</span>
+                                    <input v-model="shift.endTime" type="time" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Status</label>
-                        <select v-model="editStoreForm.isActive" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
-                            <option :value="true">Aktif</option>
-                            <option :value="false">Nonaktif</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" @click="showEditStoreModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
-                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-                            {{ saving ? 'Menyimpan...' : 'Simpan' }}
+
+                    <!-- Buttons -->
+                    <div class="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <button type="button" @click="showEditStoreModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
+                            <span v-if="saving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                            {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
                         </button>
                     </div>
                 </form>
@@ -770,20 +799,24 @@
             <form @submit.prevent="handleAddAddonSubmit" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Pilih Addon</label>
-                    <select v-model="newAddonForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
+                    <select v-model="newAddonForm.selectedAddonId" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
                         <option value="" disabled>Pilih addon...</option>
-                        <option v-for="opt in availableAddonOptions" :key="opt" :value="opt">{{ opt }}</option>
+                        <option v-for="opt in availableAddonsList" :key="opt.id" :value="opt.id">
+                            {{ opt.name }} — Rp {{ (opt.price / 1000).toFixed(0) }}rb/bln
+                            {{ opt.comingSoon ? '(Coming Soon)' : '' }}
+                        </option>
                     </select>
+                    <p v-if="selectedNewAddon" class="text-xs text-slate-500 mt-1">{{ selectedNewAddon.description }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Durasi (Hari)</label>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Durasi (hari)</label>
                     <p class="text-xs text-slate-500 mb-1">Durasi aktif addon dihitung mulai hari ini.</p>
                     <input v-model.number="newAddonForm.durationDays" type="number" min="1" placeholder="30" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
                 </div>
                 
                 <div class="flex justify-end gap-3 pt-4">
                     <button type="button" @click="showAddAddonModal = false" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Batal</button>
-                    <button type="submit" :disabled="saving" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 flex items-center gap-2">
+                    <button type="submit" :disabled="saving || !newAddonForm.selectedAddonId || selectedNewAddon?.comingSoon" class="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2">
                         <span v-if="saving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         {{ saving ? 'Menyimpan...' : 'Tambah Addon' }}
                     </button>
@@ -838,96 +871,7 @@
         </div>
     </Teleport>
 
-    <!-- Modal: Edit User -->
-    <Teleport to="body">
-        <div v-if="showEditUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showEditUserModal = false">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit User</h3>
-                    <button @click="showEditUserModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <form @submit.prevent="handleSaveUser" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama</label>
-                        <input v-model="editUserForm.name" type="text" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Email</label>
-                        <input v-model="editUserForm.email" type="email" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Role</label>
-                        <select v-model="editUserForm.role" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
-                            <option value="ADMIN_TENANT">Admin Tenant</option>
-                            <option value="CASHIER">Kasir</option>
-                            <option value="KITCHEN">Dapur</option>
-                            <option value="SUPERVISOR">Supervisor</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Status</label>
-                        <select v-model="editUserForm.isActive" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
-                            <option :value="true">Aktif</option>
-                            <option :value="false">Nonaktif</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Password Baru (Opsional)</label>
-                        <input v-model="editUserForm.password" type="password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Kosongkan jika tidak ingin mengubah" />
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" @click="showEditUserModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
-                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-                            {{ saving ? 'Menyimpan...' : 'Simpan' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </Teleport>
 
-    <!-- Modal: Edit Store -->
-    <Teleport to="body">
-        <div v-if="showEditStoreModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showEditStoreModal = false">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit Toko</h3>
-                    <button @click="showEditStoreModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <form @submit.prevent="handleSaveStore" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama Toko</label>
-                        <input v-model="editStoreForm.name" type="text" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alamat</label>
-                        <input v-model="editStoreForm.address" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Telepon</label>
-                        <input v-model="editStoreForm.phone" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Status</label>
-                        <select v-model="editStoreForm.isActive" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
-                            <option :value="true">Aktif</option>
-                            <option :value="false">Nonaktif</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" @click="showEditStoreModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
-                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-                            {{ saving ? 'Menyimpan...' : 'Simpan' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </Teleport>
 
     <!-- Modal: Edit Subscription -->
     <Teleport to="body">
@@ -1014,11 +958,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../../api';
 import { formatDate } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
+import UserEditModal from '../../components/UserEditModal.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -1086,7 +1031,12 @@ const newStoreForm = ref({
     name: '',
     address: '',
     phone: '',
-    shiftConfig: [] as Array<{ name: string; startTime: string; endTime: string }>,
+    shiftConfig: [
+        { name: 'Pagi', startTime: '06:00', endTime: '12:00' },
+        { name: 'Siang', startTime: '12:00', endTime: '17:00' },
+        { name: 'Sore', startTime: '17:00', endTime: '21:00' },
+        { name: 'Malam', startTime: '21:00', endTime: '06:00' }
+    ] as Array<{ name: string; startTime: string; endTime: string }>,
     operatingHours: {
         senin: { open: '08:00', close: '17:00', isOpen: true },
         selasa: { open: '08:00', close: '17:00', isOpen: true },
@@ -1117,12 +1067,23 @@ const editUserForm = ref({
     isActive: true,
     password: ''
 });
+const editingUser = ref<any>(null);
 const editStoreForm = ref({
     id: '',
     name: '',
     address: '',
     phone: '',
-    isActive: true
+    isActive: true,
+    shiftConfig: [] as Array<{ name: string; startTime: string; endTime: string }>,
+    operatingHours: {
+        senin: { open: '08:00', close: '17:00', isOpen: true },
+        selasa: { open: '08:00', close: '17:00', isOpen: true },
+        rabu: { open: '08:00', close: '17:00', isOpen: true },
+        kamis: { open: '08:00', close: '17:00', isOpen: true },
+        jumat: { open: '08:00', close: '17:00', isOpen: true },
+        sabtu: { open: '08:00', close: '12:00', isOpen: false },
+        minggu: { open: '08:00', close: '12:00', isOpen: false }
+    } as Record<string, { open: string; close: string; isOpen: boolean }>
 });
 const editSubscriptionForm = ref({
     plan: '',
@@ -1142,15 +1103,49 @@ const showEditAddonModal = ref(false);
 
 
 // Computed
-const daysRemainingDisplay = computed(() => {
-    if (!subscription.value?.subscriptionEnd && !tenant.value?.subscriptionEnd) return '0 hari';
+// Live countdown for subscription
+const countdownDisplay = ref('');
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+const updateCountdown = () => {
+    const endDateStr = subscription.value?.subscriptionEnd || subscription.value?.endDate || tenant.value?.subscriptionEnd;
+    if (!endDateStr) {
+        countdownDisplay.value = 'Tidak ada paket';
+        return;
+    }
     
-    const end = new Date(subscription.value?.subscriptionEnd || tenant.value?.subscriptionEnd);
+    const end = new Date(endDateStr);
     const now = new Date();
-    const diffTime = Math.abs(end.getTime() - now.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    const diffMs = end.getTime() - now.getTime();
     
-    return `${diffDays} hari`;
+    if (diffMs <= 0) {
+        countdownDisplay.value = 'Expired';
+        if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+        return;
+    }
+    
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays > 1) {
+        countdownDisplay.value = `${diffDays} hari`;
+    } else {
+        // ≤1 day: show HH:MM:SS live countdown
+        const hours = Math.floor(diffMs / (1000 * 60 * 60));
+        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+        countdownDisplay.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        // Start live interval if not already running
+        if (!countdownInterval) {
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+    }
+};
+
+const daysRemainingDisplay = computed(() => countdownDisplay.value || 'Memuat...');
+
+onUnmounted(() => {
+    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
 });
 
 // ... (existing helper functions)
@@ -1184,29 +1179,40 @@ const handleSaveSubscription = async () => {
 };
 
 // Add New Addon Handler
-const availableAddonOptions = [
-    'WhatsApp Integration',
-    'Custom Mobile App', 
-    'Advanced Analytics',
-    'Hardware Sync',
-    'Loyalty Engine',
-    'Offline Sync Pro'
-];
+const availableAddonsList = ref<any[]>([]);
+
+const loadAvailableAddons = async () => {
+    try {
+        const response = await api.get('/addons/available');
+        availableAddonsList.value = Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+        console.warn('Failed to load available addons');
+        availableAddonsList.value = [];
+    }
+};
 
 const newAddonForm = ref({
-    name: '',
+    selectedAddonId: '',
     durationDays: 30
 });
 
+const selectedNewAddon = computed(() => {
+    if (!newAddonForm.value.selectedAddonId) return null;
+    return availableAddonsList.value.find((a: any) => a.id === newAddonForm.value.selectedAddonId) || null;
+});
+
 const handleAddAddonSubmit = async () => {
-    if (!newAddonForm.value.name || !newAddonForm.value.durationDays) return;
+    const addon = selectedNewAddon.value;
+    if (!addon || !newAddonForm.value.durationDays) return;
+    if (addon.comingSoon) return;
     
     saving.value = true;
     try {
         const payload: any = {
-            addonId: newAddonForm.value.name.toLowerCase().replace(/\s+/g, '-'),
-            addonName: newAddonForm.value.name,
-            addonType: 'premium',
+            addonId: addon.id,
+            addonName: addon.name,
+            addonType: addon.type,
+            limit: addon.defaultLimit || null,
             duration: newAddonForm.value.durationDays
         };
         
@@ -1217,12 +1223,12 @@ const handleAddAddonSubmit = async () => {
         
         await api.post(`/addons/subscribe`, payload);
         
-        showSuccess(`Addon "${newAddonForm.value.name}" berhasil ditambahkan!`);
+        showSuccess(`Addon "${addon.name}" berhasil ditambahkan!`);
         showAddAddonModal.value = false;
         
         // Reset form
         newAddonForm.value = {
-            name: '',
+            selectedAddonId: '',
             durationDays: 30
         };
         
@@ -1367,9 +1373,12 @@ const loadTenantDetail = async () => {
         const addonsData = data.addons || [];
         activeAddons.value = addonsData.map((a: any) => ({
              ...a,
-             isActive: a.status === 'ACTIVE',
+             isActive: a.status?.toUpperCase() === 'ACTIVE',
              isLimitReached: a.limit && a.currentUsage >= a.limit
         }));
+        
+        // Update countdown after loading data
+        updateCountdown();
 
     } catch (error: any) {
         hasError.value = true;
@@ -1382,32 +1391,57 @@ const loadTenantDetail = async () => {
 
 const getAddonColor = (addon: any, type: 'bg' | 'text') => {
     const colors: Record<string, any> = {
-        'whatsapp-integration': { bg: 'bg-green-100', text: 'text-green-600' },
-        'custom-mobile-app': { bg: 'bg-blue-100', text: 'text-blue-600' },
-        'advanced-analytics': { bg: 'bg-purple-100', text: 'text-purple-600' },
-        // default
-        'default': { bg: 'bg-slate-100', text: 'text-slate-600' }
+        'add_outlets': { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600' },
+        'add_users': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600' },
+        'add_products': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-600' },
+        'business_analytics': { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600' },
+        'export_reports': { bg: 'bg-cyan-100 dark:bg-cyan-900/30', text: 'text-cyan-600' },
+        'receipt_editor': { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600' },
+        'delivery_marketing': { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600' },
+        'restock_suggestion': { bg: 'bg-lime-100 dark:bg-lime-900/30', text: 'text-lime-600' },
+        'stock_transfer': { bg: 'bg-indigo-100 dark:bg-indigo-900/30', text: 'text-indigo-600' },
+        'supervisor_role': { bg: 'bg-teal-100 dark:bg-teal-900/30', text: 'text-teal-600' },
+        'price_recommendation_plus': { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600' },
+        'bulk_import': { bg: 'bg-sky-100 dark:bg-sky-900/30', text: 'text-sky-600' },
+        'ecommerce_integration': { bg: 'bg-violet-100 dark:bg-violet-900/30', text: 'text-violet-600' },
+        'payment_accounting_integration': { bg: 'bg-rose-100 dark:bg-rose-900/30', text: 'text-rose-600' },
+        'default': { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-600' }
     };
-    const key = addon.addonId?.toLowerCase() || 'default';
+    const key = addon.addonId || addon.id || 'default';
     return colors[key]?.[type] || colors['default'][type];
 };
 
 const getAddonIcon = (addon: any) => {
     const icons: Record<string, string> = {
-        'whatsapp-integration': 'chat',
-        'custom-mobile-app': 'smartphone',
-        'advanced-analytics': 'analytics',
+        'add_outlets': 'storefront',
+        'add_users': 'group_add',
+        'add_products': 'inventory_2',
+        'business_analytics': 'analytics',
+        'export_reports': 'download',
+        'receipt_editor': 'receipt',
+        'delivery_marketing': 'campaign',
+        'restock_suggestion': 'inventory',
+        'stock_transfer': 'move_up',
+        'supervisor_role': 'admin_panel_settings',
+        'price_recommendation_plus': 'price_change',
+        'bulk_import': 'upload_file',
+        'ecommerce_integration': 'shopping_cart',
+        'payment_accounting_integration': 'account_balance',
         'default': 'extension'
     };
-    return icons[addon.addonId?.toLowerCase()] || icons['default'];
+    const key = addon.addonId || addon.id || 'default';
+    return icons[key] || icons['default'];
 };
 
 const getAddonDescription = (addon: any) => {
-    return addon.description || '';
+    // Try to find description from available addons list
+    if (addon.description) return addon.description;
+    const match = availableAddonsList.value.find((a: any) => a.id === addon.addonId || a.id === addon.id);
+    return match?.description || '';
 };
 
 // Addon active filter
-const filteredActiveAddons = computed(() => activeAddons.value.filter(a => a.status === 'ACTIVE'));
+const filteredActiveAddons = computed(() => activeAddons.value.filter(a => a.status?.toUpperCase() === 'ACTIVE'));
 
 // Billing handlers
 const loadingBilling = ref(false);
@@ -1479,7 +1513,26 @@ const handleSaveUser = async () => {
     }
 };
 
+// Handler for UserEditModal component @save event
+const handleSaveUserFromModal = async (userData: any) => {
+    saving.value = true;
+    try {
+        if (editingUser.value?.id) {
+            await api.put(`/users/${editingUser.value.id}`, userData);
+            showSuccess('User berhasil diperbarui');
+        }
+        showEditUserModal.value = false;
+        editingUser.value = null;
+        loadTenantDetail();
+    } catch (err: any) {
+        showError(err.response?.data?.message || 'Gagal menyimpan user');
+    } finally {
+        saving.value = false;
+    }
+};
+
 const handleEditUser = (user: any) => {
+    editingUser.value = { ...user, password: '' };
     editUserForm.value = { ...user, password: '' };
     showEditUserModal.value = true;
 };
@@ -1498,8 +1551,35 @@ const handleAddStore = async () => {
     }
 };
 const handleEditStore = (store: any) => {
-    editStoreForm.value = { ...store };
+    const defaultOH: Record<string, { open: string; close: string; isOpen: boolean }> = {
+        senin: { open: '08:00', close: '17:00', isOpen: true },
+        selasa: { open: '08:00', close: '17:00', isOpen: true },
+        rabu: { open: '08:00', close: '17:00', isOpen: true },
+        kamis: { open: '08:00', close: '17:00', isOpen: true },
+        jumat: { open: '08:00', close: '17:00', isOpen: true },
+        sabtu: { open: '08:00', close: '12:00', isOpen: false },
+        minggu: { open: '08:00', close: '12:00', isOpen: false }
+    };
+    editStoreForm.value = {
+        id: store.id,
+        name: store.name || '',
+        address: store.address || '',
+        phone: store.phone || '',
+        isActive: store.isActive !== false,
+        shiftConfig: Array.isArray(store.shiftConfig) ? [...store.shiftConfig] : [],
+        operatingHours: store.operatingHours && typeof store.operatingHours === 'object'
+            ? { ...defaultOH, ...store.operatingHours }
+            : { ...defaultOH }
+    };
     showEditStoreModal.value = true;
+};
+
+const addEditShift = () => {
+    editStoreForm.value.shiftConfig.push({ name: '', startTime: '08:00', endTime: '17:00' });
+};
+
+const removeEditShift = (index: number) => {
+    editStoreForm.value.shiftConfig.splice(index, 1);
 };
 const handleSaveStore = async () => {
     saving.value = true;
@@ -1517,5 +1597,6 @@ const handleSaveStore = async () => {
 
 onMounted(() => {
     loadTenantDetail();
+    loadAvailableAddons();
 });
 </script>

@@ -381,7 +381,7 @@ const loadStores = async () => {
     
     // Check limit
     try {
-      const limitResponse = await api.get('/outlets/check-limit');
+      const limitResponse = await api.get('/addons/check-limit/ADD_OUTLETS');
       outletLimit.value = limitResponse.data;
     } catch (err) {
       console.error('Failed to check outlet limit', err);

@@ -1,72 +1,95 @@
-import { formatCurrency, formatDate, formatDateTime } from './formatters';
-import { downloadPDFFromHTMLIframe } from './pdf-download';
+import { formatCurrency, formatDate, formatDateTime } from "./formatters";
+import { downloadPDFFromHTMLIframe } from "./pdf-download";
 
 interface ExportData {
-  type: 'report' | 'analytics' | 'both';
+  type: "report" | "analytics" | "both";
   reportData?: any;
   analyticsData?: any;
   reportType?: string;
   startDate: string;
   endDate: string;
   tenantName?: string;
-  template?: 'clean' | 'contemporary' | 'vibrant' | 'professional' | 'executive' | 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant';
+  template?:
+    | "clean"
+    | "contemporary"
+    | "vibrant"
+    | "professional"
+    | "executive"
+    | "minimalist"
+    | "modern"
+    | "classic"
+    | "colorful"
+    | "elegant";
   isGlobal?: boolean;
 }
 
 const TEMPLATES = {
   // New template names
-  clean: 'Clean & Simple',
-  contemporary: 'Contemporary',
-  vibrant: 'Vibrant',
-  professional: 'Professional',
-  executive: 'Executive',
+  clean: "Clean & Simple",
+  contemporary: "Contemporary",
+  vibrant: "Vibrant",
+  professional: "Professional",
+  executive: "Executive",
   // Legacy support
-  minimalist: 'Clean & Simple',
-  modern: 'Contemporary',
-  classic: 'Contemporary',
-  colorful: 'Vibrant',
-  elegant: 'Professional',
+  minimalist: "Clean & Simple",
+  modern: "Contemporary",
+  classic: "Contemporary",
+  colorful: "Vibrant",
+  elegant: "Professional",
 };
 
 export async function generateFlexboxExport(data: ExportData) {
-  const template = data.template || 'modern';
+  const template = data.template || "modern";
 
   // Debug: Log template being used
   console.log(`[PDF Export] Using template: ${template}`);
 
   // Generate filename
   const { type, reportType, startDate, endDate } = data;
-  const reportTypeLabel = reportType === 'sales' ? 'Penjualan' :
-    reportType === 'product' ? 'Produk' :
-      reportType === 'customers' ? 'Pelanggan' :
-        reportType === 'inventory' ? 'Inventori' :
-          reportType === 'financial' ? 'Keuangan' :
-            reportType === 'global' ? 'Global' : 'Laporan';
+  const reportTypeLabel =
+    reportType === "sales"
+      ? "Penjualan"
+      : reportType === "product"
+        ? "Produk"
+        : reportType === "customers"
+          ? "Pelanggan"
+          : reportType === "inventory"
+            ? "Inventori"
+            : reportType === "financial"
+              ? "Keuangan"
+              : reportType === "global"
+                ? "Global"
+                : "Laporan";
 
-  const exportTypeLabel = type === 'report' ? 'Laporan' :
-    type === 'analytics' ? 'Analytics' :
-      'Laporan-Analytics';
+  const exportTypeLabel =
+    type === "report"
+      ? "Laporan"
+      : type === "analytics"
+        ? "Analytics"
+        : "Laporan-Analytics";
 
-  const templateLabel = TEMPLATES[template as keyof typeof TEMPLATES] || 'Modern';
+  const templateLabel =
+    TEMPLATES[template as keyof typeof TEMPLATES] || "Modern";
   const filename = `${exportTypeLabel}_${reportTypeLabel}_${templateLabel}_${startDate}_${endDate}.pdf`;
 
   try {
     // Use fetch API directly to avoid XMLHttpRequest CORS issues
     // Get API URL - use VITE_API_URL or detect from window location
     let apiBaseURL = import.meta.env.VITE_API_URL;
-    if (!apiBaseURL && typeof window !== 'undefined') {
+    if (!apiBaseURL && typeof window !== "undefined") {
       const hostname = window.location.hostname;
       const protocol = window.location.protocol;
       const port = window.location.port;
-      if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-        apiBaseURL = `${protocol}//${hostname}${port ? ':' + port : ''}/api`;
+      if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+        apiBaseURL = `${protocol}//${hostname}${port ? ":" + port : ""}/api`;
       } else {
-        apiBaseURL = 'http://localhost:3000/api';
+        apiBaseURL = "http://localhost:3001/api";
       }
     } else if (!apiBaseURL) {
-      apiBaseURL = 'http://localhost:3000/api';
+      apiBaseURL = "http://localhost:3001/api";
     }
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
 
     // Suppress console errors for this specific request
     const originalConsoleError = console.error;
@@ -76,28 +99,32 @@ export async function generateFlexboxExport(data: ExportData) {
     // Temporarily disable console errors for CORS/network issues
     const suppressCorsErrors = () => {
       console.error = (...args: any[]) => {
-        const message = args[0]?.toString() || '';
-        if (!message.includes('CORS') &&
-          !message.includes('Access-Control') &&
-          !message.includes('ERR_NETWORK') &&
-          !message.includes('ERR_FAILED') &&
-          !message.includes('blocked by CORS policy')) {
+        const message = args[0]?.toString() || "";
+        if (
+          !message.includes("CORS") &&
+          !message.includes("Access-Control") &&
+          !message.includes("ERR_NETWORK") &&
+          !message.includes("ERR_FAILED") &&
+          !message.includes("blocked by CORS policy")
+        ) {
           originalConsoleError.apply(console, args);
         }
       };
 
       console.warn = (...args: any[]) => {
-        const message = args[0]?.toString() || '';
-        if (!message.includes('CORS') && !message.includes('Access-Control')) {
+        const message = args[0]?.toString() || "";
+        if (!message.includes("CORS") && !message.includes("Access-Control")) {
           originalConsoleWarn.apply(console, args);
         }
       };
 
       // Suppress XMLHttpRequest errors
       console.log = (...args: any[]) => {
-        const message = args[0]?.toString() || '';
-        if (!message.includes('pdf/generate') ||
-          (!message.includes('CORS') && !message.includes('blocked'))) {
+        const message = args[0]?.toString() || "";
+        if (
+          !message.includes("pdf/generate") ||
+          (!message.includes("CORS") && !message.includes("blocked"))
+        ) {
           originalConsoleLog.apply(console, args);
         }
       };
@@ -114,10 +141,10 @@ export async function generateFlexboxExport(data: ExportData) {
     try {
       // Use fetch API instead of axios to avoid XMLHttpRequest CORS issues
       const response = await fetch(`${apiBaseURL}/pdf/generate`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
           template,
@@ -127,7 +154,7 @@ export async function generateFlexboxExport(data: ExportData) {
             title: `${exportTypeLabel} ${reportTypeLabel}`,
           },
         }),
-        credentials: 'include',
+        credentials: "include",
       });
 
       restoreConsole();
@@ -138,7 +165,7 @@ export async function generateFlexboxExport(data: ExportData) {
 
         if (blob && blob.size > 0) {
           const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
           link.download = filename;
           document.body.appendChild(link);
@@ -152,7 +179,6 @@ export async function generateFlexboxExport(data: ExportData) {
       // If response is not ok, fallback to HTML to PDF
       const html = generateTemplateHTML(data, template);
       await downloadPDFFromHTMLIframe(html, filename);
-
     } catch (requestError: any) {
       restoreConsole();
 
@@ -176,17 +202,27 @@ function generateTemplateHTML(data: ExportData, template: string): string {
     elegant: generateElegantTemplate,
   };
 
-  const templateFunction = templateFunctions[template] || generateModernTemplate;
+  const templateFunction =
+    templateFunctions[template] || generateModernTemplate;
   return templateFunction(data);
 }
 
 // Template 1: Minimalist
 function generateMinimalistTemplate(data: ExportData): string {
-  const { type, reportData, analyticsData, reportType, startDate, endDate, tenantName, isGlobal } = data;
-  const currentDate = new Date().toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const {
+    type,
+    reportData,
+    analyticsData,
+    reportType,
+    startDate,
+    endDate,
+    tenantName,
+    isGlobal,
+  } = data;
+  const currentDate = new Date().toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return `
@@ -194,7 +230,7 @@ function generateMinimalistTemplate(data: ExportData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Export ${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</title>
+  <title>Export ${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</title>
   <style>
     @page {
       size: A4;
@@ -391,13 +427,13 @@ function generateMinimalistTemplate(data: ExportData): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title">${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</h1>
-      <p class="subtitle">${tenantName || 'Tenant'} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
+      <h1 class="title">${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</h1>
+      <p class="subtitle">${tenantName || "Tenant"} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
     </div>
     
     <div class="content">
-      ${type === 'report' || type === 'both' ? generateReportSection(reportData, reportType, isGlobal || false) : ''}
-      ${type === 'analytics' || type === 'both' ? generateAnalyticsSection(analyticsData) : ''}
+      ${type === "report" || type === "both" ? generateReportSection(reportData, reportType, isGlobal || false) : ""}
+      ${type === "analytics" || type === "both" ? generateAnalyticsSection(analyticsData) : ""}
     </div>
     
     <div class="footer">
@@ -411,11 +447,20 @@ function generateMinimalistTemplate(data: ExportData): string {
 
 // Template 2: Modern
 function generateModernTemplate(data: ExportData): string {
-  const { type, reportData, analyticsData, reportType, startDate, endDate, tenantName, isGlobal } = data;
-  const currentDate = new Date().toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const {
+    type,
+    reportData,
+    analyticsData,
+    reportType,
+    startDate,
+    endDate,
+    tenantName,
+    isGlobal,
+  } = data;
+  const currentDate = new Date().toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return `
@@ -423,7 +468,7 @@ function generateModernTemplate(data: ExportData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Export ${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</title>
+  <title>Export ${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</title>
   <style>
     @page {
       size: A4;
@@ -601,13 +646,13 @@ function generateModernTemplate(data: ExportData): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title">${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</h1>
-      <p class="subtitle">${tenantName || 'Tenant'} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
+      <h1 class="title">${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</h1>
+      <p class="subtitle">${tenantName || "Tenant"} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
     </div>
     
     <div class="content">
-      ${type === 'report' || type === 'both' ? generateReportSection(reportData, reportType, isGlobal || false) : ''}
-      ${type === 'analytics' || type === 'both' ? generateAnalyticsSection(analyticsData) : ''}
+      ${type === "report" || type === "both" ? generateReportSection(reportData, reportType, isGlobal || false) : ""}
+      ${type === "analytics" || type === "both" ? generateAnalyticsSection(analyticsData) : ""}
     </div>
     
     <div class="footer">
@@ -621,11 +666,20 @@ function generateModernTemplate(data: ExportData): string {
 
 // Template 3: Colorful
 function generateColorfulTemplate(data: ExportData): string {
-  const { type, reportData, analyticsData, reportType, startDate, endDate, tenantName, isGlobal } = data;
-  const currentDate = new Date().toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const {
+    type,
+    reportData,
+    analyticsData,
+    reportType,
+    startDate,
+    endDate,
+    tenantName,
+    isGlobal,
+  } = data;
+  const currentDate = new Date().toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return `
@@ -633,7 +687,7 @@ function generateColorfulTemplate(data: ExportData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Export ${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</title>
+  <title>Export ${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</title>
   <style>
     @page {
       size: A4;
@@ -833,13 +887,13 @@ function generateColorfulTemplate(data: ExportData): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title">${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</h1>
-      <p class="subtitle">${tenantName || 'Tenant'} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
+      <h1 class="title">${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</h1>
+      <p class="subtitle">${tenantName || "Tenant"} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
     </div>
     
     <div class="content">
-      ${type === 'report' || type === 'both' ? generateReportSection(reportData, reportType, isGlobal || false) : ''}
-      ${type === 'analytics' || type === 'both' ? generateAnalyticsSection(analyticsData) : ''}
+      ${type === "report" || type === "both" ? generateReportSection(reportData, reportType, isGlobal || false) : ""}
+      ${type === "analytics" || type === "both" ? generateAnalyticsSection(analyticsData) : ""}
     </div>
     
     <div class="footer">
@@ -853,11 +907,20 @@ function generateColorfulTemplate(data: ExportData): string {
 
 // Template 5: Elegant
 function generateElegantTemplate(data: ExportData): string {
-  const { type, reportData, analyticsData, reportType, startDate, endDate, tenantName, isGlobal } = data;
-  const currentDate = new Date().toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const {
+    type,
+    reportData,
+    analyticsData,
+    reportType,
+    startDate,
+    endDate,
+    tenantName,
+    isGlobal,
+  } = data;
+  const currentDate = new Date().toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return `
@@ -865,7 +928,7 @@ function generateElegantTemplate(data: ExportData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Export ${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</title>
+  <title>Export ${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</title>
   <style>
     @page {
       size: A4;
@@ -1086,13 +1149,13 @@ function generateElegantTemplate(data: ExportData): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title">${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</h1>
-      <p class="subtitle">${tenantName || 'Tenant'} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
+      <h1 class="title">${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</h1>
+      <p class="subtitle">${tenantName || "Tenant"} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
     </div>
     
     <div class="content">
-      ${type === 'report' || type === 'both' ? generateReportSection(reportData, reportType, isGlobal || false) : ''}
-      ${type === 'analytics' || type === 'both' ? generateAnalyticsSection(analyticsData) : ''}
+      ${type === "report" || type === "both" ? generateReportSection(reportData, reportType, isGlobal || false) : ""}
+      ${type === "analytics" || type === "both" ? generateAnalyticsSection(analyticsData) : ""}
     </div>
     
     <div class="footer">
@@ -1105,11 +1168,15 @@ function generateElegantTemplate(data: ExportData): string {
 }
 
 // Helper functions (same as before)
-function generateReportSection(reportData: any, reportType?: string, isGlobal: boolean = false): string {
-  if (!reportData) return '';
+function generateReportSection(
+  reportData: any,
+  reportType?: string,
+  isGlobal: boolean = false,
+): string {
+  if (!reportData) return "";
 
-  let summaryStats = '';
-  let tableContent = '';
+  let summaryStats = "";
+  let tableContent = "";
 
   // Generate summary stats
   if (reportData.summary) {
@@ -1117,24 +1184,33 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
 
     if (isGlobal) {
       // Global Report: Show subscription + addon revenue
-      const totalGlobalRevenue = (reportData.summary.totalSubscriptionRevenue || 0) + (reportData.summary.totalAddonRevenue || 0);
-      stats = ([
-        ['totalGlobalRevenue', totalGlobalRevenue],
-        ['totalSubscriptionRevenue', reportData.summary.totalSubscriptionRevenue || 0],
-        ['totalAddonRevenue', reportData.summary.totalAddonRevenue || 0],
-        ['activeTenants', reportData.summary.activeTenants || 0],
-      ] as Array<[string, any]>).filter(([_, value]) => value !== undefined && value !== null);
+      const totalGlobalRevenue =
+        (reportData.summary.totalSubscriptionRevenue || 0) +
+        (reportData.summary.totalAddonRevenue || 0);
+      stats = (
+        [
+          ["totalGlobalRevenue", totalGlobalRevenue],
+          [
+            "totalSubscriptionRevenue",
+            reportData.summary.totalSubscriptionRevenue || 0,
+          ],
+          ["totalAddonRevenue", reportData.summary.totalAddonRevenue || 0],
+          ["activeTenants", reportData.summary.activeTenants || 0],
+        ] as Array<[string, any]>
+      ).filter(([_, value]) => value !== undefined && value !== null);
     } else {
       // Tenant Report: Show orders/transactions revenue
       stats = Object.entries(reportData.summary)
         .filter(([key, value]) => {
           // Exclude subscription/addon revenue for tenant reports
-          return key !== 'totalSubscriptionRevenue' &&
-            key !== 'totalAddonRevenue' &&
-            key !== 'totalGlobalRevenue' &&
-            key !== 'activeTenants' &&
+          return (
+            key !== "totalSubscriptionRevenue" &&
+            key !== "totalAddonRevenue" &&
+            key !== "totalGlobalRevenue" &&
+            key !== "activeTenants" &&
             value !== undefined &&
-            value !== null;
+            value !== null
+          );
         })
         .slice(0, 4);
     }
@@ -1142,12 +1218,16 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
     if (stats.length > 0) {
       summaryStats = `
       <div class="stats-grid">
-        ${stats.map(([key, value]) => `
+        ${stats
+          .map(
+            ([key, value]) => `
           <div class="stat-card">
             <div class="stat-label">${formatLabel(key)}</div>
             <div class="stat-value">${formatValue(value)}</div>
           </div>
-        `).join('')}
+        `,
+          )
+          .join("")}
       </div>
     `;
     }
@@ -1155,7 +1235,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
 
   // Generate table based on report type
   switch (reportType) {
-    case 'global':
+    case "global":
       // Global Report: Show subscriptions and addons tables
       if (reportData.subscriptions && reportData.subscriptions.length > 0) {
         tableContent += `
@@ -1173,15 +1253,20 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                   </tr>
                 </thead>
                 <tbody>
-                  ${reportData.subscriptions.slice(0, 50).map((item: any) => `
+                  ${reportData.subscriptions
+                    .slice(0, 50)
+                    .map(
+                      (item: any) => `
                     <tr>
-                      <td>${item.tenantName || '-'}</td>
-                      <td>${item.plan || '-'}</td>
+                      <td>${item.tenantName || "-"}</td>
+                      <td>${item.plan || "-"}</td>
                       <td class="text-right">${formatCurrency(item.amount || 0)}</td>
                       <td>${formatDate(item.createdAt)}</td>
-                      <td>${item.status || '-'}</td>
+                      <td>${item.status || "-"}</td>
                     </tr>
-                  `).join('')}
+                  `,
+                    )
+                    .join("")}
                 </tbody>
               </table>
             </div>
@@ -1205,15 +1290,20 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                   </tr>
                 </thead>
                 <tbody>
-                  ${reportData.addons.slice(0, 50).map((item: any) => `
+                  ${reportData.addons
+                    .slice(0, 50)
+                    .map(
+                      (item: any) => `
                     <tr>
-                      <td>${item.tenantName || '-'}</td>
-                      <td>${item.addonName || '-'}</td>
+                      <td>${item.tenantName || "-"}</td>
+                      <td>${item.addonName || "-"}</td>
                       <td class="text-right">${formatCurrency(item.amount || 0)}</td>
                       <td>${formatDate(item.createdAt)}</td>
-                      <td>${item.status || 'active'}</td>
+                      <td>${item.status || "active"}</td>
                     </tr>
-                  `).join('')}
+                  `,
+                    )
+                    .join("")}
                 </tbody>
               </table>
             </div>
@@ -1222,7 +1312,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
       }
       break;
 
-    case 'sales':
+    case "sales":
       if (reportData.byDate && reportData.byDate.length > 0) {
         tableContent = `
           <div class="table-container">
@@ -1236,14 +1326,18 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                 </tr>
               </thead>
               <tbody>
-                ${reportData.byDate.map((item: any) => `
+                ${reportData.byDate
+                  .map(
+                    (item: any) => `
                   <tr>
                     <td>${formatDate(item.date)}</td>
                     <td class="text-right">${formatCurrency(item.revenue || 0)}</td>
                     <td class="text-right">${item.count || 0}</td>
                     <td class="text-right">${formatCurrency((item.revenue || 0) / (item.count || 1))}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -1251,7 +1345,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
       }
       break;
 
-    case 'product':
+    case "product":
       if (reportData.products && reportData.products.length > 0) {
         tableContent = `
           <div class="table-container">
@@ -1266,15 +1360,20 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                 </tr>
               </thead>
               <tbody>
-                ${reportData.products.slice(0, 50).map((item: any) => `
+                ${reportData.products
+                  .slice(0, 50)
+                  .map(
+                    (item: any) => `
                   <tr>
-                    <td>${item.product?.name || item.name || '-'}</td>
-                    <td>${item.product?.category || item.category || '-'}</td>
+                    <td>${item.product?.name || item.name || "-"}</td>
+                    <td>${item.product?.category || item.category || "-"}</td>
                     <td class="text-right">${item.totalSold || 0}</td>
                     <td class="text-right">${formatCurrency(item.totalRevenue || 0)}</td>
                     <td class="text-right">${item.stockLevel || item.stock || 0}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -1282,7 +1381,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
       }
       break;
 
-    case 'customers':
+    case "customers":
       const allCustomers = [
         ...(reportData.customers || []),
         ...(reportData.members || []),
@@ -1301,15 +1400,20 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                 </tr>
               </thead>
               <tbody>
-                ${allCustomers.slice(0, 50).map((item: any) => `
+                ${allCustomers
+                  .slice(0, 50)
+                  .map(
+                    (item: any) => `
                   <tr>
-                    <td>${item.customer?.name || item.member?.name || '-'}</td>
-                    <td>${item.customer?.email || item.member?.email || '-'}</td>
+                    <td>${item.customer?.name || item.member?.name || "-"}</td>
+                    <td>${item.customer?.email || item.member?.email || "-"}</td>
                     <td class="text-right">${item.totalOrders || 0}</td>
                     <td class="text-right">${formatCurrency(item.totalSpent || 0)}</td>
                     <td class="text-right">${formatCurrency(item.averageOrder || 0)}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -1317,7 +1421,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
       }
       break;
 
-    case 'financial':
+    case "financial":
       if (reportData.byDate && reportData.byDate.length > 0) {
         tableContent = `
           <div class="table-container">
@@ -1332,7 +1436,9 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                 </tr>
               </thead>
               <tbody>
-                ${reportData.byDate.map((item: any) => `
+                ${reportData.byDate
+                  .map(
+                    (item: any) => `
                   <tr>
                     <td>${formatDate(item.date)}</td>
                     <td class="text-right">${formatCurrency(reportData.revenue || 0)}</td>
@@ -1340,7 +1446,9 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                     <td class="text-right">${formatCurrency(reportData.grossProfit || 0)}</td>
                     <td class="text-right">${(reportData.profitMargin || 0).toFixed(2)}%</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -1392,13 +1500,17 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
                 </tr>
               </thead>
               <tbody>
-                ${reportData.byDate.map((item: any) => `
+                ${reportData.byDate
+                  .map(
+                    (item: any) => `
                   <tr>
                     <td>${formatDate(item.date)}</td>
                     <td class="text-right">${formatCurrency(item.revenue || 0)}</td>
                     <td class="text-right">${item.count || 0}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -1407,17 +1519,17 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
   }
 
   const reportTypeLabels: Record<string, string> = {
-    sales: 'Penjualan',
-    product: 'Produk',
-    customers: 'Pelanggan',
-    inventory: 'Inventori',
-    financial: 'Keuangan',
-    global: 'Global',
+    sales: "Penjualan",
+    product: "Produk",
+    customers: "Pelanggan",
+    inventory: "Inventori",
+    financial: "Keuangan",
+    global: "Global",
   };
 
   return `
     <div class="section">
-      <h2 class="section-title">Laporan ${reportTypeLabels[reportType || ''] || reportType || 'Penjualan'}</h2>
+      <h2 class="section-title">Laporan ${reportTypeLabels[reportType || ""] || reportType || "Penjualan"}</h2>
       ${summaryStats}
       ${tableContent}
     </div>
@@ -1425,9 +1537,9 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
 }
 
 function generateAnalyticsSection(analyticsData: any): string {
-  if (!analyticsData) return '';
+  if (!analyticsData) return "";
 
-  let content = '';
+  let content = "";
 
   if (analyticsData.predictions) {
     content += `
@@ -1440,8 +1552,8 @@ function generateAnalyticsSection(analyticsData: any): string {
           </div>
           <div class="analytics-card">
             <div class="analytics-label">Trend Penjualan</div>
-            <div class="analytics-value ${(analyticsData.predictions.trend || 0) >= 0 ? 'positive' : 'negative'}">
-              ${(analyticsData.predictions.trend || 0) >= 0 ? '+' : ''}${(analyticsData.predictions.trend || 0).toFixed(2)}%
+            <div class="analytics-value ${(analyticsData.predictions.trend || 0) >= 0 ? "positive" : "negative"}">
+              ${(analyticsData.predictions.trend || 0) >= 0 ? "+" : ""}${(analyticsData.predictions.trend || 0).toFixed(2)}%
             </div>
           </div>
           <div class="analytics-card">
@@ -1467,13 +1579,17 @@ function generateAnalyticsSection(analyticsData: any): string {
               </tr>
             </thead>
             <tbody>
-              ${analyticsData.topProducts.map((product: any, index: number) => `
+              ${analyticsData.topProducts
+                .map(
+                  (product: any, index: number) => `
                 <tr>
                   <td class="text-center">${index + 1}</td>
                   <td>${product.name}</td>
                   <td class="text-right">${product.sales || 0}</td>
                 </tr>
-              `).join('')}
+              `,
+                )
+                .join("")}
             </tbody>
           </table>
         </div>
@@ -1486,48 +1602,57 @@ function generateAnalyticsSection(analyticsData: any): string {
 
 function formatLabel(key: string): string {
   const labels: Record<string, string> = {
-    totalRevenue: 'Total Pendapatan',
-    totalOrders: 'Total Pesanan',
-    averageOrderValue: 'Rata-rata per Pesanan',
-    totalItems: 'Total Item Terjual',
-    totalProducts: 'Total Produk',
-    totalSold: 'Total Terjual',
-    lowStockCount: 'Stok Rendah',
-    totalCustomers: 'Total Pelanggan',
-    totalMembers: 'Total Member',
-    totalStockValue: 'Nilai Stok',
-    revenue: 'Pendapatan',
-    costOfGoods: 'Biaya Pokok',
-    grossProfit: 'Laba Kotor',
-    profitMargin: 'Margin Laba',
-    totalTenants: 'Total Tenant',
-    activeTenants: 'Tenant Aktif',
-    totalSubscriptionRevenue: 'Pendapatan Subscription',
-    totalAddonRevenue: 'Pendapatan Addons',
-    totalGlobalRevenue: 'Total Pendapatan Global',
-    averagePerTenant: 'Rata-rata per Tenant',
-    totalTransactions: 'Total Transaksi',
+    totalRevenue: "Total Pendapatan",
+    totalOrders: "Total Pesanan",
+    averageOrderValue: "Rata-rata per Pesanan",
+    totalItems: "Total Item Terjual",
+    totalProducts: "Total Produk",
+    totalSold: "Total Terjual",
+    lowStockCount: "Stok Rendah",
+    totalCustomers: "Total Pelanggan",
+    totalMembers: "Total Member",
+    totalStockValue: "Nilai Stok",
+    revenue: "Pendapatan",
+    costOfGoods: "Biaya Pokok",
+    grossProfit: "Laba Kotor",
+    profitMargin: "Margin Laba",
+    totalTenants: "Total Tenant",
+    activeTenants: "Tenant Aktif",
+    totalSubscriptionRevenue: "Pendapatan Subscription",
+    totalAddonRevenue: "Pendapatan Addons",
+    totalGlobalRevenue: "Total Pendapatan Global",
+    averagePerTenant: "Rata-rata per Tenant",
+    totalTransactions: "Total Transaksi",
   };
   return labels[key] || key;
 }
 
 function formatValue(value: any): string {
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     if (value > 1000000) {
       return formatCurrency(value);
     }
-    return value.toLocaleString('id-ID');
+    return value.toLocaleString("id-ID");
   }
   return String(value);
 }
 
 // Template 5: Classic (HTML version)
 function generateClassicTemplate(data: ExportData): string {
-  const { type, reportData, analyticsData, reportType, startDate, endDate, tenantName, isGlobal } = data;
-  const currentDate = new Date().toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const {
+    type,
+    reportData,
+    analyticsData,
+    reportType,
+    startDate,
+    endDate,
+    tenantName,
+    isGlobal,
+  } = data;
+  const currentDate = new Date().toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return `
@@ -1535,7 +1660,7 @@ function generateClassicTemplate(data: ExportData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Export ${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</title>
+  <title>Export ${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</title>
   <style>
     @page {
       size: A4;
@@ -1631,13 +1756,13 @@ function generateClassicTemplate(data: ExportData): string {
 </head>
 <body>
   <div class="header">
-    <h1 class="title">${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</h1>
-    <p class="subtitle">${tenantName || 'Tenant'} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
+    <h1 class="title">${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</h1>
+    <p class="subtitle">${tenantName || "Tenant"} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
   </div>
   
   <div class="content">
-    ${type === 'report' || type === 'both' ? generateReportSection(reportData, reportType, isGlobal || false) : ''}
-    ${type === 'analytics' || type === 'both' ? generateAnalyticsSection(analyticsData) : ''}
+    ${type === "report" || type === "both" ? generateReportSection(reportData, reportType, isGlobal || false) : ""}
+    ${type === "analytics" || type === "both" ? generateAnalyticsSection(analyticsData) : ""}
   </div>
   
   <div class="footer">
@@ -1647,5 +1772,3 @@ function generateClassicTemplate(data: ExportData): string {
 </html>
   `;
 }
-
-

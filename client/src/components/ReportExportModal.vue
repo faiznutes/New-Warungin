@@ -298,17 +298,21 @@
               </button>
               <button
                 type="button"
-                @click="exportForm.format = 'PDF'"
+                @click="canExportPDF ? exportForm.format = 'PDF' : null"
+                :disabled="!canExportPDF"
                 class="px-4 py-4 rounded-xl border-2 transition flex flex-col items-center gap-2 group"
-                :class="exportForm.format === 'PDF' 
-                  ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400' 
-                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-red-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
+                :class="!canExportPDF
+                  ? 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 opacity-60 cursor-not-allowed'
+                  : exportForm.format === 'PDF' 
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400' 
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-red-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                 <div class="p-2 rounded-full" :class="exportForm.format === 'PDF' ? 'bg-red-200 dark:bg-red-800' : 'bg-slate-100 dark:bg-slate-700'">
+                 <div class="p-2 rounded-full" :class="exportForm.format === 'PDF' && canExportPDF ? 'bg-red-200 dark:bg-red-800' : 'bg-slate-100 dark:bg-slate-700'">
                     <span class="material-symbols-outlined text-[24px]">picture_as_pdf</span>
                  </div>
                 <div class="text-center">
                     <span class="block text-sm font-bold">PDF Document</span>
+                    <span v-if="!canExportPDF" class="block text-[10px] text-amber-600 dark:text-amber-400 font-bold mt-1">Hanya untuk paket berbayar</span>
                 </div>
               </button>
             </div>
@@ -383,7 +387,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import api from '../api';
 import { exportToCSV, getPeriodLabel } from '../utils/export';
 import { generateFlexboxExport } from '../utils/export-templates';
@@ -423,9 +427,12 @@ const exportForm = ref({
   period: props.defaultPeriod,
   startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
   endDate: new Date().toISOString().split('T')[0],
-  format: 'PDF' as 'CSV' | 'PDF',
+  format: (authStore.isSuperAdmin || authStore.isSubscriptionActive ? 'PDF' : 'CSV') as 'CSV' | 'PDF',
   template: 'contemporary' as 'clean' | 'contemporary' | 'vibrant' | 'professional' | 'executive' | 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant',
 });
+
+// PDF export only available for Super Admin or tenants with active (paid) subscription
+const canExportPDF = computed(() => authStore.isSuperAdmin || authStore.isSubscriptionActive);
 
 const generateShareLink = async () => {
   generatingLink.value = true;

@@ -570,30 +570,22 @@ let loadAnalyticsTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const handleReportTypeChange = () => {
   if (loadReportTimeout) clearTimeout(loadReportTimeout);
-  loadReportTimeout = setTimeout(() => {
-    loadReport();
-  }, 100);
+  loadReport(); // Immediate load for faster UX
 };
 
 const handleReportViewTypeChange = () => {
   if (loadReportTimeout) clearTimeout(loadReportTimeout);
-  loadReportTimeout = setTimeout(() => {
-    loadReport();
-  }, 100);
+  loadReport();
 };
 
 const handlePeriodChange = () => {
   if (loadReportTimeout) clearTimeout(loadReportTimeout);
-  loadReportTimeout = setTimeout(() => {
-    loadReport();
-  }, 100);
+  loadReport();
 };
 
 const handleDateRangeChange = () => {
   if (loadReportTimeout) clearTimeout(loadReportTimeout);
-  loadReportTimeout = setTimeout(() => {
-    loadReport();
-  }, 300);
+  loadReport();
 };
 
 const summaryStats = computed(() => {

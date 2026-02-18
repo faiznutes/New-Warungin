@@ -112,6 +112,7 @@ export default defineConfig({
     },
   },
   build: {
+    target: 'esnext',
     outDir: 'dist',
     sourcemap: process.env.NODE_ENV === 'development',
     minify: 'terser',

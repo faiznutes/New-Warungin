@@ -201,7 +201,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="text-xs font-bold" :class="sub.purchasedBy === 'ADMIN' ? 'text-purple-600 bg-purple-50 px-2 py-0.5 rounded dark:bg-purple-900/30 dark:text-purple-400' : 'text-slate-600 bg-slate-100 px-2 py-0.5 rounded dark:bg-slate-700 dark:text-slate-400'">
-                    {{ sub.purchasedBy === 'ADMIN' ? 'Admin' : 'Mady' }}
+                    {{ sub.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right">
@@ -361,7 +361,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="text-xs font-bold" :class="addon.purchasedBy === 'ADMIN' ? 'text-purple-600 bg-purple-50 px-2 py-0.5 rounded dark:bg-purple-900/30 dark:text-purple-400' : 'text-slate-600 bg-slate-100 px-2 py-0.5 rounded dark:bg-slate-700 dark:text-slate-400'">
-                    {{ addon.purchasedBy === 'ADMIN' ? 'Admin' : 'Mady' }}
+                    {{ addon.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right">

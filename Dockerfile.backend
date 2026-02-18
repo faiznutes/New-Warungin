@@ -1,87 +1,64 @@
-# Backend Dockerfile
-FROM node:18-alpine AS backend-builder
+# NestJS Backend Dockerfile
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Configure npm for better network handling
-RUN npm config set fetch-timeout 300000 && \
-    npm config set fetch-retries 5 && \
-    npm config set fetch-retry-mintimeout 20000 && \
-    npm config set fetch-retry-maxtimeout 120000
+# Copy NestJS package files
+COPY nest/package*.json ./nest/
 
-# Copy package files
-COPY package*.json ./
-COPY tsconfig.json ./
+WORKDIR /app/nest
 
-# Install dependencies and clean cache
-RUN npm install --legacy-peer-deps --ignore-engines && \
-    npm cache clean --force
+# Install dependencies
+RUN npm install --legacy-peer-deps --ignore-engines
 
 # Copy source code
-COPY src ./src
+COPY nest/tsconfig.json ./nest/
+COPY nest/nest-cli.json ./nest/
+COPY nest/src ./src
 COPY prisma ./prisma
-# Exclude prisma.config.ts from build (it's only for Prisma CLI, not for TypeScript compilation)
-RUN rm -f prisma/prisma.config.ts || true
-# Copy scripts directory
-COPY scripts ./scripts
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN npx prisma generate --schema=../prisma/schema.prisma
 
-# Build TypeScript
+# Build NestJS
 RUN npm run build
-
-# Clean npm cache after build
-RUN npm cache clean --force
 
 # Production stage
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Install only runtime dependencies (dumb-init, wget, docker-cli)
-RUN apk add --no-cache dumb-init wget docker-cli
+# Install runtime dependencies
+RUN apk add --no-cache dumb-init
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from builder
+COPY nest/package*.json ./nest/
 
-# Copy prisma schema first (needed for Prisma client generation)
-COPY prisma ./prisma
+WORKDIR /app/nest
 
-# Install production dependencies only and clean cache immediately
-RUN npm install --omit=dev --legacy-peer-deps --ignore-engines --prefer-offline --no-audit && \
-    npm install prisma@6.19.1 --save-dev --ignore-engines && \
-    npm cache clean --force && \
-    rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
+# Install production dependencies
+RUN npm install --omit=dev --legacy-peer-deps --ignore-engines
 
-# Copy built files from builder stage
-COPY --from=backend-builder /app/dist ./dist
-# CRITICAL: Copy the generated Prisma client from builder stage
-COPY --from=backend-builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=backend-builder /app/node_modules/@prisma ./node_modules/@prisma
+# Copy built files
+COPY --from=builder /app/nest/dist ./dist
+COPY --from=builder /app/nest/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/nest/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/prisma ./prisma
 
-# Copy startup script and ensure it's executable
-COPY scripts/docker-startup.sh /app/scripts/docker-startup.sh
-RUN chmod +x /app/scripts/docker-startup.sh
+# Copy generated Prisma client
+RUN mkdir -p src/generated/client && \
+    cp -r node_modules/.prisma/client src/generated/client 2>/dev/null || true
 
 # Create logs directory
 RUN mkdir -p /app/logs
 
-# Create non-root user and add to docker group (for Docker socket access)
-RUN addgroup -g 999 docker 2>/dev/null || true && \
-    addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 -G docker || \
-    (adduser -S nodejs -u 1001 && addgroup docker 2>/dev/null && adduser nodejs docker 2>/dev/null || true)
-
-# Change ownership and remove unnecessary files
-RUN chown -R nodejs:nodejs /app && \
-    rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
+# Non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs || true
 
 USER nodejs
 
 EXPOSE 3000
 
-# Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["/app/scripts/docker-startup.sh"]
-
+CMD ["node", "dist/main.js"]

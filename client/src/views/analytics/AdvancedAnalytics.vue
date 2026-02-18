@@ -431,18 +431,20 @@ const loadAnalytics = async () => {
       authStore.isSuperAdmin 
         ? Promise.resolve({ data: { data: [] } })
         : api.get('/analytics/custom-reports').catch(() => ({ data: { data: [] } })),
-      // Mock Store Comparison Load
-      new Promise(resolve => setTimeout(() => resolve([
-         { id: '1', name: 'Warung Pusat', revenue: 45000000, orders: 1250 },
-         { id: '2', name: 'Cabang Utara', revenue: 28500000, orders: 840 },
-         { id: '3', name: 'Cabang Selatan', revenue: 32100000, orders: 920 },
-      ]), 800))
+      // Store Comparison - load real outlet data
+      api.get('/outlets').catch(() => ({ data: [] }))
     ]);
 
     predictions.value = predictionsRes.data;
     topProducts.value = productsRes.data || [];
     customReports.value = reportsRes.data?.data || reportsRes.data || [];
-    storeComparison.value = (storeComparisonRes as any) || []; // TypeScript workaround
+    // Outlets endpoint returns { data: [...], pagination: {...} }
+    storeComparison.value = (storeComparisonRes.data?.data || storeComparisonRes.data || []).map((outlet: any) => ({
+      id: outlet.id,
+      name: outlet.name,
+      revenue: outlet.totalRevenue || 0,
+      orders: outlet.totalOrders || 0,
+    }));
   } catch (error: any) {
     console.error('Error loading analytics:', error);
     if (error.response?.status === 403) {

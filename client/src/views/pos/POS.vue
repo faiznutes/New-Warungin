@@ -297,7 +297,7 @@
               to="/app/orders" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
-              v-if="authStore.user?.role !== 'Cashier'"
+              v-if="canEditOrders"
             >
               <span class="material-symbols-outlined">receipt_long</span>
               <span class="font-medium">Orders</span>
@@ -307,7 +307,7 @@
               to="/app/products" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
-              v-if="authStore.user?.role !== 'Cashier'"
+              v-if="canManageProducts"
             >
               <span class="material-symbols-outlined">inventory_2</span>
               <span class="font-medium">Products</span>
@@ -317,7 +317,7 @@
               to="/app/customers" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
-              v-if="authStore.user?.role !== 'Cashier'"
+              v-if="canManageCustomers"
             >
               <span class="material-symbols-outlined">group</span>
               <span class="font-medium">Customers</span>
@@ -327,7 +327,7 @@
               to="/app/reports" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
-              v-if="authStore.user?.role !== 'Cashier'"
+              v-if="canViewReports"
             >
               <span class="material-symbols-outlined">bar_chart</span>
               <span class="font-medium">Reports</span>
@@ -693,6 +693,7 @@ import { usePosStore, type CartItem, type Product } from '../../stores/pos.store
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
+import { usePermissions } from '../../composables/usePermissions';
 import { safeSome, safeFilter, safeMap, safeReduce, safeFind } from '../../utils/array-helpers';
 import { useSocket } from '../../composables/useSocket';
 import { useNotification } from '../../composables/useNotification';
@@ -709,6 +710,7 @@ const router = useRouter();
 const { socket } = useSocket();
 const { success: showSuccess, error: showError, warning: showWarning, confirm: showConfirm } = useNotification();
 const { playSound } = useSound();
+const { canEditOrders, canManageProducts, canManageCustomers, canViewReports } = usePermissions();
 
 // Extract state from store
 const { 

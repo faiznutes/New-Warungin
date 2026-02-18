@@ -180,6 +180,14 @@ export const useAuthStore = defineStore('auth', () => {
         // Update stored user data with fresh data from /auth/me
         user.value = meResponse.data.user;
         localStorage.setItem('user', JSON.stringify(meResponse.data.user));
+
+        // Auto-set store for cashier/kitchen from permissions (same as fetchMe)
+        if (user.value && (user.value.role === 'CASHIER' || user.value.role === 'KITCHEN')) {
+          const perms = (user.value as any).permissions;
+          if (perms?.assignedStoreId) {
+            setSelectedStore(perms.assignedStoreId);
+          }
+        }
       }
     } catch (error) {
       console.warn('Failed to fetch user permissions after login:', error);

@@ -46,13 +46,21 @@
         <div class="w-full max-w-[420px] flex justify-between items-center mb-6 z-10">
           <h2 class="text-xl font-bold text-slate-900 dark:text-white">Detail Transaksi</h2>
           <div class="flex gap-2">
-            <!-- Paper Size Selection (Compact) -->
+            <!-- Print Template Selection -->
+            <select
+              v-model="selectedPrintTemplate"
+              class="px-3 py-2 text-sm font-medium text-slate-600 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm focus:ring-2 focus:ring-primary/20 outline-none"
+            >
+              <option value="klasik">Klasik</option>
+              <option value="modern">Modern</option>
+            </select>
+            <!-- Paper Size Selection -->
             <select
               v-model="selectedPaperSize"
               class="px-3 py-2 text-sm font-medium text-slate-600 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm focus:ring-2 focus:ring-primary/20 outline-none"
             >
-              <option value="50mm">50mm</option>
-              <option value="85mm">85mm</option>
+              <option value="58mm">58mm</option>
+              <option value="80mm">80mm</option>
             </select>
             <!-- Share Button -->
             <button 
@@ -79,8 +87,8 @@
           ref="receiptContent"
           class="w-full max-w-[400px] bg-white relative z-10 shadow-receipt rounded-2xl overflow-hidden transition-all duration-300"
           :class="{
-            'receipt-50mm': selectedPaperSize === '50mm',
-            'receipt-80mm': selectedPaperSize === '85mm',
+            'receipt-50mm': selectedPaperSize === '58mm',
+            'receipt-80mm': selectedPaperSize === '80mm',
           }"
         >
           <div v-if="receiptData && template" class="receipt-content">
@@ -216,6 +224,8 @@ import { Teleport } from 'vue';
 import api from '../api';
 import { formatCurrency } from '../utils/formatters';
 import { useNotification } from '../composables/useNotification';
+import { generateKlasikReceipt, generateModernReceipt } from '../utils/receipt-print-templates';
+import type { ReceiptPrintData } from '../utils/receipt-print-templates';
 
 const { warning, success } = useNotification();
 
@@ -286,7 +296,8 @@ const emit = defineEmits<{
 
 const templates = ref<ReceiptTemplate[]>([]);
 const selectedTemplate = ref<string>('');
-const selectedPaperSize = ref<'50mm' | '85mm'>('85mm');
+const selectedPaperSize = ref<'58mm' | '80mm'>('80mm');
+const selectedPrintTemplate = ref<'klasik' | 'modern'>('modern');
 const template = ref<ReceiptTemplate | null>(null);
 const receiptContent = ref<HTMLElement | null>(null);
 const loading = ref(false);
@@ -480,80 +491,56 @@ const handlePrint = () => {
 };
 
 const printBrowser = async () => {
-  if (!receiptContent.value) return;
+  if (!receiptData.value) return;
 
-  const paperSize = selectedPaperSize.value === '50mm' ? 'THERMAL_50' : 'THERMAL_80';
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     await warning('Popup blocker terdeteksi. Silakan izinkan popup untuk mencetak struk.');
     return;
   }
 
-  const printContent = receiptContent.value.innerHTML;
-  
-  const getPageSize = () => paperSize === 'THERMAL_50' ? '50mm' : '80mm';
-  const getMaxWidth = () => paperSize === 'THERMAL_50' ? '48mm' : '72mm';
-  const getPadding = () => paperSize === 'THERMAL_50' ? '2px' : '4px';
-  const getFontSize = () => paperSize === 'THERMAL_50' ? '8px' : '10px';
+  // Build print data from receiptData
+  const printData: ReceiptPrintData = {
+    orderNumber: receiptData.value.orderNumber,
+    date: receiptData.value.date,
+    customerName: receiptData.value.customerName,
+    cashierName: receiptData.value.cashierName || undefined,
+    servedBy: receiptData.value.servedBy,
+    shiftType: receiptData.value.shiftType,
+    items: receiptData.value.items.map(item => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      subtotal: item.subtotal,
+      discount: item.discount,
+    })),
+    subtotal: receiptData.value.subtotal,
+    discount: receiptData.value.discount,
+    total: receiptData.value.total,
+    paymentMethod: receiptData.value.paymentMethod,
+    change: receiptData.value.change,
+  };
 
-  const printStyles = `
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      @media print {
-        @page {
-          size: ${getPageSize()};
-          margin: 0;
-        }
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: 'Inter', sans-serif;
-          font-size: ${getFontSize()};
-          line-height: 1.4;
-        }
-        .receipt-print-container {
-          max-width: ${getMaxWidth()};
-          width: ${getMaxWidth()};
-          margin: 0 auto;
-          padding: ${getPadding()};
-        }
-        .no-print, .paper-tear-effect {
-          display: none !important;
-        }
-        * {
-          color: #000 !important;
-          background: transparent !important;
-        }
-      }
-    </style>
-  `;
+  const options = {
+    receiptData: printData,
+    tenantName: props.tenantName || tenantInfo.value?.name || 'Warungin',
+    tenantAddress: props.tenantAddress || tenantInfo.value?.address || '',
+    tenantPhone: props.tenantPhone || tenantInfo.value?.phone || '',
+    paperSize: selectedPaperSize.value,
+  };
 
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Receipt - ${receiptData.value?.orderNumber || ''}</title>
-        <meta charset="UTF-8">
-        ${printStyles}
-      </head>
-      <body>
-        <div class="receipt-print-container">
-          ${printContent}
-        </div>
-      </body>
-    </html>
-  `);
+  // Generate HTML based on selected print template
+  const htmlContent = selectedPrintTemplate.value === 'klasik'
+    ? generateKlasikReceipt(options)
+    : generateModernReceipt(options);
+
+  printWindow.document.write(htmlContent);
   printWindow.document.close();
   printWindow.focus();
   setTimeout(() => {
     printWindow.print();
     printWindow.close();
-  }, 250);
+  }, 300);
 };
 
 watch(() => props.show, (newShow) => {

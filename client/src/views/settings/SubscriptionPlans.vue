@@ -111,14 +111,14 @@
         </ul>
         <button
           @click="handleUpgrade('BASIC')"
-          :disabled="currentPlan?.plan === 'BASIC' || upgrading"
+          :disabled="(currentPlan?.plan === 'BASIC' && (currentPlan?.daysRemaining > 7)) || upgrading"
           class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition relative z-10"
-          :class="currentPlan?.plan === 'BASIC' 
+          :class="(currentPlan?.plan === 'BASIC' && (currentPlan?.daysRemaining > 7))
             ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' 
             : 'bg-slate-800 text-white hover:bg-slate-900 shadow-lg shadow-slate-500/20'"
         >
           <span class="material-symbols-outlined text-[20px]" v-if="currentPlan?.plan === 'BASIC'">check_circle</span>
-          {{ currentPlan?.plan === 'BASIC' ? 'Paket Saat Ini' : 'Pilih BASIC' }}
+          {{ currentPlan?.plan === 'BASIC' ? (currentPlan?.daysRemaining <= 7 ? 'Perpanjang BASIC' : 'Paket Saat Ini') : 'Pilih BASIC' }}
         </button>
       </div>
 
@@ -197,15 +197,15 @@
         </ul>
         <button
           @click="handleUpgrade('PRO')"
-          :disabled="currentPlan?.plan === 'PRO' || upgrading"
+          :disabled="(currentPlan?.plan === 'PRO' && (currentPlan?.daysRemaining > 7)) || upgrading"
           class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition relative z-10"
-          :class="currentPlan?.plan === 'PRO' 
+          :class="(currentPlan?.plan === 'PRO' && (currentPlan?.daysRemaining > 7))
             ? 'bg-blue-50/50 text-blue-400 cursor-not-allowed border border-blue-100' 
             : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30'"
         >
           <span class="material-symbols-outlined text-[20px]" v-if="currentPlan?.plan !== 'PRO'">rocket_launch</span>
           <span class="material-symbols-outlined text-[20px]" v-else>check_circle</span>
-          {{ currentPlan?.plan === 'PRO' ? 'Paket Saat Ini' : 'Pilih PRO' }}
+          {{ currentPlan?.plan === 'PRO' ? (currentPlan?.daysRemaining <= 7 ? 'Perpanjang PRO' : 'Paket Saat Ini') : 'Pilih PRO' }}
         </button>
       </div>
 

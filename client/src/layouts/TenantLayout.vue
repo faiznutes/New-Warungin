@@ -78,7 +78,7 @@
             />
 
             <SidebarItem
-              v-if="userRole === 'CASHIER' || userRole === 'SUPERVISOR'"
+              v-if="userRole === 'CASHIER' || userRole === 'SUPERVISOR' || userRole === 'ADMIN_TENANT'"
               to="/pos"
               icon="point_of_sale"
               label="Buka POS"
@@ -153,7 +153,7 @@
           >
             <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/subscription" icon="card_membership" label="Berlangganan" />
             <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/addons" icon="extension" label="Addon" />
-            <SidebarItem to="/app/tenants/support" icon="support_agent" label="Bantuan" />
+            <SidebarItem to="/app/support" icon="support_agent" label="Bantuan" />
             <SidebarItem to="/app/rewards" icon="stars" label="Point Gratis" />
             <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/settings/store" icon="storefront" label="Pengaturan Toko" />
             <SidebarItem v-if="hasSimpleNotaEditor" to="/app/receipts/templates" icon="receipt" label="Template Struk" />
@@ -164,7 +164,7 @@
           <!-- Support Section -->
           <div class="mb-1 mt-4 border-t border-slate-100 dark:border-slate-700 pt-2">
             <SidebarItem
-              :to="authStore.isSuperAdmin ? '/app/tenants/support' : '/app/support'"
+              :to="authStore.isSuperAdmin ? '/app/superadmin/contact-messages' : '/app/support'"
               icon="help_center"
               label="Bantuan & Support"
             />

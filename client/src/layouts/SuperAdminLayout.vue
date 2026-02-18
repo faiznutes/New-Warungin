@@ -53,16 +53,15 @@
           <p class="text-sm font-medium leading-normal">Subscriptions</p>
         </router-link>
 
-        <!-- New V3 Support Tickets Link -->
         <router-link 
-          to="/app/tenants/support" 
+          to="/app/superadmin/contact-messages" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
           active-class="bg-blue-50 text-blue-600 font-bold"
-          :class="[$route.path === '/app/tenants/support' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
+          :class="[$route.path === '/app/superadmin/contact-messages' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
-          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/tenants/support' }">support_agent</span>
-          <p class="text-sm font-medium leading-normal">Support Tickets</p>
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/contact-messages' }">support_agent</span>
+          <p class="text-sm font-medium leading-normal">Support & Pesan</p>
         </router-link>
 
         <router-link 
@@ -134,18 +133,6 @@
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/backups' }">backup</span>
           <p class="text-sm font-medium leading-normal">Backups</p>
-        </router-link>
-
-        <router-link 
-          to="/app/superadmin/contact-messages" 
-          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-blue-50 text-blue-600 font-bold"
-          :class="[$route.path === '/app/superadmin/contact-messages' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
-          @click="windowWidth < 1024 ? sidebarOpen = false : null"
-        >
-           <!-- Badge check -->
-          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/contact-messages' }">mail</span>
-          <p class="text-sm font-medium leading-normal">Pesan Kontak</p>
         </router-link>
 
         <router-link 
@@ -254,7 +241,7 @@ const pageTitle = computed(() => {
   const titles: Record<string, string> = {
     '/app/super-dashboard': 'Super Admin Dashboard',
     '/app/tenants': 'Tenant Management',
-    '/app/tenants/support': 'Tenant Support',
+    '/app/tenants/support': 'Support & Pesan',
     '/app/addons': 'Addon Management',
     '/app/reports/global': 'Laporan Global',
     '/app/settings/system': 'System Settings',
@@ -263,7 +250,7 @@ const pageTitle = computed(() => {
     '/app/superadmin/backups': 'Backup Management',
     '/app/superadmin/server-monitor': 'Server Monitor',
     '/app/superadmin/system-info': 'Informasi Sistem',
-    '/app/superadmin/contact-messages': 'Kelola Pesan',
+    '/app/superadmin/contact-messages': 'Support & Pesan',
     '/app/analytics': 'Advanced Analytics',
     '/app/finance': 'Keuangan',
     '/app/profit-loss': 'Laporan Laba Rugi',

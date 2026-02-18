@@ -162,7 +162,7 @@
                 </div>
                 <span class="text-sm font-bold text-slate-700 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Laporan Global</span>
               </router-link>
-              <router-link to="/app/tenants/support" class="flex flex-col items-center justify-center gap-4 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-blue-500/50 hover:shadow-lg hover:-translate-y-1 transition-all group">
+              <router-link to="/app/superadmin/contact-messages" class="flex flex-col items-center justify-center gap-4 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-blue-500/50 hover:shadow-lg hover:-translate-y-1 transition-all group">
                 <div class="bg-blue-50 dark:bg-slate-700 p-4 rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors text-blue-600 shadow-sm">
                   <span class="material-symbols-outlined text-[28px]">support_agent</span>
                 </div>

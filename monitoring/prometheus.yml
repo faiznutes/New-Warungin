@@ -1,0 +1,173 @@
+# PROMETHEUS CONFIGURATION FOR WARUNGIN POS
+# 
+# Purpose: Metrics collection for all system components
+# Collects: CPU, Memory, Disk, Network, Application metrics, Database metrics
+# Scrape interval: 15 seconds (production setting)
+
+global:
+  scrape_interval: 15s          # Scrape targets every 15 seconds
+  evaluation_interval: 15s      # Evaluate rules every 15 seconds
+  external_labels:
+    monitor: 'warungin-pos'
+    environment: 'production'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - localhost:9093
+
+# Load rules files
+rule_files:
+  - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # ========================================================================
+  # PROMETHEUS SERVER ITSELF
+  # ========================================================================
+  
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+  
+  # ========================================================================
+  # NODE EXPORTER - System metrics
+  # ========================================================================
+  
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'production-server'
+    metric_relabel_configs:
+      # Filter metrics we care about
+      - source_labels: [__name__]
+        regex: 'node_(cpu|memory|disk|network|load|filesystem).*'
+        action: keep
+      # Add custom labels
+      - source_labels: [__name__]
+        target_label: metric_type
+        regex: '(node_.*)'
+        replacement: 'system'
+  
+  # ========================================================================
+  # NGINX METRICS - Web server statistics
+  # ========================================================================
+  
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['localhost:9113']  # nginx-prometheus-exporter
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'nginx-api'
+    scrape_interval: 10s  # More frequent for real-time monitoring
+  
+  # ========================================================================
+  # NESTJS APPLICATION METRICS
+  # ========================================================================
+  
+  - job_name: 'nestjs-backend'
+    static_configs:
+      - targets: ['localhost:3000']
+    metrics_path: '/metrics'  # Prometheus endpoint in NestJS
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'nestjs-api-server'
+    scrape_interval: 10s
+    metric_relabel_configs:
+      # Keep only business relevant metrics
+      - source_labels: [__name__]
+        regex: 'http_(requests|duration|errors).*|db_query.*|cache_.*|orders_processed'
+        action: keep
+  
+  # ========================================================================
+  # POSTGRESQL DATABASE METRICS
+  # ========================================================================
+  
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['localhost:9187']  # postgres-exporter
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'postgresql-main'
+    scrape_interval: 30s  # Database metrics less frequently
+    metric_relabel_configs:
+      # Focus on critical database metrics
+      - source_labels: [__name__]
+        regex: 'pg_(stat|database|table|index|query).*'
+        action: keep
+  
+  # ========================================================================
+  # REDIS CACHE METRICS (Optional)
+  # ========================================================================
+  
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:9121']  # redis-exporter
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'redis-cache'
+    scrape_interval: 15s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'redis_(memory|clients|stats).*'
+        action: keep
+
+  # ========================================================================
+  # DOCKER METRICS (If using Docker)
+  # ========================================================================
+  
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['localhost:9323']  # docker-metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'docker-daemon'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'docker_(container|image|network).*'
+        action: keep
+
+  # ========================================================================
+  # SSL CERTIFICATE MONITORING
+  # ========================================================================
+  
+  - job_name: 'ssl-certificate-expiry'
+    static_configs:
+      - targets: ['localhost:9117']  # ssl-certificate-exporter
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'ssl-monitor'
+    scrape_interval: 3600s  # Once per hour is enough
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'ssl_certificate.*'
+        action: keep
+
+# ========================================================================
+# REMOTE STORAGE (Optional - for long-term retention)
+# ========================================================================
+#
+# remote_write:
+#   - url: "https://remote-storage.example.com/api/v1/write"
+#     queue_config:
+#       capacity: 10000
+#       max_shards: 200
+#       min_shards: 1
+#       max_samples_per_send: 500
+#       batch_send_wait: 5s
+#       min_backoff: 30ms
+#       max_backoff: 100ms

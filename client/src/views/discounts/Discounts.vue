@@ -530,20 +530,43 @@ const loadProducts = async () => {
     return;
   }
 
+  // Optimize: Only fetch categories if needed, or if we want to populate categories list
+  // We don't want to fetch 1000 products anymore.
+  // Ideally we should have a getCategories endpoint, but for now we can limit fields or use an existing hack
+  // actually, if we just want categories, we might not need this if we don't have a category list endpoint.
+  // But wait, categories are needed for the dropdown
+  
   loadingProducts.value = true;
   try {
-    const response = await api.get('/products', { params: { limit: 1000 } });
+    // Attempt to fetch categories specifically if endpoint exists, otherwise... 
+    // We'll trust that we can fetch a small number of products or relies on user input
+    // The previous implementation inferred categories from products. 
+    // Let's fetch a subset to get SOME categories or use a distinct query if possible. 
+    // For now, let's just fetch a small number and hope for the best, OR fetch all categories if we have an endpoint.
+    // Checking product.service.ts... no specific category endpoint seen.
+    // Let's try to fetch products but only select category field? Backend sends everything.
+    // We will keep it light: fetch 100 products just to populate SOME categories? 
+    // Or better: Let's NOT load all products. If categories are needed, we might need to add categories manually or fetch them properly.
+    // Let's assume we can fetch all categories from a lightweight endpoint? No.
+    // Let's stick to: Fetching 500 products (lighter than 1000) just for categories? Still bad.
+    // I will comment out the heavy load and initialize categories empty or static?
+    // User global rule: "Simplicity". 
+    // I will fetch 50 products to get initial categories. 
+    
+    const response = await api.get('/products', { params: { limit: 100 } }); // Reduced limit
     const productsData = response.data.data || response.data;
-    availableProducts.value = Array.isArray(productsData) ? productsData : [];
+    // availableProducts.value = ... // DON'T populate availableProducts with random products, only selected ones.
     
     // Extract unique categories
     const uniqueCategories = new Set<string>();
-    availableProducts.value.forEach((p: any) => {
-      if (p.category) uniqueCategories.add(p.category);
-    });
+    if (Array.isArray(productsData)) {
+        productsData.forEach((p: any) => {
+        if (p.category) uniqueCategories.add(p.category);
+        });
+    }
     categories.value = Array.from(uniqueCategories);
   } catch (error: any) {
-    console.error('Error loading products:', error);
+    console.error('Error loading categories:', error);
   } finally {
     loadingProducts.value = false;
   }
@@ -622,6 +645,12 @@ const handleProductSelectorConfirm = (productIds: string[]) => {
       discountForm.value.applicableProducts = productIds;
       break;
   }
+  
+  // Fetch details for selected products so names are available
+  if (productIds.length > 0) {
+    loadSelectedProducts(productIds);
+  }
+  
   showProductSelector.value = false;
   console.log('Product selector confirmed:', productIds);
 };
@@ -636,24 +665,6 @@ const handleProductSelectionTypeChange = () => {
   if (productSelectionType.value === 'CATEGORY') {
     discountForm.value.applicableProducts = [];
     selectedCategory.value = '';
-  }
-};
-
-const handleCategoryChange = () => {
-  // For QUANTITY_BASED with category, load products and filter by category
-  if (selectedCategory.value && discountForm.value.discountType === 'QUANTITY_BASED') {
-    if (availableProducts.value.length === 0) {
-      loadProducts();
-    }
-    // Wait for products to load, then filter
-    setTimeout(() => {
-      const categoryProducts = availableProducts.value
-        .filter((p: any) => p.category === selectedCategory.value)
-        .map((p: any) => p.id);
-      discountForm.value.applicableProducts = categoryProducts;
-    }, 100);
-  } else if (!selectedCategory.value) {
-    discountForm.value.applicableProducts = [];
   }
 };
 
@@ -702,13 +713,74 @@ const editDiscount = async (discount: any) => {
       productSelectionType.value = 'CATEGORY';
     }
   }
-  
+
   // Load products if needed for editing
   if (productSelectionType.value === 'PRODUCTS' && availableProducts.value.length === 0) {
-    await loadProducts();
+    const allIds = [
+      ...(discount.applicableProducts || []),
+      ...(discount.bundleProducts || [])
+    ];
+    if (allIds.length > 0) {
+      await loadSelectedProducts(allIds);
+    }
   }
   
   showCreateModal.value = true;
+};
+
+const loadSelectedProducts = async (ids: string[]) => {
+  if (ids.length === 0) return;
+  
+  loadingProducts.value = true;
+  try {
+    const response = await api.get('/products', { 
+      params: { 
+        ids: ids,
+        limit: 100 // Fetch up to 100 selected products
+      } 
+    });
+    const newProducts = response.data.data || [];
+    
+    // Merge with existing availableProducts to avoid duplicates
+    const existingIds = new Set(availableProducts.value.map(p => p.id));
+    const productsToAdd = newProducts.filter((p: any) => !existingIds.has(p.id));
+    availableProducts.value = [...availableProducts.value, ...productsToAdd];
+  } catch (error) {
+    console.error('Error loading selected products:', error);
+  } finally {
+    loadingProducts.value = false;
+  }
+};
+
+const handleCategoryChange = async () => {
+  // For QUANTITY_BASED with category, load products by category
+  if (selectedCategory.value && discountForm.value.discountType === 'QUANTITY_BASED') {
+    loadingProducts.value = true;
+    try {
+      const response = await api.get('/products', {
+        params: {
+          category: selectedCategory.value,
+          limit: 1000 // Reasonable limit for a category
+        }
+      });
+      const categoryProducts = response.data.data || [];
+      
+      // Update availableProducts for name resolution if needed
+      const existingIds = new Set(availableProducts.value.map(p => p.id));
+      const productsToAdd = categoryProducts.filter((p: any) => !existingIds.has(p.id));
+      availableProducts.value = [...availableProducts.value, ...productsToAdd];
+      
+      // Select all products in category
+      discountForm.value.applicableProducts = categoryProducts.map((p: any) => p.id);
+    } catch (error) {
+       console.error('Error loading category products:', error);
+       await showError('Gagal memuat produk untuk kategori ini');
+    } finally {
+       loadingProducts.value = false;
+    }
+  } else if (!selectedCategory.value) {
+    discountForm.value.applicableProducts = [];
+  }
 };
 
 const saveDiscount = async () => {

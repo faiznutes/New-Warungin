@@ -69,7 +69,12 @@ function generateFinancialReportHTML(data: FinancialData): string {
   <style>
     @page {
       size: A4;
-      margin: 20mm;
+      margin: 18mm 20mm 25mm 20mm;
+      @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-size: 8pt;
+        color: #9ca3af;
+      }
     }
     * {
       margin: 0;
@@ -79,109 +84,167 @@ function generateFinancialReportHTML(data: FinancialData): string {
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 10pt;
-      line-height: 1.6;
+      line-height: 1.5;
       color: #1f2937;
       background: #fff;
     }
     .header {
-      border-bottom: 2px solid #1f2937;
-      padding-bottom: 15px;
-      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 3px solid #111827;
+      padding-bottom: 16px;
+      margin-bottom: 28px;
     }
-    .title {
-      font-size: 24pt;
+    .header-left .brand {
+      font-size: 11pt;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #10b981;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .header-left .title {
+      font-size: 22pt;
       font-weight: 700;
       color: #111827;
-      margin-bottom: 5px;
+      line-height: 1.2;
     }
-    .subtitle {
-      font-size: 10pt;
+    .header-right {
+      text-align: right;
+      font-size: 9pt;
       color: #6b7280;
+      line-height: 1.6;
+    }
+    .header-right .period-label {
+      font-weight: 600;
+      color: #374151;
+      font-size: 9.5pt;
     }
     .section {
-      margin-bottom: 30px;
+      margin-bottom: 28px;
       page-break-inside: avoid;
     }
     .section-title {
-      font-size: 14pt;
+      font-size: 12pt;
       font-weight: 700;
       color: #111827;
-      margin-bottom: 15px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 16px;
+      background: #10b981;
+      border-radius: 2px;
     }
     .summary-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-bottom: 25px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
     }
     .summary-card {
       border: 1px solid #e5e7eb;
-      padding: 15px;
-      border-radius: 4px;
+      padding: 14px 16px;
+      border-radius: 6px;
       background: #f9fafb;
     }
     .summary-label {
-      font-size: 9pt;
+      font-size: 8pt;
+      font-weight: 600;
       color: #6b7280;
-      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
     }
     .summary-value {
-      font-size: 16pt;
+      font-size: 14pt;
       font-weight: 700;
       color: #111827;
+    }
+    .summary-sub {
+      font-size: 8pt;
+      margin-top: 4px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      font-size: 9.5pt;
     }
     th, td {
-      padding: 10px;
+      padding: 9px 12px;
       text-align: left;
-      border-bottom: 1px solid #e5e7eb;
     }
     th {
-      background: #f9fafb;
-      font-weight: 600;
+      background: #f3f4f6;
+      font-weight: 700;
       color: #374151;
-      font-size: 9pt;
+      font-size: 8pt;
       text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 2px solid #d1d5db;
     }
     td {
-      font-size: 10pt;
+      border-bottom: 1px solid #e5e7eb;
       color: #1f2937;
     }
-    .text-right {
-      text-align: right;
+    tr:last-child td {
+      border-bottom: none;
     }
-    .text-bold {
+    tr.row-total {
+      background: #f3f4f6;
       font-weight: 700;
     }
-    .positive {
-      color: #059669;
+    tr.row-total td {
+      border-top: 2px solid #d1d5db;
+      border-bottom: 2px solid #d1d5db;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
-    .negative {
-      color: #dc2626;
+    tr.row-header td {
+      background: #fafafa;
+      font-weight: 700;
+      padding-top: 12px;
+      color: #111827;
     }
+    .text-right { text-align: right; }
+    .text-bold { font-weight: 700; }
+    .positive { color: #059669; }
+    .negative { color: #dc2626; }
+    .indent { padding-left: 28px !important; }
     .footer {
-      position: fixed;
-      bottom: 10mm;
-      left: 20mm;
-      font-size: 9pt;
+      margin-top: 40px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 8pt;
       color: #9ca3af;
-      background: transparent;
+      display: flex;
+      justify-content: space-between;
     }
     .content {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1 class="title">Laporan Keuangan</h1>
-    <p class="subtitle">Periode: ${formatDate(startDate)} - ${formatDate(endDate)} | ${date}</p>
+    <div class="header-left">
+      <div class="brand">Warungin</div>
+      <div class="title">Laporan Keuangan</div>
+    </div>
+    <div class="header-right">
+      <div class="period-label">Periode Laporan</div>
+      <div>${formatDate(startDate)} — ${formatDate(endDate)}</div>
+      <div style="margin-top: 4px;">Dicetak: ${date}</div>
+    </div>
   </div>
   
   <div class="content">
@@ -192,8 +255,8 @@ function generateFinancialReportHTML(data: FinancialData): string {
         <div class="summary-card">
           <div class="summary-label">Total Revenue</div>
           <div class="summary-value">${formatCurrency(summary.revenue)}</div>
-          <div style="font-size: 8pt; color: #059669; margin-top: 5px;">
-            +${summary.revenueGrowth}% vs bulan lalu
+          <div class="summary-sub ${summary.revenueGrowth >= 0 ? 'positive' : 'negative'}">
+            ${summary.revenueGrowth >= 0 ? '▲' : '▼'} ${Math.abs(summary.revenueGrowth)}% vs periode lalu
           </div>
         </div>
         <div class="summary-card">
@@ -240,7 +303,7 @@ function generateFinancialReportHTML(data: FinancialData): string {
             <td>Operating Expenses</td>
             <td class="text-right negative">(${formatCurrency(profitLoss.operatingExpenses)})</td>
           </tr>
-          <tr class="text-bold" style="background: #f9fafb;">
+          <tr class="row-total">
             <td>Net Profit</td>
             <td class="text-right ${profitLoss.netProfit >= 0 ? 'positive' : 'negative'}">
               ${formatCurrency(profitLoss.netProfit)}
@@ -261,39 +324,39 @@ function generateFinancialReportHTML(data: FinancialData): string {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><strong>Assets</strong></td>
+          <tr class="row-header">
+            <td>Assets</td>
             <td></td>
           </tr>
           <tr>
-            <td style="padding-left: 20px;">Cash</td>
+            <td class="indent">Cash & Bank</td>
             <td class="text-right">${formatCurrency(balanceSheet.cash)}</td>
           </tr>
           <tr>
-            <td style="padding-left: 20px;">Receivables</td>
+            <td class="indent">Accounts Receivable</td>
             <td class="text-right">${formatCurrency(balanceSheet.receivables)}</td>
           </tr>
           <tr>
-            <td style="padding-left: 20px;">Inventory</td>
+            <td class="indent">Inventory</td>
             <td class="text-right">${formatCurrency(balanceSheet.inventory)}</td>
           </tr>
-          <tr class="text-bold" style="background: #f9fafb;">
+          <tr class="row-total">
             <td>Total Assets</td>
             <td class="text-right">${formatCurrency(balanceSheet.totalAssets)}</td>
           </tr>
-          <tr>
-            <td><strong>Liabilities & Equity</strong></td>
+          <tr class="row-header">
+            <td>Liabilities & Equity</td>
             <td></td>
           </tr>
           <tr>
-            <td style="padding-left: 20px;">Liabilities</td>
+            <td class="indent">Hutang Usaha</td>
             <td class="text-right">${formatCurrency(balanceSheet.liabilities)}</td>
           </tr>
           <tr>
-            <td style="padding-left: 20px;">Equity</td>
+            <td class="indent">Modal (Equity)</td>
             <td class="text-right">${formatCurrency(balanceSheet.equity)}</td>
           </tr>
-          <tr class="text-bold" style="background: #f9fafb;">
+          <tr class="row-total">
             <td>Total Liabilities & Equity</td>
             <td class="text-right">${formatCurrency(balanceSheet.totalLiabilities)}</td>
           </tr>
@@ -315,7 +378,7 @@ function generateFinancialReportHTML(data: FinancialData): string {
         </thead>
         <tbody>
           <tr>
-            <td><strong>Operating Activities</strong></td>
+            <td><strong>Aktivitas Operasi</strong></td>
             <td class="text-right">${formatCurrency(cashFlow.operating.inflow)}</td>
             <td class="text-right negative">(${formatCurrency(cashFlow.operating.outflow)})</td>
             <td class="text-right ${cashFlow.operating.net >= 0 ? 'positive' : 'negative'}">
@@ -323,7 +386,7 @@ function generateFinancialReportHTML(data: FinancialData): string {
             </td>
           </tr>
           <tr>
-            <td><strong>Investing Activities</strong></td>
+            <td><strong>Aktivitas Investasi</strong></td>
             <td class="text-right">${formatCurrency(cashFlow.investing.inflow)}</td>
             <td class="text-right negative">(${formatCurrency(cashFlow.investing.outflow)})</td>
             <td class="text-right ${cashFlow.investing.net >= 0 ? 'positive' : 'negative'}">
@@ -331,14 +394,14 @@ function generateFinancialReportHTML(data: FinancialData): string {
             </td>
           </tr>
           <tr>
-            <td><strong>Financing Activities</strong></td>
+            <td><strong>Aktivitas Pendanaan</strong></td>
             <td class="text-right">${formatCurrency(cashFlow.financing.inflow)}</td>
             <td class="text-right negative">(${formatCurrency(cashFlow.financing.outflow)})</td>
             <td class="text-right ${cashFlow.financing.net >= 0 ? 'positive' : 'negative'}">
               ${formatCurrency(cashFlow.financing.net)}
             </td>
           </tr>
-          <tr class="text-bold" style="background: #f9fafb;">
+          <tr class="row-total">
             <td>Total Cash Flow</td>
             <td></td>
             <td></td>
@@ -352,7 +415,8 @@ function generateFinancialReportHTML(data: FinancialData): string {
   </div>
   
   <div class="footer">
-    <p>Dibuat oleh Warungin | ${date}</p>
+    <span>Dibuat oleh Warungin POS System</span>
+    <span>${date}</span>
   </div>
 </body>
 </html>

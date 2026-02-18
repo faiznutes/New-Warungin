@@ -290,7 +290,8 @@ const clearSelection = () => {
 const loadProducts = async () => {
   loading.value = true;
   try {
-    const response = await api.get('/products', { params: { limit: 1000, isActive: true } });
+    const params: Record<string, any> = { limit: 500, isActive: true, skipCache: '1' };
+    const response = await api.get('/products', { params });
     const productsData = response.data.data || response.data;
     products.value = Array.isArray(productsData) ? productsData : [];
   } catch (error: any) {

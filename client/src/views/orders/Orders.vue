@@ -157,7 +157,7 @@
       <h3 class="text-xl font-bold text-slate-900 mb-2">Belum Ada Pesanan</h3>
       <p class="text-slate-500 text-center max-w-md mb-6">Pesanan yang masuk atau transaksi baru akan muncul di sini.</p>
       
-      <router-link to="/app/pos" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2">
+      <router-link to="/pos" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2">
          <span class="material-symbols-outlined">add_circle</span>
          Buat Pesanan Baru
       </router-link>

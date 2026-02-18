@@ -308,16 +308,16 @@
                   >
                     <div class="col-span-8">
                        <label class="block text-xs font-semibold text-slate-500 mb-1">Product</label>
-                      <select
-                        v-model="item.productId"
-                        required
-                        class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-white"
+                      <div 
+                        @click="openProductSelector('transfer', index)"
+                        class="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white cursor-pointer hover:border-blue-400 transition"
                       >
-                        <option value="">Select Product</option>
-                        <option v-for="product in products" :key="product.id" :value="product.id">
-                          {{ product.name }} (Stock: {{ product.stock }})
-                        </option>
-                      </select>
+                        <div v-if="item.productId" class="flex flex-col">
+                          <span class="font-bold text-sm text-slate-900 truncate">{{ item.productName }}</span>
+                          <span class="text-[10px] text-slate-500">Stock: {{ item.currentStock }}</span>
+                        </div>
+                        <span v-else class="text-sm text-slate-400">Select Product</span>
+                      </div>
                     </div>
                     <div class="col-span-3">
                        <label class="block text-xs font-semibold text-slate-500 mb-1">Qty</label>
@@ -347,18 +347,16 @@
             <!-- Product Selection (for non-transfer) -->
             <div v-if="adjustmentForm.reasonType !== 'TRANSFER_STOK' && adjustmentForm.reasonType !== ''">
               <label class="block text-sm font-bold text-slate-700 mb-2">Product *</label>
-              <div class="relative">
-                <select
-                  v-model="adjustmentForm.productId"
-                  required
-                  class="appearance-none w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
-                >
-                  <option value="">Select Product</option>
-                  <option v-for="product in products" :key="product.id" :value="product.id">
-                    {{ product.name }} (Stock: {{ product.stock }})
-                  </option>
-                </select>
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 pointer-events-none">expand_more</span>
+              <div 
+                @click="openProductSelector('single')"
+                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
+              >
+                <div v-if="adjustmentForm.productId">
+                  <span class="font-bold text-slate-900 block">{{ adjustmentForm.productName }}</span>
+                  <span class="text-xs text-slate-500">Current Stock: {{ adjustmentForm.currentStock }}</span>
+                </div>
+                <span v-else class="text-slate-500">Select Product</span>
+                <span class="material-symbols-outlined text-slate-400">inventory_2</span>
               </div>
             </div>
 
@@ -423,6 +421,15 @@
       </div>
     </div>
   </div>
+
+    <!-- Product Selector Modal -->
+  <ProductSelectorModal
+    :show="showProductSelector"
+    :title="selectorContext.type === 'transfer' ? 'Select Product for Transfer' : 'Select Product to Adjust'"
+    :allow-multiple="false"
+    @confirm="handleProductSelection"
+    @cancel="showProductSelector = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -431,6 +438,7 @@ import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
 import { useAuthStore } from '../../stores/auth';
+import ProductSelectorModal from '../../components/ProductSelectorModal.vue';
 
 const authStore = useAuthStore();
 const { success: showSuccess, error: showError } = useNotification();
@@ -438,7 +446,7 @@ const { success: showSuccess, error: showError } = useNotification();
 const loading = ref(false);
 const saving = ref(false);
 const adjustments = ref<any[]>([]);
-const products = ref<any[]>([]);
+// const products = ref<any[]>([]); // Removed: No longer loading all products
 const outlets = ref<any[]>([]);
 const suppliers = ref<any[]>([]);
 const showAdjustmentModal = ref(false);
@@ -465,13 +473,54 @@ const adjustmentForm = ref({
   type: 'DECREASE' as 'INCREASE' | 'DECREASE',
   quantity: 1,
   reason: '',
+  productName: '', // Added for display
+  currentStock: 0, // Added for display
 });
 
 const transferForm = ref({
   fromOutletId: '',
   toOutletId: '',
-  items: [{ productId: '', quantity: 1 }],
+  items: [{ productId: '', quantity: 1, productName: '', currentStock: 0 }],
 });
+
+const showProductSelector = ref(false);
+const selectorContext = ref<{ type: 'single' | 'transfer', index?: number }>({ type: 'single' });
+
+const openProductSelector = (type: 'single' | 'transfer', index?: number) => {
+  selectorContext.value = { type, index };
+  showProductSelector.value = true;
+};
+
+const handleProductSelection = async (selectedIds: string[]) => {
+  if (selectedIds.length === 0) return;
+  const productId = selectedIds[0];
+  showProductSelector.value = false;
+
+  try {
+    // Fetch product details - use /products/:id for single product (faster and more reliable)
+    const response = await api.get(`/products/${productId}`);
+    const product = response.data;
+
+    if (!product) {
+        await showError('Failed to load product details');
+        return;
+    }
+
+    if (selectorContext.value.type === 'single') {
+        adjustmentForm.value.productId = product.id;
+        adjustmentForm.value.productName = product.name;
+        adjustmentForm.value.currentStock = product.stock;
+    } else if (selectorContext.value.type === 'transfer' && selectorContext.value.index !== undefined) {
+        const item = transferForm.value.items[selectorContext.value.index];
+        item.productId = product.id;
+        item.productName = product.name;
+        item.currentStock = product.stock;
+    }
+  } catch (error) {
+    console.error('Error fetching selected product:', error);
+    await showError('Failed to select product');
+  }
+};
 
 const reasonMap: Record<string, string> = {
   'STOCK_OPNAME': 'Stock Opname / Stocktaking',
@@ -556,11 +605,17 @@ const handleReasonChange = () => {
   adjustmentForm.value.supplierId = '';
   adjustmentForm.value.quantity = 1;
   adjustmentForm.value.reason = '';
+  calcStock(adjustmentForm.value); // Reset
   transferForm.value = {
     fromOutletId: '',
     toOutletId: '',
-    items: [{ productId: '', quantity: 1 }],
+    items: [{ productId: '', quantity: 1, productName: '', currentStock: 0 }],
   };
+};
+
+const calcStock = (form: any) => {
+    form.productName = '';
+    form.currentStock = 0;
 };
 
 const handleSupplierChange = () => {
@@ -620,6 +675,8 @@ const loadAdjustments = async (page = 1) => {
   }
 };
 
+// Removed loadProducts as we select via modal
+/*
 const loadProducts = async () => {
   try {
     const params: any = { limit: 1000 };
@@ -634,6 +691,7 @@ const loadProducts = async () => {
     console.error('Error loading products:', error);
   }
 };
+*/
 
 const loadOutlets = async () => {
   try {
@@ -666,11 +724,30 @@ const loadSuppliers = async () => {
 };
 
 const addTransferItem = () => {
-  transferForm.value.items.push({ productId: '', quantity: 1 });
+  transferForm.value.items.push({ productId: '', quantity: 1, productName: '', currentStock: 0 });
 };
 
 const removeTransferItem = (index: number) => {
   transferForm.value.items.splice(index, 1);
+};
+
+const closeModal = () => {
+  showAdjustmentModal.value = false;
+  adjustmentForm.value = {
+    reasonType: '',
+    productId: '',
+    supplierId: '',
+    type: 'DECREASE',
+    quantity: 1,
+    reason: '',
+    productName: '',
+    currentStock: 0,
+  };
+  transferForm.value = {
+    fromOutletId: '',
+    toOutletId: '',
+    items: [{ productId: '', quantity: 1, productName: '', currentStock: 0 }],
+  };
 };
 
 const saveAdjustment = async () => {
@@ -680,22 +757,18 @@ const saveAdjustment = async () => {
     return;
   }
   
-  // Validate product exists before submitting
-  if (adjustmentForm.value.reasonType !== 'TRANSFER_STOK' && adjustmentForm.value.productId) {
-    const productExists = products.value.some(p => p.id === adjustmentForm.value.productId);
-    if (!productExists) {
-      await showError('Selected product not found. Please select another product.');
+    // Product valid if set (modal ensures existence)
+    if (!adjustmentForm.value.productId) {
+      await showError('Please select a product.');
       return;
     }
-  }
   
-  // Validate transfer items
+  // Validate transfer items (modal ensures existence)
   if (adjustmentForm.value.reasonType === 'TRANSFER_STOK') {
     for (const item of transferForm.value.items) {
-      const productExists = products.value.some(p => p.id === item.productId);
-      if (!productExists) {
-        await showError(`Product with ID ${item.productId} not found.`);
-        return;
+      if (!item.productId) {
+         await showError('Please select a product for all transfer items.');
+         return;
       }
     }
   }
@@ -738,7 +811,7 @@ const saveAdjustment = async () => {
     
     closeModal();
     await loadAdjustments(pagination.value.page);
-    await loadProducts();
+    // await loadProducts(); // No longer needed
   } catch (error: any) {
     console.error('Error saving adjustment:', error);
     const errorMessage = error.response?.data?.message || error.message || 'Failed to save adjustment';
@@ -756,26 +829,11 @@ const saveAdjustment = async () => {
   }
 };
 
-const closeModal = () => {
-  showAdjustmentModal.value = false;
-  adjustmentForm.value = {
-    reasonType: '',
-    productId: '',
-    supplierId: '',
-    type: 'DECREASE',
-    quantity: 1,
-    reason: '',
-  };
-  transferForm.value = {
-    fromOutletId: '',
-    toOutletId: '',
-    items: [{ productId: '', quantity: 1 }],
-  };
-};
+
 
 onMounted(() => {
   loadAdjustments();
-  loadProducts();
+  // loadProducts(); // Removed
   loadOutlets();
   loadSuppliers();
 });

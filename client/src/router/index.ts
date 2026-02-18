@@ -117,7 +117,7 @@ const router = createRouter({
       component: () => import('../views/pos/POS.vue'),
       meta: {
         requiresAuth: true,
-        roles: ['CASHIER', 'SUPERVISOR'],
+        roles: ['CASHIER', 'SUPERVISOR', 'ADMIN_TENANT'],
         fullscreen: true
       },
     },
@@ -184,9 +184,7 @@ const router = createRouter({
         },
         {
           path: 'tenants/support',
-          name: 'tenant-support',
-          component: () => import('../views/tenants/SupportTickets.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          redirect: '/app/superadmin/contact-messages',
         },
         {
           path: 'support',

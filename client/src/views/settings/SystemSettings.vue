@@ -267,7 +267,15 @@ const saving = ref(false);
 const loadSettings = async () => {
   try {
     const response = await api.get('/settings/system');
-    settings.value = { ...settings.value, ...response.data };
+    const data = response.data;
+    // Map backend field names to frontend field names
+    settings.value = {
+      systemName: data.appName || data.systemName || 'Warungin',
+      supportEmail: data.supportEmail || 'support@warungin.com',
+      timezone: data.timezone || 'Asia/Jakarta',
+      requireStrongPassword: data.requireStrongPassword ?? true,
+      enable2FA: data.enable2FA ?? false,
+    };
   } catch (error: any) {
     console.error('Error loading settings:', error);
   }

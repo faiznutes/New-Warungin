@@ -4,6 +4,7 @@
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
+  output        = "../nest/src/generated/client"
 }
 
 datasource db {
@@ -58,6 +59,7 @@ model Tenant {
   cashShifts          CashShift[]
   storeShifts         StoreShift[]
   courierConfigs      CourierConfig[]
+  supportTickets      SupportTicket[]
 
   @@map("tenants")
 }
@@ -91,6 +93,7 @@ model User {
   auditLogs          AuditLog[]
   storeShifts        StoreShift[]        @relation("StoreShiftOpener")
   deviceTokens       DeviceToken[]
+  supportTickets     SupportTicket[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -139,6 +142,7 @@ model Product {
   @@index([tenantId, category, isActive])
   @@index([tenantId, isActive])
   @@index([tenantId, name])
+  @@index([tenantId, stock])
   @@map("products")
 }
 
@@ -208,6 +212,8 @@ model Order {
   @@index([tenantId, status, createdAt(sort: Desc)])
   @@index([tenantId, customerId])
   @@index([tenantId, outletId])
+  @@index([tenantId, status, customerId])
+  @@index([tenantId, userId])
   @@index([storeShiftId])
   @@map("orders")
 }
@@ -288,8 +294,10 @@ model Transaction {
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([tenantId, createdAt])
+  @@index([tenantId, status, createdAt(sort: Desc)])
   @@index([tenantId, paymentMethod, createdAt(sort: Desc)])
   @@index([tenantId, userId])
+  @@index([orderId])
   @@map("transactions")
 }
 
@@ -911,6 +919,10 @@ model SystemSettings {
   multiOutletEnabled   Boolean  @default(true)
   deliveryEnabled      Boolean  @default(false)
   accountingEnabled    Boolean  @default(false)
+  enable2FA            Boolean  @default(false)
+  requireStrongPassword Boolean @default(true)
+  supportEmail         String?  @default("support@warungin.com")
+  timezone             String   @default("Asia/Jakarta")
   customSettings       Json? // JSON for additional custom settings
   lastModifiedBy       String?
   createdAt            DateTime @default(now())
@@ -919,4 +931,49 @@ model SystemSettings {
   @@map("system_settings")
 }
 
+model ContactSubmission {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String   @db.Text
+  type      String   @default("contact")
+  status    String   @default("NEW")
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  reply     String?  @db.Text
+  repliedAt DateTime?
+  repliedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model SupportTicket {
+  id          String   @id @default(uuid())
+  tenantId    String?
+  userId      String?
+  name        String
+  email       String
+  subject     String
+  message     String   @db.Text
+  type        String   @default("support")
+  priority    String   @default("MEDIUM")
+  status      String   @default("OPEN")
+  reply       String?  @db.Text
+  repliedAt   DateTime?
+  repliedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([tenantId])
+  @@index([createdAt])
+}

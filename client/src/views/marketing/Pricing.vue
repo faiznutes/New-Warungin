@@ -282,51 +282,51 @@ useSEO({
 const defaultAddons = [
   {
     id: 'business_analytics',
-    name: 'Business Analytics',
-    description: 'Laporan Laba Rugi lengkap, prediksi penjualan, dan analisis tren bisnis.',
+    name: 'Business Analytics & Insight',
+    description: 'Laporan Laba Rugi lengkap, prediksi penjualan, analisis tren, dan ringkasan harian transaksi.',
     price: 250000,
     icon: 'analytics',
-    features: ['Laporan Laba Rugi', 'Prediksi Penjualan', 'Custom Reports']
+    features: ['Laporan Laba Rugi (Revenue, COGS, Net Profit)', 'Prediksi Penjualan', 'Advanced Analytics & Custom Reports']
   },
   {
     id: 'delivery_marketing',
     name: 'Delivery & Marketing',
-    description: 'Manajemen pesanan delivery dan kampanye marketing otomatis via email/SMS.',
+    description: 'Manajemen pesanan delivery, kampanye marketing email/SMS, dan customer engagement tools.',
     price: 150000,
     icon: 'campaign',
-    features: ['Tracking Delivery', 'Email Marketing', 'Customer Engagement']
+    features: ['Tracking Delivery', 'Email & SMS Marketing', 'Customer Engagement & Segmentasi']
   },
   {
     id: 'bulk_import',
     name: 'Import Massal',
-    description: 'Import produk, stok, dan pelanggan dari Excel/CSV dengan validasi otomatis.',
+    description: 'Import massal produk, stok, dan pelanggan dari Excel/CSV dengan validasi otomatis.',
     price: 100000,
     icon: 'upload_file',
-    features: ['Import Excel/CSV', 'Validasi Data', 'Update Stok Massal']
+    features: ['Import Excel/CSV', 'Validasi Data Otomatis', 'Template Download & Update Existing']
   },
   {
     id: 'stock_transfer',
-    name: 'Transfer Stok',
-    description: 'Pindahkan stok antar cabang dengan validasi dan riwayat perpindahan lengkap.',
+    name: 'Transfer Stok Antar Store',
+    description: 'Transfer stok antar store/cabang dengan validasi otomatis dan riwayat transfer lengkap.',
     price: 80000,
     icon: 'move_up',
-    features: ['Multi-Store Sync', 'Riwayat Transfer', 'Validasi Stok']
+    features: ['Multi-Store Transfer', 'Riwayat Transfer & Tracking', 'Validasi Stok Otomatis']
   },
   {
     id: 'supervisor_role',
     name: 'Supervisor Role',
-    description: 'Akses khusus supervisor untuk memantau dan mengelola cabang tertentu.',
+    description: 'Role khusus supervisor cabang dengan akses terbatas ke cabang yang ditugaskan.',
     price: 60000,
     icon: 'admin_panel_settings',
-    features: ['Akses Per Cabang', 'Audit Trail', 'Dashboard Khusus']
+    features: ['Akses Per Cabang', 'Audit Trail Aktivitas', 'Dashboard Khusus Supervisor']
   },
   {
     id: 'receipt_editor',
     name: 'Simple Nota Editor',
-    description: 'Kustomisasi tampilan struk belanja dengan logo bisnis dan pesan promo.',
+    description: 'Kustomisasi tampilan nota: nama toko, logo, pesan promo, dan preview real-time.',
     price: 50000,
     icon: 'receipt',
-    features: ['Custom Logo', 'Edit Layout', 'Promo Footer']
+    features: ['Custom Logo & Header', 'Edit Layout Struk', 'Promo Footer & Preview']
   }
 ];
 
