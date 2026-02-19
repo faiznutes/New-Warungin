@@ -9,6 +9,7 @@ import {
   Query,
   ParseUUIDPipe,
   UseGuards,
+  SetMetadata,
 } from "@nestjs/common";
 import { TenantsService } from "./tenants.service";
 import {
@@ -17,7 +18,7 @@ import {
   TenantQueryDto,
 } from "./dto/tenant.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { TenantGuard } from "../../common/guards/tenant.guard";
+import { TenantGuard, TENANT_REQUIRED_KEY } from "../../common/guards/tenant.guard";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { TenantId } from "../../common/decorators/tenant-id.decorator";
@@ -26,9 +27,10 @@ import { Public } from "../../common/decorators/public.decorator";
 @Controller("tenants")
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class TenantsController {
-  constructor(private readonly tenantsService: TenantsService) {}
+  constructor(private readonly tenantsService: TenantsService) { }
 
   @Post()
+  @SetMetadata(TENANT_REQUIRED_KEY, false)
   create(@Body() dto: CreateTenantDto) {
     return this.tenantsService.create(dto);
   }

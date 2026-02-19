@@ -1,7 +1,9 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { APP_GUARD, APP_INTERCEPTOR, APP_FILTER } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
+import { ServeStaticModule } from "@nestjs/serve-static";
 import * as Joi from "joi";
+import { join } from "path";
 import { PrismaModule } from "./prisma/prisma.module";
 import { CorrelationIdMiddleware } from "./common/middleware/correlation-id.middleware";
 import { HealthModule } from "./common/health/health.module";
@@ -83,6 +85,13 @@ const validationSchema = Joi.object({
       validationOptions: {
         allowUnknown: true,
         abortEarly: true,
+      },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'client', 'dist'),
+      exclude: ['/api/(.*)'],
+      serveStaticOptions: {
+        fallthrough: true, // Allow 404 to fall through to other handlers/filters if file not found
       },
     }),
     LoggerModule,
