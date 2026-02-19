@@ -13,11 +13,13 @@ export class CreateTenantDto {
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsString()
-  slug: string;
+  slug?: string;
 
+  @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsOptional()
   @IsString()

@@ -9,32 +9,80 @@ import {
   UpdateTenantDto,
   TenantQueryDto,
 } from "./dto/tenant.dto";
+import * as bcrypt from "bcryptjs";
 
 @Injectable()
 export class TenantsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateTenantDto) {
-    const existing = await this.prisma.tenant.findUnique({
-      where: { slug: dto.slug },
-    });
-    if (existing) {
-      throw new ConflictException("Tenant slug already exists");
+    // 1. Generate Slug if missing
+    let slug = dto.slug;
+    if (!slug) {
+      slug = dto.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      // Append random suffix if short or empty
+      if (slug.length < 3) {
+        slug = `${slug}-${Math.random().toString(36).substring(2, 7)}`;
+      }
     }
 
-    const tenant = await this.prisma.tenant.create({
-      data: {
-        name: dto.name,
-        slug: dto.slug,
-        email: dto.email,
-        phone: dto.phone,
-        address: dto.address,
-        subscriptionPlan: dto.subscriptionPlan || "BASIC",
-        tenantsLimit: dto.tenantsLimit || 1,
-      },
+    // Ensure slug uniqueness
+    let existingSlug = await this.prisma.tenant.findUnique({ where: { slug } });
+    let counter = 1;
+    while (existingSlug) {
+      slug = `${slug}-${counter}`;
+      existingSlug = await this.prisma.tenant.findUnique({ where: { slug } });
+      counter++;
+    }
+
+    // 2. Generate Email if missing
+    const email = dto.email || `admin@${slug}.com`;
+
+    // 3. Check for existing tenant with same email (global uniqueness check for email if needed, though schema enforces it)
+    const existingEmail = await this.prisma.tenant.findUnique({ where: { email } });
+    if (existingEmail) {
+      throw new ConflictException("Tenant email already exists");
+    }
+
+    // 4. Generate Default Password
+    const defaultPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+    // 5. Create Tenant and User in transaction
+    const result = await this.prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.create({
+        data: {
+          name: dto.name,
+          slug,
+          email,
+          phone: dto.phone,
+          address: dto.address,
+          subscriptionPlan: dto.subscriptionPlan || "BASIC",
+          tenantsLimit: dto.tenantsLimit || 1,
+        },
+      });
+
+      const user = await tx.user.create({
+        data: {
+          tenantId: tenant.id,
+          name: `Admin ${tenant.name}`,
+          email: email,
+          password: hashedPassword,
+          role: "ADMIN_TENANT",
+        },
+      });
+
+      return { tenant, user };
     });
 
-    return tenant;
+    return {
+      ...result.tenant,
+      defaultPassword,
+      users: [result.user],
+    };
   }
 
   async findAll(query: TenantQueryDto) {

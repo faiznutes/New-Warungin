@@ -22,12 +22,24 @@ import { TenantId } from "../../common/decorators/tenant-id.decorator";
 @Controller("addons")
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard, SubscriptionGuard)
 export class AddonController {
-  constructor(private readonly addonService: AddonService) {}
+  constructor(private readonly addonService: AddonService) { }
 
   @Get()
   @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
   async getAddons(@TenantId() tenantId: string, @Query() query: any) {
     return this.addonService.getAddons(tenantId, query);
+  }
+
+  @Get("active")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
+  async getActiveAddons(@TenantId() tenantId: string) {
+    return this.addonService.getActiveAddons(tenantId);
+  }
+
+  @Get("available")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
+  async getAvailableAddons() {
+    return this.addonService.getAvailableAddons();
   }
 
   @Get(":id")
@@ -61,23 +73,7 @@ export class AddonController {
     return this.addonService.deleteAddon(id, tenantId);
   }
 
-  @Get("active")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
-  async getActiveAddons(@TenantId() tenantId: string) {
-    return this.addonService.getActiveAddons(tenantId);
-  }
 
-  @Post(":id/toggle")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
-  async toggleAddon(@Param("id") id: string, @TenantId() tenantId: string) {
-    return this.addonService.toggleAddon(id, tenantId);
-  }
-
-  @Get("available")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
-  async getAvailableAddons() {
-    return this.addonService.getAvailableAddons();
-  }
 
   @Post(":id/extend")
   @Roles("SUPER_ADMIN", "ADMIN_TENANT")
