@@ -12,11 +12,11 @@
 - Phase 8: Deploy readiness (`audit/reports/phase-08-deploy-readiness.md`).
 - Phase 9: Sign-off blockers (`audit/reports/phase-09-signoff-blockers.md`).
 - Connectivity matrix (`audit/reports/connectivity-matrix.md`).
+- Tenant page sign-off (`audit/reports/page-tenants-signoff-2026-02-23.md`).
 
 ## In Progress
 
 - Runtime verification planning and test checklist (`audit/reports/runtime-audit-checklist.md`).
-- P0/P1 remediation applied in code, pending runtime verification.
 
 ## Open Bug Count (Current)
 
