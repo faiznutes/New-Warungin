@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEmail, IsNumber, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsNumber, Max, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateOutletDto {
@@ -14,13 +14,12 @@ export class CreateOutletDto {
   phone?: string;
 
   @IsOptional()
-  @IsEmail()
-  email?: string;
+  @IsObject()
+  shiftConfig?: any;
 
   @IsOptional()
-  @IsNumber()
-  @Min(1)
-  capacity?: number;
+  @IsObject()
+  operatingHours?: any;
 }
 
 export class UpdateOutletDto {
@@ -37,13 +36,12 @@ export class UpdateOutletDto {
   phone?: string;
 
   @IsOptional()
-  @IsEmail()
-  email?: string;
+  @IsObject()
+  shiftConfig?: any;
 
   @IsOptional()
-  @IsNumber()
-  @Min(1)
-  capacity?: number;
+  @IsObject()
+  operatingHours?: any;
 
   @IsOptional()
   isActive?: boolean;

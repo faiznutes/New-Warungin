@@ -79,8 +79,12 @@ export class OutletsService {
   async createOutlet(data: CreateOutletDto, tenantId: string) {
     const outlet = await this.prisma.outlet.create({
       data: {
-        ...data,
         tenantId,
+        name: data.name,
+        address: data.address,
+        phone: data.phone,
+        shiftConfig: data.shiftConfig,
+        operatingHours: data.operatingHours,
         isActive: true,
       },
     });
@@ -91,9 +95,20 @@ export class OutletsService {
   async updateOutlet(id: string, data: UpdateOutletDto, tenantId: string) {
     await this.getOutletById(id, tenantId);
 
+    const updateData: any = {
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.address !== undefined && { address: data.address }),
+      ...(data.phone !== undefined && { phone: data.phone }),
+      ...(data.isActive !== undefined && { isActive: data.isActive }),
+      ...(data.shiftConfig !== undefined && { shiftConfig: data.shiftConfig }),
+      ...(data.operatingHours !== undefined && {
+        operatingHours: data.operatingHours,
+      }),
+    };
+
     const updated = await this.prisma.outlet.update({
       where: { id },
-      data,
+      data: updateData,
     });
 
     return updated;

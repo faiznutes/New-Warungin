@@ -10,6 +10,9 @@ import {
   TenantQueryDto,
 } from "./dto/tenant.dto";
 import * as bcrypt from "bcryptjs";
+import { CreateUserDto } from "../users/dto/user.dto";
+import { CreateOutletDto } from "../outlets/dto/outlet.dto";
+import { getPlanPrice } from "../catalog/platform-catalog";
 
 @Injectable()
 export class TenantsService {
@@ -143,6 +146,73 @@ export class TenantsService {
     return tenant;
   }
 
+  async findDetail(id: string) {
+    const tenant = await this.findOne(id);
+    const [users, stores, addonsRaw, invoices, latestSubscription] =
+      await Promise.all([
+        this.prisma.user.findMany({
+          where: { tenantId: id },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: { createdAt: "desc" },
+        }),
+        this.prisma.outlet.findMany({
+          where: { tenantId: id },
+          orderBy: { createdAt: "desc" },
+        }),
+        this.prisma.tenantAddon.findMany({
+          where: { tenantId: id },
+          orderBy: { subscribedAt: "desc" },
+        }),
+        this.prisma.subscriptionHistory.findMany({
+          where: { tenantId: id },
+          orderBy: { createdAt: "desc" },
+          take: 30,
+        }),
+        this.prisma.subscription.findFirst({
+          where: { tenantId: id },
+          orderBy: { endDate: "desc" },
+        }),
+      ]);
+
+    const addons = addonsRaw.map((addon) => ({
+      ...addon,
+      status: (addon.status || "ACTIVE").toUpperCase(),
+    }));
+
+    const subscription = latestSubscription
+      ? {
+          plan: latestSubscription.plan,
+          status: latestSubscription.status,
+          subscriptionStart: latestSubscription.startDate,
+          subscriptionEnd: latestSubscription.endDate,
+          amount: latestSubscription.amount,
+        }
+      : {
+          plan: tenant.subscriptionPlan,
+          status: tenant.isActive ? "ACTIVE" : "INACTIVE",
+          subscriptionStart: tenant.subscriptionStart,
+          subscriptionEnd: tenant.subscriptionEnd,
+          amount: getPlanPrice(tenant.subscriptionPlan || "BASIC"),
+        };
+
+    return {
+      tenant,
+      users,
+      stores,
+      addons,
+      subscription,
+      invoices,
+    };
+  }
+
   async update(id: string, dto: UpdateTenantDto) {
     await this.findOne(id);
 
@@ -176,16 +246,126 @@ export class TenantsService {
 
   async updateSubscription(
     id: string,
-    plan: string,
-    startDate: Date,
-    endDate: Date,
+    body: {
+      plan?: string;
+      status?: string;
+      durationDays?: number;
+      startDate?: Date;
+      endDate?: Date;
+    },
   ) {
-    return this.prisma.tenant.update({
-      where: { id },
+    const tenant = await this.findOne(id);
+    const plan = (body.plan || tenant.subscriptionPlan || "BASIC").toUpperCase();
+    const now = new Date();
+    const startDate = body.startDate ? new Date(body.startDate) : now;
+    let endDate = body.endDate ? new Date(body.endDate) : tenant.subscriptionEnd;
+
+    if (!endDate && body.durationDays && body.durationDays > 0) {
+      endDate = new Date(now.getTime() + body.durationDays * 24 * 60 * 60 * 1000);
+    }
+
+    if (!endDate) {
+      endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    }
+
+    const status = (body.status || "ACTIVE").toUpperCase();
+    const amount = getPlanPrice(plan);
+    const durationDays = Math.max(
+      1,
+      Math.ceil((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)),
+    );
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      const updatedTenant = await tx.tenant.update({
+        where: { id },
+        data: {
+          subscriptionPlan: plan,
+          subscriptionStart: startDate,
+          subscriptionEnd: endDate,
+          isActive: status !== "INACTIVE" && status !== "CANCELLED",
+        },
+      });
+
+      const subscription = await tx.subscription.create({
+        data: {
+          tenantId: id,
+          plan,
+          startDate,
+          endDate,
+          status,
+          amount,
+          purchasedBy: "ADMIN",
+        },
+      });
+
+      await tx.subscriptionHistory.create({
+        data: {
+          subscriptionId: subscription.id,
+          tenantId: id,
+          planType: plan,
+          startDate,
+          endDate,
+          price: amount,
+          durationDays,
+          isTemporary: false,
+          reverted: false,
+        },
+      });
+
+      return updatedTenant;
+    });
+
+    return result;
+  }
+
+  async createTenantUser(
+    tenantId: string,
+    dto: Omit<CreateUserDto, "password"> & { password?: string },
+  ) {
+    await this.findOne(tenantId);
+
+    const existing = await this.prisma.user.findFirst({
+      where: { tenantId, email: dto.email },
+    });
+    if (existing) throw new ConflictException("Email already exists for this tenant");
+
+    const generatedPassword = dto.password || Math.random().toString(36).slice(-10);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    const user = await this.prisma.user.create({
       data: {
-        subscriptionPlan: plan,
-        subscriptionStart: startDate,
-        subscriptionEnd: endDate,
+        tenantId,
+        name: dto.name,
+        email: dto.email.toLowerCase().trim(),
+        password: hashedPassword,
+        role: dto.role as any,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        tenantId: true,
+        name: true,
+        email: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+
+    return { ...user, defaultPassword: generatedPassword };
+  }
+
+  async createTenantOutlet(tenantId: string, dto: CreateOutletDto) {
+    await this.findOne(tenantId);
+    return this.prisma.outlet.create({
+      data: {
+        tenantId,
+        name: dto.name,
+        address: dto.address,
+        phone: dto.phone,
+        shiftConfig: (dto as any).shiftConfig,
+        operatingHours: (dto as any).operatingHours,
+        isActive: true,
       },
     });
   }

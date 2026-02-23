@@ -26,4 +26,8 @@ export class UpdateAddonDto {
   @IsOptional()
   @IsObject()
   config?: any;
+
+  @IsOptional()
+  @IsNumber()
+  durationDays?: number;
 }

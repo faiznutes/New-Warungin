@@ -8,7 +8,9 @@ import {
   Body,
   Query,
   UseGuards,
+  Req,
 } from "@nestjs/common";
+import { Request } from "express";
 import { AddonService } from "./addon.service";
 import { CreateAddonDto } from "./dto/create-addon.dto";
 import { UpdateAddonDto } from "./dto/update-addon.dto";
@@ -55,6 +57,44 @@ export class AddonController {
     @TenantId() tenantId: string,
   ) {
     return this.addonService.createAddon(createAddonDto, tenantId);
+  }
+
+  @Post("subscribe")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
+  async subscribeAddon(
+    @TenantId() tenantId: string,
+    @Body()
+    body: {
+      addonId: string;
+      addonName?: string;
+      addonType?: string;
+      limit?: number | null;
+      duration?: number;
+      tenantId?: string;
+      purchasedBy?: string;
+    },
+    @Req() req: Request,
+  ) {
+    const user = req.user as { role?: string } | undefined;
+    const targetTenantId =
+      user?.role === "SUPER_ADMIN" && body.tenantId ? body.tenantId : tenantId;
+    return this.addonService.subscribeAddon(targetTenantId, body, user?.role);
+  }
+
+  @Post("unsubscribe/:addonId")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
+  async unsubscribeAddon(
+    @Param("addonId") addonId: string,
+    @TenantId() tenantId: string,
+    @Body() body: { tenantId?: string },
+    @Req() req: Request,
+  ) {
+    const user = req.user as { role?: string } | undefined;
+    const targetTenantId =
+      user?.role === "SUPER_ADMIN" && body?.tenantId
+        ? body.tenantId
+        : tenantId;
+    return this.addonService.unsubscribeAddon(targetTenantId, addonId);
   }
 
   @Put(":id")

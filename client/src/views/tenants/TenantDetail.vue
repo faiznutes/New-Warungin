@@ -1244,7 +1244,7 @@ const handleAddAddonSubmit = async () => {
 const handleEditAddon = (addon: any) => {
     selectedAddonForEdit.value = addon;
     editAddonForm.value = {
-        id: addon.addonId || addon.id, // Handle different property names
+        id: addon.id || addon.addonId,
         name: addon.addonName || addon.name,
         status: addon.status || 'ACTIVE',
         durationDays: 30 // Default 30 days
@@ -1361,7 +1361,7 @@ const loadTenantDetail = async () => {
     loading.value = true;
     hasError.value = false;
     try {
-        const response = await api.get(`/tenants/${tenantId}`);
+        const response = await api.get(`/tenants/${tenantId}/detail`);
         const data = response.data.data || response.data;
         tenant.value = data.tenant || data;
         tenantStores.value = data.stores || [];
@@ -1475,12 +1475,17 @@ const handleAddUserSubmit = async () => {
     saving.value = true;
     try {
         // Send request to add user for the tenant
-        await api.post(`/tenants/${tenantId}/users`, {
+        const response = await api.post(`/tenants/${tenantId}/users`, {
             name: newUserForm.value.name,
             email: newUserForm.value.email,
             role: newUserForm.value.role,
         });
-        showSuccess('User berhasil ditambahkan. Password default telah dikirim via email.');
+        const defaultPassword = response.data?.defaultPassword;
+        if (defaultPassword) {
+            showSuccess(`User berhasil ditambahkan. Password default: ${defaultPassword}`);
+        } else {
+            showSuccess('User berhasil ditambahkan.');
+        }
         showAddUserModal.value = false;
         // Reset form
         newUserForm.value = { name: '', email: '', role: '' };

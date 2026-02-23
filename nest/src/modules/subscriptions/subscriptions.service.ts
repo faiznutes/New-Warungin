@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { UpgradeSubscriptionDto } from "./dto/subscription.dto";
+import { ADDON_CATALOG, PLAN_CATALOG } from "../catalog/platform-catalog";
 
 @Injectable()
 export class SubscriptionsService {
@@ -278,11 +279,11 @@ export class SubscriptionsService {
   }
 
   async getAvailablePlans() {
-    return [];
+    return PLAN_CATALOG;
   }
 
   async getAvailableAddons() {
-    return [];
+    return ADDON_CATALOG;
   }
 
   async addAddon(tenantId: string, data: any) {

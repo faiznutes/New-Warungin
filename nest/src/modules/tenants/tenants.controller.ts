@@ -23,6 +23,8 @@ import { RolesGuard } from "../../common/guards/roles.guard";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { TenantId } from "../../common/decorators/tenant-id.decorator";
 import { Public } from "../../common/decorators/public.decorator";
+import { CreateUserDto } from "../users/dto/user.dto";
+import { CreateOutletDto } from "../outlets/dto/outlet.dto";
 
 @Controller("tenants")
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
@@ -45,6 +47,12 @@ export class TenantsController {
     return this.tenantsService.findOne(id);
   }
 
+  @Get(":id/detail")
+  @Roles("SUPER_ADMIN")
+  findDetail(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.findDetail(id);
+  }
+
   @Public()
   @Get("slug/:slug")
   findBySlug(@Param("slug") slug: string) {
@@ -62,16 +70,35 @@ export class TenantsController {
   }
 
   @Put(":id/subscription")
+  @Roles("SUPER_ADMIN")
   updateSubscription(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body() body: { plan: string; startDate: Date; endDate: Date },
+    @Body()
+    body: {
+      plan?: string;
+      status?: string;
+      durationDays?: number;
+      startDate?: Date;
+      endDate?: Date;
+    },
   ) {
-    return this.tenantsService.updateSubscription(
-      id,
-      body.plan,
-      body.startDate,
-      body.endDate,
-    );
+    return this.tenantsService.updateSubscription(id, body);
+  }
+
+  @Post(":id/users")
+  @Roles("SUPER_ADMIN")
+  createTenantUser(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Body()
+    dto: Omit<CreateUserDto, "password"> & { password?: string },
+  ) {
+    return this.tenantsService.createTenantUser(id, dto);
+  }
+
+  @Post(":id/outlets")
+  @Roles("SUPER_ADMIN")
+  createTenantOutlet(@Param("id", ParseUUIDPipe) id: string, @Body() dto: CreateOutletDto) {
+    return this.tenantsService.createTenantOutlet(id, dto);
   }
 
   @Get(":id/users")
