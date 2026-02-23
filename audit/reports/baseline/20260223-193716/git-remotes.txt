@@ -1,0 +1,7 @@
+﻿# Command: git remote -v
+# WorkDir: .
+
+gitsafe-backup	git://gitsafe:5418/backup.git (fetch)
+gitsafe-backup	git://gitsafe:5418/backup.git (push)
+origin	https://github.com/faiznutes/New-Warungin (fetch)
+origin	https://github.com/faiznutes/New-Warungin (push)

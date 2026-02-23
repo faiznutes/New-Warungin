@@ -238,6 +238,9 @@ export class AuthService {
   }
 
   async getMe(userId: string) {
+    if (!userId) {
+      throw new UnauthorizedException("Invalid token");
+    }
     if (isDebug) console.log("getMe called with userId:", userId);
     try {
       const user = await this.prisma.user.findUnique({
@@ -272,11 +275,11 @@ export class AuthService {
   async getMeFromToken(token: string) {
     try {
       const jwtSecret = this.config.get<string>("JWT_SECRET");
-      if (isDebug) console.log("[DEBUG] JWT_SECRET from config:", jwtSecret);
-      const secret = jwtSecret || "warungin-dev-secret-key-min32chars-ok";
-      if (isDebug) console.log("[DEBUG] Using secret:", secret);
+      if (!jwtSecret || jwtSecret.length < 32) {
+        throw new UnauthorizedException("JWT secret is not configured");
+      }
 
-      const decoded = jwt.verify(token, secret) as TokenPayload;
+      const decoded = jwt.verify(token, jwtSecret) as TokenPayload;
       if (isDebug) console.log("[DEBUG] Token decoded:", decoded);
       return this.getMe(decoded.userId);
     } catch (error) {

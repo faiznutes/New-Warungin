@@ -195,11 +195,14 @@ export class PaymentsService {
     }
 
     const { order_id, transaction_status, transaction_id } = dto;
+    let finalStatus: "PENDING" | "COMPLETED" | "FAILED" = "PENDING";
 
     // ATOMIC TRANSACTION: Update both transaction and order together
     await this.prisma.$transaction(async (tx) => {
       const transaction = await tx.transaction.findFirst({
-        where: { reference: order_id },
+        where: {
+          OR: [{ reference: order_id }, { reference: transaction_id }],
+        },
       });
 
       if (!transaction) {
@@ -208,6 +211,7 @@ export class PaymentsService {
 
       // Check if already processed (idempotency)
       if (transaction.status === "COMPLETED") {
+        finalStatus = "COMPLETED";
         return {
           success: true,
           status: "COMPLETED",
@@ -229,13 +233,12 @@ export class PaymentsService {
         status = "FAILED";
       }
 
+      finalStatus = status;
+
       // Update transaction
       await tx.transaction.update({
         where: { id: transaction.id },
-        data: {
-          status,
-          reference: transaction_id,
-        },
+        data: { status },
       });
 
       // Update order status atomically
@@ -247,7 +250,7 @@ export class PaymentsService {
       }
     });
 
-    return { success: true, status: "COMPLETED" };
+    return { success: true, status: finalStatus };
   }
 
   async handleN8nWebhook(dto: PaymentCallbackDto, signature?: string) {

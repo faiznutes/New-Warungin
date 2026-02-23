@@ -11,12 +11,14 @@ import {
 } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
 import { GetOrdersDto } from "./dto/get-orders.dto";
+import { CreateOrderDto } from "./dto/create-order.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { TenantGuard } from "../../common/guards/tenant.guard";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { SubscriptionGuard } from "../../common/guards/subscription.guard";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { TenantId } from "../../common/decorators/tenant-id.decorator";
+import { CurrentUser } from "../../common/decorators/current-user.decorator";
 
 @Controller("orders")
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard, SubscriptionGuard)
@@ -46,8 +48,12 @@ export class OrdersController {
 
   @Post()
   @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER")
-  async createOrder(@TenantId() tenantId: string, @Body() dto: any) {
-    return this.ordersService.createOrder(dto, tenantId);
+  async createOrder(
+    @TenantId() tenantId: string,
+    @CurrentUser() user: any,
+    @Body() dto: CreateOrderDto,
+  ) {
+    return this.ordersService.createOrder(dto, tenantId, user.id);
   }
 
   @Put(":id/status")

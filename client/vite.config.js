@@ -138,8 +138,17 @@ export default defineConfig({
             if (id.includes('chart.js') || id.includes('vue-chartjs')) {
               return 'chart-vendor';
             }
-            if (id.includes('jspdf') || id.includes('html2canvas')) {
-              return 'pdf-vendor';
+            if (id.includes('jspdf')) {
+              return 'jspdf-vendor';
+            }
+            if (id.includes('html2canvas')) {
+              return 'html2canvas-vendor';
+            }
+            if (id.includes('socket.io-client')) {
+              return 'realtime-vendor';
+            }
+            if (id.includes('date-fns') || id.includes('marked') || id.includes('dompurify')) {
+              return 'utils-vendor';
             }
             return 'vendor';
           }

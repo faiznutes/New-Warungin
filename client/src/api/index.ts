@@ -21,8 +21,8 @@ const getApiUrl = () => {
     }
   }
 
-  // Default to localhost for development (NestJS backend on port 3001)
-  return "http://localhost:3001/api";
+  // Default to localhost for development (NestJS backend on port 3000)
+  return "http://localhost:3000/api";
 };
 
 const api = axios.create({
@@ -91,6 +91,8 @@ api.interceptors.request.use(
       !isAuthRoute &&
       !isPdfRoute
     ) {
+      config.headers["x-tenant-id"] = selectedTenantId;
+
       // Only add tenantId if not already in params or URL
 
       // Check if tenantId is already in URL (query parameter)
@@ -135,6 +137,10 @@ api.interceptors.request.use(
           config.params.tenantId = selectedTenantId;
         }
       }
+    }
+
+    if (userRole === "SUPER_ADMIN" && !selectedTenantId) {
+      delete config.headers["x-tenant-id"];
     }
 
     // Add outletId query param if selectedStoreId exists (for all users, not just super admin)

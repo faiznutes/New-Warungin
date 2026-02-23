@@ -1,5 +1,5 @@
 # Deployment via WSL + SSHPASS
-$Server = "192.168.1.101"
+$Server = "192.168.1.105"
 $User = "root"
 $Pass = "123"
 

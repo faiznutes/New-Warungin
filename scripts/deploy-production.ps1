@@ -10,7 +10,7 @@ param()
 $ErrorActionPreference = "Stop"
 
 # Configuration
-$Server = "192.168.1.101"
+$Server = "192.168.1.105"
 $User = "root"
 $Password = "123"  # Use SSH keys in production
 $ProjectPath = "/root/New-Warungin"

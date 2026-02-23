@@ -69,7 +69,7 @@ export class CashShiftsController {
       tenantId,
       user.id,
     );
-    return shift || { message: 'No active shift' };
+    return shift;
   }
 
   @Get('history')

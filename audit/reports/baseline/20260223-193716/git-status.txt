@@ -1,0 +1,12 @@
+﻿# Command: git status -sb
+# WorkDir: .
+
+## main...origin/main
+ M scripts/deploy-production.ps1
+ M scripts/deploy-via-wsl-sshpass.ps1
+?? audit/
+?? audit_prompt.txt
+?? nul
+?? scripts/deploy-manual.bat
+?? scripts/run-audit-baseline.ps1
+?? scripts/run-audit-static.ps1

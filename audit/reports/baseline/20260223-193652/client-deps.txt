@@ -1,0 +1,3 @@
+﻿# Command: npm ls --depth=0
+# WorkDir: client
+

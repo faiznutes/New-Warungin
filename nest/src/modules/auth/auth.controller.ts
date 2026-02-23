@@ -5,7 +5,7 @@ import {
   Body,
   UseGuards,
   Req,
-  Headers,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
@@ -35,13 +35,13 @@ export class AuthController {
     return { message: "Logged out successfully" };
   }
 
-  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get("me")
-  async me(@Headers("authorization") authHeader: string) {
-    const token = authHeader?.replace("Bearer ", "");
-    if (!token) {
-      return { success: false, message: "No token provided" };
+  async me(@Req() req: any) {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new UnauthorizedException("Invalid token");
     }
-    return this.authService.getMeFromToken(token);
+    return this.authService.getMe(userId);
   }
 }

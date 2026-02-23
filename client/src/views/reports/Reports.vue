@@ -222,9 +222,9 @@
             <div class="flex items-center gap-4">
               <span 
                 class="w-8 h-8 flex items-center justify-center text-sm font-bold rounded-lg transition-colors group-hover:scale-110"
-                :class="index < 3 ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
+                :class="Number(index) < 3 ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
               >
-                #{{ index + 1 }}
+                #{{ Number(index) + 1 }}
               </span>
               <span class="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ product.name }}</span>
             </div>

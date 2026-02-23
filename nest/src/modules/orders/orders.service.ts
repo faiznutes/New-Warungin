@@ -22,6 +22,14 @@ const VALID_ORDER_STATUSES = [
 export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private generateOrderNumber(): string {
+    const now = new Date();
+    const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
+    const timePart = now.toTimeString().slice(0, 8).replace(/:/g, "");
+    const randPart = Math.random().toString(36).slice(2, 6).toUpperCase();
+    return `ORD-${datePart}-${timePart}-${randPart}`;
+  }
+
   private validateTenantId(tenantId: string | null | undefined): string {
     if (!tenantId) {
       throw new BadRequestException("Tenant ID is required");
@@ -64,66 +72,144 @@ export class OrdersService {
     return order;
   }
 
-  async createOrder(dto: any, tenantId: string) {
+  async createOrder(dto: CreateOrderDto, tenantId: string, userId: string) {
     this.validateTenantId(tenantId);
+
+    if (!userId) {
+      throw new BadRequestException("User ID is required");
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, tenantId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new ForbiddenException("User not found in tenant context");
+    }
+
+    if (!dto.items?.length) {
+      throw new BadRequestException("Order items are required");
+    }
+
+    const idempotencyKey = (dto as any).idempotencyKey as string | undefined;
+
+    const productIds = [...new Set(dto.items.map((item) => item.productId))];
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds }, tenantId, isActive: true },
+      select: { id: true, price: true, stock: true, cost: true },
+    });
+
+    if (products.length !== productIds.length) {
+      throw new BadRequestException("Some products are invalid or inactive");
+    }
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+    const requestedQty = new Map<string, number>();
+    for (const item of dto.items) {
+      requestedQty.set(
+        item.productId,
+        (requestedQty.get(item.productId) || 0) + Number(item.quantity),
+      );
+    }
+
+    for (const [productId, qty] of requestedQty.entries()) {
+      const product = productMap.get(productId);
+      if (!product) {
+        throw new BadRequestException(`Product ${productId} not found`);
+      }
+      if (product.stock < qty) {
+        throw new BadRequestException(
+          `Insufficient stock for product ${productId}`,
+        );
+      }
+    }
+
+    const orderItemsData = dto.items.map((item) => {
+      const product = productMap.get(item.productId)!;
+      const snapshotPrice = Number(product.price);
+      const quantity = Number(item.quantity);
+      const subtotal = snapshotPrice * quantity;
+      const unitCost = product.cost ? Number(product.cost) : null;
+      const profit = unitCost !== null ? (snapshotPrice - unitCost) * quantity : null;
+
+      return {
+        productId: item.productId,
+        quantity,
+        price: snapshotPrice,
+        subtotal,
+        cost: unitCost,
+        profit,
+      };
+    });
+
+    const subtotal = orderItemsData.reduce((sum, item) => sum + item.subtotal, 0);
+    const discount = Math.max(0, Math.min(Number(dto.discount || 0), subtotal));
+    const total = Math.max(0, subtotal - discount);
 
     // Use atomic transaction to ensure idempotency check + order creation is atomic
     const order = await this.prisma.$transaction(async (tx) => {
       // Check idempotency key if provided to prevent duplicate orders
       // This check is now inside transaction to prevent race conditions
-      if (dto.idempotencyKey) {
+      if (idempotencyKey) {
         const existingOrder = await tx.order.findFirst({
-          where: { idempotencyKey: dto.idempotencyKey, tenantId },
+          where: { idempotencyKey, tenantId },
         });
         if (existingOrder) {
           return existingOrder;
         }
       }
 
+      const orderNumber = this.generateOrderNumber();
+
       // Create new order with idempotency key (unique constraint will prevent duplicates)
       const newOrder = await tx.order.create({
         data: {
+          orderNumber,
           tenantId,
-          total: dto.total || 0,
+          userId,
+          customerId: dto.customerId || null,
+          memberId: dto.memberId || null,
+          outletId: dto.outletId || null,
+          temporaryCustomerName: dto.temporaryCustomerName || null,
+          subtotal,
+          discount,
+          total,
           status: "PENDING",
-          idempotencyKey: dto.idempotencyKey || null,
-        } as any,
+          sendToKitchen: Boolean(dto.sendToKitchen),
+          kitchenStatus: dto.sendToKitchen ? "PENDING" : null,
+          notes: dto.notes || null,
+          idempotencyKey: idempotencyKey || null,
+        },
       });
 
-      // If items provided, create them within the same transaction
-      if (dto.items && dto.items.length > 0) {
-        // Fetch current product prices for price snapshot
-        const productIds = dto.items.map((item: any) => item.productId);
-        const products = await tx.product.findMany({
-          where: { id: { in: productIds }, tenantId },
-          select: { id: true, price: true },
-        });
-        const productPriceMap = new Map(
-          products.map((p) => [p.id, Number(p.price)]),
-        );
-
-        // Create order items with snapshot prices
-        const orderItems = dto.items.map((item: any) => ({
+      await tx.orderItem.createMany({
+        data: orderItemsData.map((item) => ({
           orderId: newOrder.id,
           productId: item.productId,
           quantity: item.quantity,
-          price: productPriceMap.get(item.productId) || item.price || 0,
-          subtotal:
-            (productPriceMap.get(item.productId) || item.price || 0) *
-            item.quantity,
-        }));
+          price: item.price,
+          subtotal: item.subtotal,
+          cost: item.cost,
+          profit: item.profit,
+        })),
+      });
 
-        await tx.orderItem.createMany({ data: orderItems });
-
-        // Calculate total from items
-        const total = orderItems.reduce(
-          (sum: number, item: any) => sum + item.subtotal,
-          0,
-        );
-        await tx.order.update({
-          where: { id: newOrder.id },
-          data: { total },
+      for (const [productId, qty] of requestedQty.entries()) {
+        const stockResult = await tx.product.updateMany({
+          where: {
+            id: productId,
+            tenantId,
+            stock: { gte: qty },
+          },
+          data: { stock: { decrement: qty } },
         });
+
+        if (stockResult.count === 0) {
+          throw new BadRequestException(
+            `Insufficient stock for product ${productId}`,
+          );
+        }
       }
 
       return newOrder;
@@ -417,7 +503,7 @@ export class OrdersService {
   async bulkDelete(orderIds: string[], tenantId: string) {
     await this.prisma.order.updateMany({
       where: { id: { in: orderIds }, tenantId },
-      data: { status: "DELETED" as any },
+      data: { status: "CANCELLED" as any },
     });
 
     return { message: "Orders deleted", count: orderIds.length };
@@ -428,7 +514,7 @@ export class OrdersService {
 
     await this.prisma.order.update({
       where: { id },
-      data: { status: "DELETED" as any },
+      data: { status: "CANCELLED" as any },
     });
 
     return { message: "Order deleted successfully" };

@@ -114,7 +114,7 @@
                                                     <input v-model="shift.endTime" type="time" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all text-center" />
                                                 </div>
                                             </div>
-                                            <button @click="removeShift(index)" type="button" class="mt-0 sm:mt-5 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors ml-auto sm:ml-0">
+                                            <button @click="removeShift(Number(index))" type="button" class="mt-0 sm:mt-5 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors ml-auto sm:ml-0">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                             </button>
                                         </div>

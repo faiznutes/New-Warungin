@@ -491,12 +491,6 @@ const router = createRouter({
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
-          path: 'stores',
-          name: 'stores',
-          component: () => import('../views/stores/Stores.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
-        },
-        {
           path: 'reports/stores',
           name: 'store-reports',
           component: () => import('../views/reports/StoreReports.vue'),
@@ -800,7 +794,6 @@ router.beforeEach(async (to, from, next) => {
 
     // For other roles or non-basic addons, check if addon is active
     try {
-      const { default: api } = await import('../api');
       const response = await api.get('/addons');
       const addonsData = response.data?.data || response.data || [];
       const activeAddons = Array.isArray(addonsData) ? addonsData : [];
@@ -855,4 +848,3 @@ router.beforeEach(async (to, from, next) => {
 });
 
 export default router;
-

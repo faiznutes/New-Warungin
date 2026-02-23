@@ -1,0 +1,4 @@
+﻿# Command: node -v
+# WorkDir: .
+
+v24.11.1

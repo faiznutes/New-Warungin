@@ -430,33 +430,6 @@
        />
     </main>
 
-    <!-- Success Overlay (New) -->
-     <div v-if="showSuccessOverlay" class="absolute inset-0 z-50 bg-white/50 backdrop-blur-md flex items-center justify-center">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center border-2 border-green-100 transform scale-100 animate-bounce-in">
-           <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-              <span class="material-symbols-outlined text-5xl text-green-500 animate-pulse">check_circle</span>
-              <div class="absolute inset-0 rounded-full border-4 border-green-200 animate-ping opacity-20"></div>
-           </div>
-           
-           <h2 class="text-2xl font-black text-slate-800 mb-2">Pembayaran Berhasil!</h2>
-           <p class="text-slate-500 mb-8 font-medium">Transaction #{{ lastOrderReceipt?.orderNumber }} telah selesai</p>
-           
-           <div class="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
-              <p class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Kembalian</p>
-              <p class="text-4xl font-black text-slate-900">{{ formatCurrency(lastOrderReceipt?.change || 0) }}</p>
-           </div>
-           
-           <div class="space-y-3">
-              <button @click="printReceiptAndClose" class="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20">
-                 <span class="material-symbols-outlined">print</span> Cetak Struk
-              </button>
-              <button @click="closeSuccessOverlay" class="w-full py-3.5 bg-white text-slate-600 border-2 border-slate-100 rounded-xl font-bold hover:bg-slate-50 transition">
-                 Pesanan Baru
-              </button>
-           </div>
-        </div>
-     </div>
-
     <!-- Modals -->
     <PaymentModal
       :show="showPaymentModal"

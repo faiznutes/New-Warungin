@@ -1,0 +1,4 @@
+﻿# Command: git branch --show-current
+# WorkDir: .
+
+main

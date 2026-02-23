@@ -1,0 +1,16 @@
+﻿# Command: npm run build
+# WorkDir: nest
+
+
+> warungin-nest@1.0.0 build
+> nest build
+
+
+> warungin-nest@1.0.0 postbuild
+> npm run copy:prisma
+
+
+> warungin-nest@1.0.0 copy:prisma
+> node -e "const fs=require('fs');const src='src/generated';const dst='dist/generated';if(fs.existsSync(src)){if(!fs.existsSync(dst))fs.mkdirSync(dst,{recursive:true});fs.cpSync(src,dst,{recursive:true});console.log('Copied generated client to dist')}"
+
+Copied generated client to dist
