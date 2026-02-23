@@ -18,6 +18,14 @@ import { parsePagination } from "../../common/utils/pagination.util";
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private assertMutableUser(user: { role: string }, action: string) {
+    if (user.role === "SUPER_ADMIN") {
+      throw new ForbiddenException(
+        `SUPER_ADMIN user cannot be ${action} from tenant management`,
+      );
+    }
+  }
+
   async getUsers(tenantId: string, page: number = 1, limit: number = 10) {
     const { skip } = parsePagination(page, limit);
 
@@ -116,6 +124,14 @@ export class UsersService {
   async updateUser(id: string, data: UpdateUserDto, tenantId: string) {
     const user = await this.getUserById(id, tenantId);
 
+    if (
+      user.role === "SUPER_ADMIN" &&
+      (data.isActive === false ||
+        (typeof data.role === "string" && data.role !== "SUPER_ADMIN"))
+    ) {
+      this.assertMutableUser(user, "downgraded or deactivated");
+    }
+
     if (data.email && data.email !== user.email) {
       const existing = await this.prisma.user.findFirst({
         where: {
@@ -179,6 +195,7 @@ export class UsersService {
 
   async deleteUser(id: string, tenantId: string) {
     const user = await this.getUserById(id, tenantId);
+    this.assertMutableUser(user, "deleted");
 
     await this.prisma.user.delete({
       where: { id },
@@ -230,6 +247,7 @@ export class UsersService {
 
   async deactivateUser(id: string, tenantId: string) {
     const user = await this.getUserById(id, tenantId);
+    this.assertMutableUser(user, "deactivated");
     return this.prisma.user.update({
       where: { id },
       data: { isActive: false },

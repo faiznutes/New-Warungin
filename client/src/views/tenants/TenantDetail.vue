@@ -2170,6 +2170,11 @@ const {
 } = useNotification();
 const tenantId = route.params.id as string;
 
+const tenantRequestConfig = () => ({
+  headers: { "x-tenant-id": tenantId },
+  params: { tenantId },
+});
+
 interface Tenant {
   id: string;
   name: string;
@@ -2417,7 +2422,7 @@ const availableAddonsList = ref<any[]>([]);
 
 const loadAvailableAddons = async () => {
   try {
-    const response = await api.get("/addons/available");
+    const response = await api.get("/addons/available", tenantRequestConfig());
     const payload = response.data?.data || response.data;
     availableAddonsList.value = Array.isArray(payload) ? payload : [];
   } catch (error) {
@@ -2464,7 +2469,7 @@ const handleAddAddonSubmit = async () => {
       payload.tenantId = tenantId;
     }
 
-    await api.post(`/addons/subscribe`, payload);
+    await api.post(`/addons/subscribe`, payload, tenantRequestConfig());
 
     showSuccess(`Addon "${addon.name}" berhasil ditambahkan!`);
     showAddAddonModal.value = false;
@@ -2506,10 +2511,14 @@ const handleSaveAddon = async () => {
 
   saving.value = true;
   try {
-    await api.put(`/addons/${editAddonForm.value.id}`, {
-      durationDays: editAddonForm.value.durationDays,
-      status: editAddonForm.value.status,
-    });
+    await api.put(
+      `/addons/${editAddonForm.value.id}`,
+      {
+        durationDays: editAddonForm.value.durationDays,
+        status: editAddonForm.value.status,
+      },
+      tenantRequestConfig(),
+    );
     showSuccess(`Addon "${editAddonForm.value.name}" berhasil diperbarui!`);
     showEditAddonModal.value = false;
     loadTenantDetail();
@@ -2536,7 +2545,11 @@ const handleDeactivateAddon = async (addon: any) => {
   if (!confirmed) return;
 
   try {
-    await api.post(`/addons/unsubscribe/${addonId}`, { tenantId });
+    await api.post(
+      `/addons/unsubscribe/${addonId}`,
+      { tenantId },
+      tenantRequestConfig(),
+    );
     showSuccess("Addon berhasil dinonaktifkan.");
     loadTenantDetail();
   } catch (error: any) {
@@ -2578,7 +2591,11 @@ const handleToggleUserStatus = async (user: any) => {
   if (!confirmed) return;
 
   try {
-    await api.put(`/users/${user.id}`, { isActive: !user.isActive });
+    await api.put(
+      `/users/${user.id}`,
+      { isActive: !user.isActive },
+      tenantRequestConfig(),
+    );
     showSuccess(
       `User berhasil di${user.isActive ? "nonaktifkan" : "aktifkan"}!`,
     );
@@ -2603,7 +2620,7 @@ const handleDeleteUser = async (user: any) => {
   if (!confirmed) return;
 
   try {
-    await api.delete(`/users/${user.id}`);
+    await api.delete(`/users/${user.id}`, tenantRequestConfig());
     showSuccess("User berhasil dihapus!");
     loadTenantDetail();
   } catch (error: any) {
@@ -2622,7 +2639,11 @@ const handleToggleStoreStatus = async (store: any) => {
   if (!confirmed) return;
 
   try {
-    await api.put(`/outlets/${store.id}`, { isActive: !store.isActive });
+    await api.put(
+      `/outlets/${store.id}`,
+      { isActive: !store.isActive },
+      tenantRequestConfig(),
+    );
     showSuccess(
       `Toko berhasil di${store.isActive ? "nonaktifkan" : "aktifkan"}!`,
     );
@@ -2890,7 +2911,11 @@ const handleSaveUser = async () => {
       showSuccess("User berhasil dibuat");
     } else {
       // Update
-      await api.put(`/users/${editUserForm.value.id}`, editUserForm.value);
+      await api.put(
+        `/users/${editUserForm.value.id}`,
+        editUserForm.value,
+        tenantRequestConfig(),
+      );
       showSuccess("User berhasil diperbarui");
     }
     showEditUserModal.value = false;
@@ -2917,7 +2942,11 @@ const handleSaveUserFromModal = async (userData: any) => {
   saving.value = true;
   try {
     if (editingUser.value?.id) {
-      await api.put(`/users/${editingUser.value.id}`, userData);
+      await api.put(
+        `/users/${editingUser.value.id}`,
+        userData,
+        tenantRequestConfig(),
+      );
       showSuccess("User berhasil diperbarui");
     }
     showEditUserModal.value = false;
@@ -3009,7 +3038,11 @@ const handleSaveStore = async () => {
 
   saving.value = true;
   try {
-    await api.put(`/outlets/${editStoreForm.value.id}`, editStoreForm.value);
+    await api.put(
+      `/outlets/${editStoreForm.value.id}`,
+      editStoreForm.value,
+      tenantRequestConfig(),
+    );
     showSuccess("Toko berhasil diperbarui");
     showEditStoreModal.value = false;
     loadTenantDetail();
