@@ -189,21 +189,27 @@ export class TenantsService {
       status: (addon.status || "ACTIVE").toUpperCase(),
     }));
 
-    const subscription = latestSubscription
-      ? {
-          plan: latestSubscription.plan,
-          status: latestSubscription.status,
-          subscriptionStart: latestSubscription.startDate,
-          subscriptionEnd: latestSubscription.endDate,
-          amount: latestSubscription.amount,
-        }
-      : {
-          plan: tenant.subscriptionPlan,
-          status: tenant.isActive ? "ACTIVE" : "INACTIVE",
-          subscriptionStart: tenant.subscriptionStart,
-          subscriptionEnd: tenant.subscriptionEnd,
-          amount: getPlanPrice(tenant.subscriptionPlan || "BASIC"),
-        };
+    const now = new Date();
+    const currentEnd = tenant.subscriptionEnd
+      ? new Date(tenant.subscriptionEnd)
+      : null;
+    const inferredStatus = !tenant.isActive
+      ? currentEnd && currentEnd <= now
+        ? "CANCELLED"
+        : "INACTIVE"
+      : currentEnd && currentEnd <= now
+        ? "EXPIRED"
+        : "ACTIVE";
+
+    const subscription = {
+      plan: tenant.subscriptionPlan,
+      status: inferredStatus,
+      subscriptionStart: tenant.subscriptionStart,
+      subscriptionEnd: tenant.subscriptionEnd,
+      amount:
+        latestSubscription?.amount ||
+        getPlanPrice(tenant.subscriptionPlan || "BASIC"),
+    };
 
     return {
       tenant,

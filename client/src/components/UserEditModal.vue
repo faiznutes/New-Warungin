@@ -808,6 +808,7 @@ const loadPassword = async () => {
       scopedRequestConfig(),
     );
     const generatedPassword =
+      response.data?.data?.data?.temporaryPassword ||
       response.data?.data?.temporaryPassword ||
       response.data?.temporaryPassword;
     if (generatedPassword) {
