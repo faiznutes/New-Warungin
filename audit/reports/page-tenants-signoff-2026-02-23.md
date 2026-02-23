@@ -76,6 +76,8 @@ Stabilize one page at a time (Tenant list/detail) and verify auth, route, API co
 - [PASS] `POST /api/tenants/:id/users` succeeds (`201`).
 - [PASS] `PUT /api/users/:id` status toggle succeeds (`200`).
 - [PASS] `DELETE /api/users/:id` succeeds (`200`).
+- [PASS] Direct API attempt to deactivate `SUPER_ADMIN` is blocked (`403`).
+- [PASS] Direct API attempt to delete `SUPER_ADMIN` is blocked (`403`).
 
 ### Stores Tab
 
@@ -101,3 +103,11 @@ Stabilize one page at a time (Tenant list/detail) and verify auth, route, API co
 `PASS (Page-Level)` for `/app/tenants` and `/app/tenants/:id` under `SUPER_ADMIN` scope.
 
 This page is acceptable to move forward to next-page remediation, with one-page-at-a-time strategy maintained.
+
+## Additional Hardening (Post Sign-off Sweep)
+
+- Tenant detail now sends explicit tenant scoping (`x-tenant-id` and `tenantId`) for cross-tenant-sensitive actions:
+  - user update/delete
+  - outlet update/toggle
+  - addon available/subscribe/unsubscribe/update
+- Backend user service now enforces immutable protection for `SUPER_ADMIN` against tenant-page destructive actions.
