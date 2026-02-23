@@ -16,11 +16,11 @@
 
 ## In Progress
 
-- Runtime verification planning and test checklist (`audit/reports/runtime-audit-checklist.md`).
+- Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`).
 
 ## Open Bug Count (Current)
 
-- P0-Critical: 1
+- P0-Critical: 0
 - P1-Major: 0
 - P2-Minor: 2
 

@@ -2,6 +2,12 @@
 
 This checklist is for the next execution pass to validate end-to-end runtime behavior before any code changes.
 
+## Execution Update (2026-02-23)
+
+- Tenant page runtime verification completed and signed off in:
+  - `audit/reports/page-tenants-signoff-2026-02-23.md`
+- This checklist remains open for non-tenant page journeys.
+
 ## A. Database Connectivity
 
 - [ ] Backend starts with validated `DATABASE_URL`.
