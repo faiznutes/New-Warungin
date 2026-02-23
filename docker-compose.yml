@@ -16,7 +16,6 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - postgres_backup:/backup
     networks:
       - warungin-network
     healthcheck:
@@ -67,6 +66,8 @@ services:
       - BACKUP_RETENTION_DAYS=30
     networks:
       - warungin-network
+    profiles:
+      - ops
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
@@ -176,7 +177,6 @@ services:
       - warungin-network
     volumes:
       - ./logs:/app/logs
-      - ./scripts/docker-startup.sh:/app/scripts/docker-startup.sh
     user: "1001:1001"
     # Security hardening removed for stability
     # read_only: true
@@ -305,6 +305,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    profiles:
+      - local-proxy
 
   # Loki Log Aggregation
   loki:
@@ -324,6 +326,8 @@ services:
     #   interval: 10s
     #   timeout: 5s
     #   retries: 5
+    profiles:
+      - observability
 
     # Promtail Log Shipper
   promtail:
@@ -345,6 +349,8 @@ services:
     #   interval: 10s
     #   timeout: 5s
     #   retries: 5
+    profiles:
+      - observability
 
     # Cloudflare Tunnel - untuk public access via Cloudflare
     # Setup:
@@ -429,6 +435,8 @@ services:
           memory: 1G
         reservations:
           memory: 512M
+    profiles:
+      - observability
 
   # Phase 30 - Grafana Dashboards
   grafana:
@@ -469,6 +477,8 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+    profiles:
+      - observability
 
   # Phase 30 - AlertManager
   alertmanager:
@@ -507,6 +517,8 @@ services:
           memory: 256M
         reservations:
           memory: 128M
+    profiles:
+      - observability
 
 networks:
   warungin-network:
@@ -520,10 +532,6 @@ volumes:
     # Current usage: Check with: docker exec warungin-postgres du -sh /var/lib/postgresql/data
   postgres_backup:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /mnt/warungin-backups
     # Daily backup storage - EXTERNAL MOUNT
     # IMPORTANT: Create mount point on host before deployment:
     #   sudo mkdir -p /mnt/warungin-backups
