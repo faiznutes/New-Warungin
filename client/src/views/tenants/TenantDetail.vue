@@ -421,12 +421,16 @@
                                 </div>
                             </div>
                              <div class="flex gap-3 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
-                                <button @click="handleEditAddon(addon)" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center gap-2">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                    Edit Addon
-                                </button>
-                             </div>
-                         </div>
+                                 <button @click="handleEditAddon(addon)" class="flex-1 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center gap-2">
+                                     <span class="material-symbols-outlined text-[18px]">edit</span>
+                                     Edit Addon
+                                 </button>
+                                 <button @click="handleDeactivateAddon(addon)" class="py-2.5 px-3 rounded-xl border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs font-bold text-red-600 dark:text-red-400 transition-colors flex items-center justify-center gap-2">
+                                     <span class="material-symbols-outlined text-[18px]">block</span>
+                                     Nonaktifkan
+                                 </button>
+                              </div>
+                          </div>
                     </div>
                  </section>
 
@@ -999,9 +1003,18 @@ const billingHistory = ref<any[]>([]);
 const activeAddons = ref<any[]>([]);
 const loadingStores = ref(false);
 const progressWidth = computed(() => {
-    if (!tenant.value?.subscriptionEnd) return 0;
-    // Simple logic: return 75 for now as we don't have start date reliable everywhere
-    return 75;
+    const startRaw = subscription.value?.subscriptionStart || tenant.value?.subscriptionStart;
+    const endRaw = subscription.value?.subscriptionEnd || tenant.value?.subscriptionEnd;
+    if (!startRaw || !endRaw) return 0;
+
+    const start = new Date(startRaw).getTime();
+    const end = new Date(endRaw).getTime();
+    const now = Date.now();
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
+
+    const total = end - start;
+    const elapsed = Math.min(Math.max(now - start, 0), total);
+    return Math.round((elapsed / total) * 100);
 });
 
 // Modals state
@@ -1161,6 +1174,11 @@ const handleEditSubscription = () => {
 };
 
 const handleSaveSubscription = async () => {
+    if (!editSubscriptionForm.value.durationDays || editSubscriptionForm.value.durationDays < 1) {
+        showError('Durasi langganan minimal 1 hari.');
+        return;
+    }
+
     saving.value = true;
     try {
         await api.put(`/tenants/${tenantId}/subscription`, {
@@ -1184,7 +1202,8 @@ const availableAddonsList = ref<any[]>([]);
 const loadAvailableAddons = async () => {
     try {
         const response = await api.get('/addons/available');
-        availableAddonsList.value = Array.isArray(response.data) ? response.data : [];
+        const payload = response.data?.data || response.data;
+        availableAddonsList.value = Array.isArray(payload) ? payload : [];
     } catch (error) {
         console.warn('Failed to load available addons');
         availableAddonsList.value = [];
@@ -1205,6 +1224,10 @@ const handleAddAddonSubmit = async () => {
     const addon = selectedNewAddon.value;
     if (!addon || !newAddonForm.value.durationDays) return;
     if (addon.comingSoon) return;
+    if (newAddonForm.value.durationDays < 1) {
+        showError('Durasi addon minimal 1 hari.');
+        return;
+    }
     
     saving.value = true;
     try {
@@ -1253,6 +1276,11 @@ const handleEditAddon = (addon: any) => {
 };
 
 const handleSaveAddon = async () => {
+    if (!editAddonForm.value.durationDays || editAddonForm.value.durationDays < 1) {
+        showError('Durasi addon minimal 1 hari.');
+        return;
+    }
+
     saving.value = true;
     try {
         await api.put(`/addons/${editAddonForm.value.id}`, {
@@ -1266,6 +1294,30 @@ const handleSaveAddon = async () => {
         showError(error.response?.data?.message || 'Gagal memperbarui addon.');
     } finally {
         saving.value = false;
+    }
+};
+
+const handleDeactivateAddon = async (addon: any) => {
+    const addonId = addon.addonId || addon.id;
+    if (!addonId) {
+        showError('Addon tidak valid untuk dinonaktifkan.');
+        return;
+    }
+
+    const confirmed = await confirmDialog(
+        `Nonaktifkan addon "${addon.addonName || addon.name}" untuk tenant ini?`,
+        'Nonaktifkan Addon',
+        'Nonaktifkan',
+        'Batal',
+    );
+    if (!confirmed) return;
+
+    try {
+        await api.post(`/addons/unsubscribe/${addonId}`, { tenantId });
+        showSuccess('Addon berhasil dinonaktifkan.');
+        loadTenantDetail();
+    } catch (error: any) {
+        showError(error.response?.data?.message || 'Gagal menonaktifkan addon.');
     }
 };
 
@@ -1472,6 +1524,11 @@ const handleRequestUpdateProfile = () => {
 };
 
 const handleAddUserSubmit = async () => {
+    if (!newUserForm.value.name || !newUserForm.value.email || !newUserForm.value.role) {
+        showError('Nama, email, dan role wajib diisi.');
+        return;
+    }
+
     saving.value = true;
     try {
         // Send request to add user for the tenant
@@ -1543,6 +1600,15 @@ const handleEditUser = (user: any) => {
 };
 
 const handleAddStore = async () => {
+    if (!newStoreForm.value.name) {
+        showError('Nama toko wajib diisi.');
+        return;
+    }
+    if (!newStoreForm.value.shiftConfig.length) {
+        showError('Minimal satu shift diperlukan.');
+        return;
+    }
+
     saving.value = true;
     try {
         await api.post(`/tenants/${tenantId}/outlets`, newStoreForm.value);
@@ -1587,6 +1653,15 @@ const removeEditShift = (index: number) => {
     editStoreForm.value.shiftConfig.splice(index, 1);
 };
 const handleSaveStore = async () => {
+    if (!editStoreForm.value.name) {
+        showError('Nama toko wajib diisi.');
+        return;
+    }
+    if (!editStoreForm.value.shiftConfig.length) {
+        showError('Minimal satu shift diperlukan.');
+        return;
+    }
+
     saving.value = true;
     try {
         await api.put(`/outlets/${editStoreForm.value.id}`, editStoreForm.value);
