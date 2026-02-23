@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, Max, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsNumber, Max, IsObject, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateOutletDto {
@@ -14,7 +14,7 @@ export class CreateOutletDto {
   phone?: string;
 
   @IsOptional()
-  @IsObject()
+  @IsArray()
   shiftConfig?: any;
 
   @IsOptional()
@@ -36,7 +36,7 @@ export class UpdateOutletDto {
   phone?: string;
 
   @IsOptional()
-  @IsObject()
+  @IsArray()
   shiftConfig?: any;
 
   @IsOptional()
