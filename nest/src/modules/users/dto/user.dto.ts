@@ -1,4 +1,13 @@
-import { IsString, IsEmail, IsEnum, IsOptional, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  MaxLength,
+  IsBoolean,
+  IsObject,
+  MinLength,
+} from "class-validator";
 
 export class CreateUserDto {
   @IsString()
@@ -12,7 +21,7 @@ export class CreateUserDto {
   @MaxLength(255)
   password: string;
 
-  @IsEnum(['SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'])
+  @IsEnum(["SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER", "KITCHEN"])
   role: string;
 
   @IsOptional()
@@ -30,15 +39,26 @@ export class UpdateUserDto {
   email?: string;
 
   @IsOptional()
-  @IsEnum(['SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'])
+  @IsEnum(["SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER", "KITCHEN"])
   role?: string;
 
   @IsOptional()
+  @IsBoolean()
   isActive?: boolean;
 
   @IsOptional()
   @IsString()
   outletId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(6)
+  @MaxLength(255)
+  password?: string;
+
+  @IsOptional()
+  @IsObject()
+  permissions?: Record<string, unknown>;
 }
 
 export class ChangePasswordDto {

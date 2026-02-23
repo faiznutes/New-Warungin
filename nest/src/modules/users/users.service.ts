@@ -150,6 +150,10 @@ export class UsersService {
     if (data.role) {
       updateData.role = data.role;
     }
+    if (data.password) {
+      updateData.password = await bcrypt.hash(data.password, 10);
+      updateData.mustChangePassword = true;
+    }
 
     const updated = await this.prisma.user.update({
       where: { id },
@@ -166,6 +170,31 @@ export class UsersService {
     });
 
     return updated;
+  }
+
+  async resetUserPasswordTemp(id: string, tenantId: string) {
+    const user = await this.getUserById(id, tenantId);
+    this.assertMutableUser(user, "reset from tenant management");
+
+    const temporaryPassword = Math.random().toString(36).slice(-10) + "A1!";
+    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: hashedPassword,
+        mustChangePassword: true,
+        passwordChangedAt: new Date(),
+      },
+    });
+
+    return {
+      message: "Temporary password generated",
+      data: {
+        userId: id,
+        temporaryPassword,
+      },
+    };
   }
 
   async changePassword(id: string, data: ChangePasswordDto, tenantId: string) {

@@ -106,6 +106,15 @@ export class UsersController {
     return this.usersService.resetPassword(body.email, tenantId);
   }
 
+  @Post(":id/reset-password-temp")
+  @Roles("ADMIN_TENANT", "SUPER_ADMIN")
+  async resetUserPasswordTemp(
+    @Param("id") id: string,
+    @TenantId() tenantId: string,
+  ) {
+    return this.usersService.resetUserPasswordTemp(id, tenantId);
+  }
+
   @Post(":id/activate")
   @Roles("ADMIN_TENANT", "SUPER_ADMIN")
   async activateUser(@Param("id") id: string, @TenantId() tenantId: string) {

@@ -1321,6 +1321,7 @@
     <UserEditModal
       :show="showEditUserModal"
       :user="editingUser"
+      :tenant-id="tenantId"
       @close="
         showEditUserModal = false;
         editingUser = null;
@@ -2032,26 +2033,44 @@
               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm"
             >
               <option value="ACTIVE">Aktif</option>
-              <option value="INACTIVE">Nonaktif</option>
-              <option value="PAST_DUE">Tunggakan</option>
+              <option value="FROZEN">Nonaktif (Freeze)</option>
               <option value="CANCELLED">Dibatalkan</option>
             </select>
+            <p class="text-xs text-slate-500 mt-1">
+              Nonaktif (Freeze): tenant berhenti operasi sampai diaktifkan admin
+              kembali. Dibatalkan: sisa masa langganan hangus.
+            </p>
           </div>
           <div>
             <label
               class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2"
-              >Durasi Tambahan (Hari)</label
+              >Penyesuaian Durasi (Hari)</label
             >
             <p class="text-xs text-slate-500 mb-1">
-              Masukkan jumlah hari untuk memperpanjang langganan dari HARI INI.
+              Gunakan angka positif untuk menambah, angka negatif untuk
+              mengurangi.
             </p>
             <input
-              v-model.number="editSubscriptionForm.durationDays"
+              v-model.number="editSubscriptionForm.durationDeltaDays"
               type="number"
-              min="1"
-              placeholder="30"
+              placeholder="contoh: 30 atau -7"
               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm"
             />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2"
+              >Pencatatan Tagihan</label
+            >
+            <select
+              v-model="editSubscriptionForm.billingMode"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm"
+            >
+              <option value="NON_BILLABLE">
+                Tidak catat tagihan (edit manual)
+              </option>
+              <option value="BILLABLE">Catat sebagai tagihan/laporan</option>
+            </select>
           </div>
           <div class="flex gap-3 pt-4">
             <button
@@ -2309,7 +2328,8 @@ const editStoreForm = ref({
 const editSubscriptionForm = ref({
   plan: "",
   status: "",
-  durationDays: 30,
+  durationDeltaDays: 0,
+  billingMode: "NON_BILLABLE",
 });
 const editAddonForm = ref({
   id: "",
@@ -2386,17 +2406,18 @@ const handleEditSubscription = () => {
   editSubscriptionForm.value = {
     plan: subscription.value?.plan || tenant.value?.subscriptionPlan || "BASIC",
     status: subscription.value?.status || "ACTIVE",
-    durationDays: 30, // Default 30 days
+    durationDeltaDays: 0,
+    billingMode: "NON_BILLABLE",
   };
   showEditSubscriptionModal.value = true;
 };
 
 const handleSaveSubscription = async () => {
   if (
-    !editSubscriptionForm.value.durationDays ||
-    editSubscriptionForm.value.durationDays < 1
+    editSubscriptionForm.value.durationDeltaDays === null ||
+    Number.isNaN(editSubscriptionForm.value.durationDeltaDays)
   ) {
-    showError("Durasi langganan minimal 1 hari.");
+    showError("Penyesuaian durasi harus berupa angka.");
     return;
   }
 
@@ -2405,7 +2426,9 @@ const handleSaveSubscription = async () => {
     await api.put(`/tenants/${tenantId}/subscription`, {
       plan: editSubscriptionForm.value.plan,
       status: editSubscriptionForm.value.status,
-      durationDays: editSubscriptionForm.value.durationDays,
+      durationDeltaDays: editSubscriptionForm.value.durationDeltaDays,
+      createBilling: editSubscriptionForm.value.billingMode === "BILLABLE",
+      purchasedBy: "ADMIN",
     });
     showSuccess("Langganan berhasil diperbarui!");
     showEditSubscriptionModal.value = false;
@@ -3013,9 +3036,18 @@ const handleSaveStore = async () => {
 
   saving.value = true;
   try {
+    const payload = {
+      name: editStoreForm.value.name,
+      address: editStoreForm.value.address,
+      phone: editStoreForm.value.phone,
+      isActive: editStoreForm.value.isActive,
+      shiftConfig: editStoreForm.value.shiftConfig,
+      operatingHours: editStoreForm.value.operatingHours,
+    };
+
     await api.put(
       `/outlets/${editStoreForm.value.id}`,
-      editStoreForm.value,
+      payload,
       tenantRequestConfig(),
     );
     showSuccess("Toko berhasil diperbarui");

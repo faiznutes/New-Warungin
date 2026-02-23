@@ -18,7 +18,10 @@ import {
   TenantQueryDto,
 } from "./dto/tenant.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { TenantGuard, TENANT_REQUIRED_KEY } from "../../common/guards/tenant.guard";
+import {
+  TenantGuard,
+  TENANT_REQUIRED_KEY,
+} from "../../common/guards/tenant.guard";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { TenantId } from "../../common/decorators/tenant-id.decorator";
@@ -29,7 +32,7 @@ import { CreateOutletDto } from "../outlets/dto/outlet.dto";
 @Controller("tenants")
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class TenantsController {
-  constructor(private readonly tenantsService: TenantsService) { }
+  constructor(private readonly tenantsService: TenantsService) {}
 
   @Post()
   @SetMetadata(TENANT_REQUIRED_KEY, false)
@@ -78,8 +81,12 @@ export class TenantsController {
       plan?: string;
       status?: string;
       durationDays?: number;
+      durationDeltaDays?: number;
       startDate?: Date;
       endDate?: Date;
+      createBilling?: boolean;
+      purchasedBy?: string;
+      note?: string;
     },
   ) {
     return this.tenantsService.updateSubscription(id, body);
@@ -97,7 +104,10 @@ export class TenantsController {
 
   @Post(":id/outlets")
   @Roles("SUPER_ADMIN")
-  createTenantOutlet(@Param("id", ParseUUIDPipe) id: string, @Body() dto: CreateOutletDto) {
+  createTenantOutlet(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Body() dto: CreateOutletDto,
+  ) {
     return this.tenantsService.createTenantOutlet(id, dto);
   }
 

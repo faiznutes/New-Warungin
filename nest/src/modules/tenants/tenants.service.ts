@@ -16,7 +16,7 @@ import { getPlanPrice } from "../catalog/platform-catalog";
 
 @Injectable()
 export class TenantsService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateTenantDto) {
     // 1. Generate Slug if missing
@@ -45,7 +45,9 @@ export class TenantsService {
     const email = dto.email || `admin@${slug}.com`;
 
     // 3. Check for existing tenant with same email (global uniqueness check for email if needed, though schema enforces it)
-    const existingEmail = await this.prisma.tenant.findUnique({ where: { email } });
+    const existingEmail = await this.prisma.tenant.findUnique({
+      where: { email },
+    });
     if (existingEmail) {
       throw new ConflictException("Tenant email already exists");
     }
@@ -250,18 +252,39 @@ export class TenantsService {
       plan?: string;
       status?: string;
       durationDays?: number;
+      durationDeltaDays?: number;
       startDate?: Date;
       endDate?: Date;
+      createBilling?: boolean;
+      purchasedBy?: string;
+      note?: string;
     },
   ) {
     const tenant = await this.findOne(id);
-    const plan = (body.plan || tenant.subscriptionPlan || "BASIC").toUpperCase();
+    const plan = (
+      body.plan ||
+      tenant.subscriptionPlan ||
+      "BASIC"
+    ).toUpperCase();
     const now = new Date();
-    const startDate = body.startDate ? new Date(body.startDate) : now;
-    let endDate = body.endDate ? new Date(body.endDate) : tenant.subscriptionEnd;
+    const currentStart = tenant.subscriptionStart || now;
+    const startDate = body.startDate ? new Date(body.startDate) : currentStart;
+    let endDate = body.endDate
+      ? new Date(body.endDate)
+      : tenant.subscriptionEnd;
 
     if (!endDate && body.durationDays && body.durationDays > 0) {
-      endDate = new Date(now.getTime() + body.durationDays * 24 * 60 * 60 * 1000);
+      endDate = new Date(
+        now.getTime() + body.durationDays * 24 * 60 * 60 * 1000,
+      );
+    }
+
+    if (typeof body.durationDeltaDays === "number" && tenant.subscriptionEnd) {
+      const base = new Date(tenant.subscriptionEnd);
+      const next = new Date(
+        base.getTime() + body.durationDeltaDays * 24 * 60 * 60 * 1000,
+      );
+      endDate = next < now ? now : next;
     }
 
     if (!endDate) {
@@ -269,32 +292,51 @@ export class TenantsService {
     }
 
     const status = (body.status || "ACTIVE").toUpperCase();
+    const normalizedStatus =
+      status === "INACTIVE" || status === "FROZEN" ? "INACTIVE" : status;
+
+    if (normalizedStatus === "CANCELLED") {
+      endDate = now;
+    }
+
     const amount = getPlanPrice(plan);
     const durationDays = Math.max(
       1,
-      Math.ceil((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)),
+      Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000),
+      ),
     );
 
-    const result = await this.prisma.$transaction(async (tx) => {
-      const updatedTenant = await tx.tenant.update({
-        where: { id },
-        data: {
-          subscriptionPlan: plan,
-          subscriptionStart: startDate,
-          subscriptionEnd: endDate,
-          isActive: status !== "INACTIVE" && status !== "CANCELLED",
-        },
-      });
+    const shouldCreateBilling = body.createBilling === true;
+    const purchasedBy = (body.purchasedBy || "ADMIN").toUpperCase();
 
+    const updatedTenant = await this.prisma.tenant.update({
+      where: { id },
+      data: {
+        subscriptionPlan: plan,
+        subscriptionStart: startDate,
+        subscriptionEnd: endDate,
+        isActive: normalizedStatus === "ACTIVE" && endDate > now,
+      },
+    });
+
+    if (!shouldCreateBilling) {
+      return {
+        ...updatedTenant,
+        billingEventCreated: false,
+      };
+    }
+
+    const result = await this.prisma.$transaction(async (tx) => {
       const subscription = await tx.subscription.create({
         data: {
           tenantId: id,
           plan,
           startDate,
           endDate,
-          status,
+          status: normalizedStatus,
           amount,
-          purchasedBy: "ADMIN",
+          purchasedBy,
         },
       });
 
@@ -312,7 +354,10 @@ export class TenantsService {
         },
       });
 
-      return updatedTenant;
+      return {
+        ...updatedTenant,
+        billingEventCreated: true,
+      };
     });
 
     return result;
@@ -327,9 +372,11 @@ export class TenantsService {
     const existing = await this.prisma.user.findFirst({
       where: { tenantId, email: dto.email },
     });
-    if (existing) throw new ConflictException("Email already exists for this tenant");
+    if (existing)
+      throw new ConflictException("Email already exists for this tenant");
 
-    const generatedPassword = dto.password || Math.random().toString(36).slice(-10);
+    const generatedPassword =
+      dto.password || Math.random().toString(36).slice(-10);
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     const user = await this.prisma.user.create({
