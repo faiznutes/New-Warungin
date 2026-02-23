@@ -17,6 +17,8 @@
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`).
+- WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
+- WG-AUD-0017: testing coverage expansion (added tenant API contract smoke spec).
 
 ## Open Bug Count (Current)
 

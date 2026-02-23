@@ -1,5 +1,4 @@
 import axios from "axios";
-import type { AxiosResponse } from "axios";
 import { unwrapResponse, extractErrorDetails } from "./response-adapter";
 
 // Determine API URL based on environment
