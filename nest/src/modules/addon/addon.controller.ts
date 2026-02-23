@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   Req,
+  HttpCode,
 } from "@nestjs/common";
 import { Request } from "express";
 import { AddonService } from "./addon.service";
@@ -82,6 +83,7 @@ export class AddonController {
   }
 
   @Post("unsubscribe/:addonId")
+  @HttpCode(200)
   @Roles("SUPER_ADMIN", "ADMIN_TENANT")
   async unsubscribeAddon(
     @Param("addonId") addonId: string,
