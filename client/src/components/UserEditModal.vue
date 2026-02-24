@@ -77,6 +77,12 @@
                       Super Admin
                     </option>
                     <option value="ADMIN_TENANT">Admin</option>
+                    <option
+                      v-if="form.role === 'SUPERVISOR' && !hasSupervisorRole"
+                      value="SUPERVISOR"
+                    >
+                      Supervisor
+                    </option>
                     <option v-if="hasSupervisorRole" value="SUPERVISOR">
                       Supervisor
                     </option>
