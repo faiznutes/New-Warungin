@@ -26,6 +26,11 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 - Retention smoke verification on live domain passed (`client/cypress/e2e/retention-page-api.cy.ts`: `2 tests, 2 passing, 0 failing`).
 - Reports pass added: `/reports/tenant` endpoint implemented for reports page and export modal contract (`sales|financial|product|customers|inventory`) including period/date filtering and optional product detail hydration.
 - Reports smoke verification on live domain passed (`client/cypress/e2e/reports-page-api.cy.ts`: `2 tests, 2 passing, 0 failing`).
+- Tenant-detail hardening batch deployed on Coolify (`jk4kkok0s48ooskk0s4sck0g`, commit image `f5bec161...`).
+- Post-deploy verifier run completed via `npm run verify:tenant-detail:runtime`:
+  - health endpoint `ok`, database `connected`
+  - tenant-detail API spec executed (`8 tests, 2 passing, 6 pending, 0 failing`)
+  - pending remains gated by missing auth env (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`, `TENANT_ID`).
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
 ## A. Database Connectivity
