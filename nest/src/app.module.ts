@@ -49,6 +49,7 @@ import { ReceiptModule } from "./modules/receipt/receipt.module";
 import { StockAlertModule } from "./modules/stock-alert/stock-alert.module";
 import { StockTransferModule } from "./modules/stock-transfer/stock-transfer.module";
 import { SubscriptionReceiptModule } from "./modules/subscription-receipt/subscription-receipt.module";
+import { RetentionModule } from "./modules/retention/retention.module";
 import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
 import { ResponseInterceptor } from "./common/interceptors/response.interceptor";
 import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
@@ -88,8 +89,8 @@ const validationSchema = Joi.object({
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'dist'),
-      exclude: ['/api/(.*)'],
+      rootPath: join(__dirname, "..", "..", "client", "dist"),
+      exclude: ["/api/(.*)"],
       serveStaticOptions: {
         fallthrough: true, // Allow 404 to fall through to other handlers/filters if file not found
       },
@@ -138,6 +139,7 @@ const validationSchema = Joi.object({
     StockAlertModule,
     StockTransferModule,
     SubscriptionReceiptModule,
+    RetentionModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
