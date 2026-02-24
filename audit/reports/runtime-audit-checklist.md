@@ -58,6 +58,18 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 - Crash root-cause identified in backend interceptor path:
   - `performance-monitoring.interceptor.ts` used `JSON.stringify(data).length` and could throw when controller returns `undefined` (notably handlers using `@Res`).
   - patch applied locally to safely compute response size when serialized payload is undefined.
+- Coolify deployment executed for commit `e8c4c7a` (started `2026-02-24 15:38:05 UTC`, ended `2026-02-24 15:47:27 UTC`).
+- Post-deploy authenticated verification (live) now passes end-to-end:
+  - `tenant-page-api.cy.ts`: `4/4 passing`
+  - `customers-page-api.cy.ts`: `4/4 passing` (loyalty points `502` no longer reproduced)
+  - `orders-page-api.cy.ts`: `3/3 passing`
+  - `finance-transactions-page-api.cy.ts`: `4/4 passing`
+  - `retention-page-api.cy.ts`: `2/2 passing`
+  - `reports-page-api.cy.ts`: `2/2 passing`
+  - `analytics-page-api.cy.ts`: `3/3 passing`
+  - `tenant-detail-user-edit-api.cy.ts`: `8/8 passing`
+- Full authenticated chained sweep rerun completed with all specs passing in a single sequential run.
+- Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
 ## A. Database Connectivity

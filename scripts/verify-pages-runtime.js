@@ -13,6 +13,7 @@ const specs = [
   { name: "tenant-page", command: "npm run test:tenant-page:api" },
   { name: "customers", command: "npm run test:customers:api" },
   { name: "orders", command: "npm run test:orders:api" },
+  { name: "finance-transactions", command: "npm run test:finance:api" },
   { name: "retention", command: "npm run test:retention:api" },
   { name: "reports", command: "npm run test:reports:api" },
   { name: "analytics", command: "npm run test:analytics:api" },

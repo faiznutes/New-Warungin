@@ -11,6 +11,7 @@
     "test:tenant-page:api": "cypress run --spec \"cypress/e2e/tenant-page-api.cy.ts\"",
     "test:customers:api": "cypress run --spec \"cypress/e2e/customers-page-api.cy.ts\"",
     "test:orders:api": "cypress run --spec \"cypress/e2e/orders-page-api.cy.ts\"",
+    "test:finance:api": "cypress run --spec \"cypress/e2e/finance-transactions-page-api.cy.ts\"",
     "test:retention:api": "cypress run --spec \"cypress/e2e/retention-page-api.cy.ts\"",
     "test:reports:api": "cypress run --spec \"cypress/e2e/reports-page-api.cy.ts\"",
     "test:analytics:api": "cypress run --spec \"cypress/e2e/analytics-page-api.cy.ts\"",

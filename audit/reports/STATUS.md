@@ -25,20 +25,14 @@
 - Tenant-detail deploy-ready pack prepared in `audit/reports/tenant-detail-deploy-ready-pack-2026-02-24.md`.
 - Tenant-detail runtime verifier script prepared (`npm run verify:tenant-detail:runtime`, `scripts/verify-tenant-detail-runtime.js`).
 - Multi-page runtime verifier script prepared (`npm run verify:pages:runtime`, `scripts/verify-pages-runtime.js`) and executed for unauth/health baseline.
+- Finance transactions API runtime spec added (`client/cypress/e2e/finance-transactions-page-api.cy.ts`) and included in verifier command chain.
 
 ## In Progress
 
-- Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`).
+- Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`) is in closure phase.
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
 - WG-AUD-0017: testing coverage expansion (tenant + customers + orders + retention + reports + tenant-detail-user-edit API smoke include unauth guard assertions and env-driven Cypress base/API config).
-- Runtime/contract sweep for `/app/customers` (post-fix validation evidence being accumulated).
-- Runtime/contract sweep for `/app/orders` (post-fix validation evidence being accumulated).
-- Runtime/contract sweep for `/app/finance/transactions` (post-fix validation evidence being accumulated).
-- Runtime/contract sweep for `/app/settings/retention` (post-fix validation evidence being accumulated).
-- Runtime/contract sweep for `/app/reports` (post-fix validation evidence being accumulated).
-- Tenant-detail deep regression matrix executed in authenticated mode (`8/8 passing`) after Coolify deploy hotfix.
-- Runtime stabilization hardening applied in backend exception/proxy path (`response.dto`, `global-exception.filter`, `main.ts`) for intermittent 502/crash mitigation; authenticated multi-page rerun pending env credentials.
-- Authenticated rerun executed with provided credentials: tenant-page/orders/tenant-detail specs now pass, but customers loyalty-points path still triggers live `502`; crash root traced to performance interceptor response-size assumption and patched locally (pending deploy verification).
+- Post-deploy verification completed for commit `e8c4c7a` with authenticated API sweep green (`tenant-page`, `customers`, `orders`, `finance-transactions`, `retention`, `reports`, `analytics`, `tenant-detail-user-edit`).
 
 ## Open Bug Count (Current)
 
