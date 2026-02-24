@@ -489,17 +489,8 @@ const scopedRequestConfig = () =>
       }
     : undefined;
 
-const scopedRequestWithParams = (extraParams: Record<string, unknown>) => {
-  const scoped = scopedRequestConfig();
-  if (!scoped) return { params: extraParams };
-  return {
-    ...scoped,
-    params: {
-      ...(scoped.params || {}),
-      ...extraParams,
-    },
-  };
-};
+const tenantHeaderOnlyConfig = () =>
+  props.tenantId ? { headers: { "x-tenant-id": props.tenantId } } : undefined;
 
 const normalizeRole = (role?: string) => {
   if (!role) return "CASHIER";
@@ -624,18 +615,15 @@ const loadStores = async (force = false) => {
     isLoadingStores = true;
     loadingStores.value = true;
     try {
-      const response = await api.get(
-        "/outlets",
-        scopedRequestWithParams({ page: 1, limit: 500 }),
+      const activeRes = await api.get(
+        "/outlets/active",
+        tenantHeaderOnlyConfig(),
       );
-      let rawStores = response.data?.data || [];
+      let rawStores = activeRes.data || [];
 
       if (!Array.isArray(rawStores) || rawStores.length === 0) {
-        const activeRes = await api.get(
-          "/outlets/active",
-          scopedRequestConfig(),
-        );
-        rawStores = activeRes.data || [];
+        const response = await api.get("/outlets", tenantHeaderOnlyConfig());
+        rawStores = response.data?.data || [];
       }
 
       stores.value = safeMap(rawStores, (store: any) => ({

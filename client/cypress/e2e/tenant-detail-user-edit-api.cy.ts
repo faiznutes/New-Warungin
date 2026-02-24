@@ -85,7 +85,6 @@ describe("Tenant Detail User Edit API Contract", () => {
         method: "GET",
         url: `${apiBase}/outlets`,
         headers: authHeaders,
-        qs: { tenantId, page: 1, limit: 500 },
       }).then((outletRes) => {
         assert.equal(outletRes.status, 200);
         const outletPayload = readData(outletRes.body);
@@ -101,7 +100,6 @@ describe("Tenant Detail User Edit API Contract", () => {
             method: "GET",
             url: `${apiBase}/outlets/active`,
             headers: authHeaders,
-            qs: { tenantId },
           })
           .then((activeRes) => {
             assert.equal(activeRes.status, 200);
@@ -307,7 +305,6 @@ describe("Tenant Detail User Edit API Contract", () => {
         method: "GET",
         url: `${apiBase}/outlets`,
         headers: authHeaders,
-        qs: { tenantId, page: 1, limit: 500 },
       }).then((outletRes) => {
         assert.equal(outletRes.status, 200);
         const outlets = readData(outletRes.body)?.data || [];
@@ -321,7 +318,6 @@ describe("Tenant Detail User Edit API Contract", () => {
             method: "GET",
             url: `${apiBase}/outlets/active`,
             headers: authHeaders,
-            qs: { tenantId },
           })
           .then((activeRes) => {
             assert.equal(activeRes.status, 200);
