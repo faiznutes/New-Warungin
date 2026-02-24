@@ -376,6 +376,23 @@ export class TenantsService {
   ) {
     await this.findOne(tenantId);
 
+    if (dto.role === "SUPERVISOR") {
+      const supervisorAddon = await this.prisma.tenantAddon.findFirst({
+        where: {
+          tenantId,
+          addonType: "SUPERVISOR_ROLE",
+          status: { in: ["active", "ACTIVE"] },
+        },
+        select: { id: true },
+      });
+
+      if (!supervisorAddon) {
+        throw new ConflictException(
+          "Supervisor Role addon belum aktif untuk tenant ini",
+        );
+      }
+    }
+
     const existing = await this.prisma.user.findFirst({
       where: { tenantId, email: dto.email },
     });
@@ -392,7 +409,7 @@ export class TenantsService {
         name: dto.name,
         email: dto.email.toLowerCase().trim(),
         password: hashedPassword,
-        role: dto.role as any,
+        role: (dto.role === "STAFF" ? "CASHIER" : dto.role) as any,
         isActive: true,
       },
       select: {

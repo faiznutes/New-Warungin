@@ -23,6 +23,26 @@ export class UsersService {
     return role === "STAFF" ? "CASHIER" : role;
   }
 
+  private async assertSupervisorRoleAddon(tenantId: string, role?: string) {
+    const normalizedRole = this.normalizeRole(role);
+    if (normalizedRole !== "SUPERVISOR") return;
+
+    const addon = await this.prisma.tenantAddon.findFirst({
+      where: {
+        tenantId,
+        addonType: "SUPERVISOR_ROLE",
+        status: { in: ["active", "ACTIVE"] },
+      },
+      select: { id: true },
+    });
+
+    if (!addon) {
+      throw new BadRequestException(
+        "Supervisor Role addon belum aktif untuk tenant ini",
+      );
+    }
+  }
+
   private async sanitizePermissions(
     tenantId: string,
     role: string,
@@ -151,6 +171,8 @@ export class UsersService {
   }
 
   async createUser(data: CreateUserDto, tenantId: string) {
+    await this.assertSupervisorRoleAddon(tenantId, data.role);
+
     const existing = await this.prisma.user.findFirst({
       where: {
         tenantId,
@@ -190,6 +212,8 @@ export class UsersService {
     const user = await this.getUserById(id, tenantId);
     const effectiveRole =
       this.normalizeRole(data.role || user.role) || user.role;
+
+    await this.assertSupervisorRoleAddon(tenantId, effectiveRole);
 
     if (
       user.role === "SUPER_ADMIN" &&

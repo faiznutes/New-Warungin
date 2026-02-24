@@ -926,9 +926,9 @@ const handleSubmit = () => {
 
   // Include permissions if role is CASHIER, SUPERVISOR, or KITCHEN
   if (
-    form.value.role === "CASHIER" ||
-    form.value.role === "SUPERVISOR" ||
-    form.value.role === "KITCHEN"
+    normalizedRole === "CASHIER" ||
+    normalizedRole === "SUPERVISOR" ||
+    normalizedRole === "KITCHEN"
   ) {
     userData.permissions = form.value.permissions;
   }

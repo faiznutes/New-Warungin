@@ -240,5 +240,64 @@ describe("Tenant Detail User Edit API Contract", () => {
         });
       });
     });
+
+    it("enforces supervisor role addon policy on user creation", () => {
+      const authHeaders = {
+        Authorization: `Bearer ${token}`,
+        "x-tenant-id": tenantId,
+      };
+      const testEmail = `tenant-user-supervisor-${Date.now()}@warungin.test`;
+      let createdUserId = "";
+
+      cy.request({
+        method: "GET",
+        url: `${apiBase}/tenants/${tenantId}/detail`,
+        headers: authHeaders,
+        qs: { tenantId },
+      }).then((detailRes) => {
+        assert.equal(detailRes.status, 200);
+        const addons = readData(detailRes.body)?.addons || [];
+        const hasSupervisorAddon = Array.isArray(addons)
+          ? addons.some((a: any) => {
+              const type = String(a?.addonType || a?.type || "").toUpperCase();
+              const status = String(a?.status || "").toUpperCase();
+              return type === "SUPERVISOR_ROLE" && status === "ACTIVE";
+            })
+          : false;
+
+        cy.request({
+          method: "POST",
+          url: `${apiBase}/tenants/${tenantId}/users`,
+          headers: authHeaders,
+          body: {
+            name: "Tenant Supervisor QA",
+            email: testEmail,
+            role: "SUPERVISOR",
+          },
+          failOnStatusCode: false,
+        }).then((createRes) => {
+          if (hasSupervisorAddon) {
+            assert.include([200, 201], createRes.status);
+            createdUserId = readData(createRes.body)?.id || "";
+            assert.isNotEmpty(createdUserId);
+          } else {
+            assert.include([400, 409], createRes.status);
+          }
+        });
+      });
+
+      cy.then(() => {
+        if (!createdUserId) return;
+        cy.request({
+          method: "DELETE",
+          url: `${apiBase}/users/${createdUserId}`,
+          headers: authHeaders,
+          qs: { tenantId },
+          failOnStatusCode: false,
+        }).then((deleteRes) => {
+          assert.include([200, 204], deleteRes.status);
+        });
+      });
+    });
   });
 });

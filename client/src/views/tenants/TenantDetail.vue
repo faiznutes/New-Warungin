@@ -1277,10 +1277,20 @@
               >
                 <option value="">Pilih Role</option>
                 <option value="ADMIN_TENANT">Admin Tenant</option>
-                <option value="SUPERVISOR">Supervisor</option>
+                <option v-if="canUseSupervisorRole" value="SUPERVISOR">
+                  Supervisor
+                </option>
                 <option value="CASHIER">Kasir</option>
                 <option value="KITCHEN">Dapur</option>
               </select>
+              <p
+                v-if="
+                  newUserForm.role === 'SUPERVISOR' && !canUseSupervisorRole
+                "
+                class="mt-1 text-xs text-red-600"
+              >
+                Supervisor Role addon belum aktif untuk tenant ini.
+              </p>
             </div>
             <div
               class="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg"
@@ -2221,6 +2231,13 @@ const tenantUsers = ref<any[]>([]);
 const subscription = ref<any>(null);
 const billingHistory = ref<any[]>([]);
 const activeAddons = ref<any[]>([]);
+const canUseSupervisorRole = computed(() =>
+  activeAddons.value.some((addon: any) => {
+    const type = String(addon?.addonType || addon?.type || "").toUpperCase();
+    const status = String(addon?.status || "").toUpperCase();
+    return type === "SUPERVISOR_ROLE" && status === "ACTIVE";
+  }),
+);
 const loadingStores = ref(false);
 const progressWidth = computed(() => {
   const startRaw =
@@ -2894,6 +2911,11 @@ const handleAddUserSubmit = async () => {
     !newUserForm.value.role
   ) {
     showError("Nama, email, dan role wajib diisi.");
+    return;
+  }
+
+  if (newUserForm.value.role === "SUPERVISOR" && !canUseSupervisorRole.value) {
+    showError("Supervisor Role addon belum aktif untuk tenant ini.");
     return;
   }
 
