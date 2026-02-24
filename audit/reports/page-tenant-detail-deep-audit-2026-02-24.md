@@ -95,6 +95,10 @@ Latest run in current environment:
 - `8 tests, 2 passing, 6 pending, 0 failing`
 - pending cases are auth-env gated (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`, `TENANT_ID`).
 
+Quick command:
+
+- `cd client && npm run test:tenant-detail:api -- --config baseUrl=https://warungin.faiznute.site --env API_BASE=https://warungin-api.faiznute.site/api`
+
 ## Build verification
 
 - `nest npm run build` -> pass

@@ -26,13 +26,14 @@
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`).
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
-- WG-AUD-0017: testing coverage expansion (tenant + customers + orders + retention + reports API smoke include unauth guard assertions and env-driven Cypress base/API config).
+- WG-AUD-0017: testing coverage expansion (tenant + customers + orders + retention + reports + tenant-detail-user-edit API smoke include unauth guard assertions and env-driven Cypress base/API config).
 - Runtime/contract sweep for `/app/customers` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/orders` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/finance/transactions` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/settings/retention` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/reports` (post-fix validation evidence being accumulated).
 - Authenticated runtime verification for tenant-detail deep pass is pending deployment + env credentials.
+- Tenant-detail deep regression matrix expanded (store assignment persist/reject, role transition guards, supervisor addon policy), pending authenticated runtime execution.
 
 ## Open Bug Count (Current)
 
