@@ -35,8 +35,7 @@
 - Runtime/contract sweep for `/app/finance/transactions` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/settings/retention` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/reports` (post-fix validation evidence being accumulated).
-- Authenticated runtime verification for tenant-detail deep pass is pending deployment + env credentials.
-- Tenant-detail deep regression matrix expanded (store assignment persist/reject, role transition guards, supervisor addon policy), pending authenticated runtime execution.
+- Tenant-detail deep regression matrix executed in authenticated mode (`8/8 passing`) after Coolify deploy hotfix.
 
 ## Open Bug Count (Current)
 

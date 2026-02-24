@@ -125,3 +125,12 @@ Quick command:
 - Code-level hardening for tenant-detail user flow is complete for current findings.
 - Deployment intentionally pending by request.
 - Recommended next step: deploy these commits, then run authenticated end-to-end checks with real super-admin credentials to convert env-gated pending tests into pass/fail runtime evidence.
+
+## Post-deployment verification update
+
+- Coolify deployment completed for tenant-detail hardening and follow-up hotfix:
+  - `jk4kkok0s48ooskk0s4sck0g` (main batch)
+  - `p4swgggcsk0woggsw4wcwk4s` (outlets query validation hotfix)
+- Authenticated verifier result (with provided super-admin credentials):
+  - `client/cypress/e2e/tenant-detail-user-edit-api.cy.ts`
+  - `8 tests, 8 passing, 0 failing`

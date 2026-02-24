@@ -29,8 +29,9 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 - Tenant-detail hardening batch deployed on Coolify (`jk4kkok0s48ooskk0s4sck0g`, commit image `f5bec161...`).
 - Post-deploy verifier run completed via `npm run verify:tenant-detail:runtime`:
   - health endpoint `ok`, database `connected`
-  - tenant-detail API spec executed (`8 tests, 2 passing, 6 pending, 0 failing`)
-  - pending remains gated by missing auth env (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`, `TENANT_ID`).
+  - tenant-detail API spec executed with authenticated env (`8 tests, 8 passing, 0 failing`).
+- Hotfix deployment completed for outlets query validation alignment (`p4swgggcsk0woggsw4wcwk4s`, commit image `2154cee...`).
+- Re-run verifier after hotfix: pass (`8 tests, 8 passing, 0 failing`).
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
 ## A. Database Connectivity
