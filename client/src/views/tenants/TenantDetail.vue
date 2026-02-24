@@ -2416,6 +2416,30 @@ onUnmounted(() => {
   }
 });
 
+const extractApiErrorMessage = (error: any, fallback: string) => {
+  const rawMessage =
+    error?.response?.data?.message ??
+    error?.response?.data?.data?.message ??
+    error?.message;
+
+  if (Array.isArray(rawMessage)) {
+    return rawMessage[0] || fallback;
+  }
+
+  if (typeof rawMessage === "string") {
+    return rawMessage;
+  }
+
+  if (rawMessage && typeof rawMessage === "object") {
+    const nested = (rawMessage as any).message;
+    if (typeof nested === "string") {
+      return nested;
+    }
+  }
+
+  return fallback;
+};
+
 // ... (existing helper functions)
 
 // Subscription Management Handlers
@@ -2451,7 +2475,7 @@ const handleSaveSubscription = async () => {
     showEditSubscriptionModal.value = false;
     loadTenantDetail();
   } catch (error: any) {
-    showError(error.response?.data?.message || "Gagal memperbarui langganan.");
+    showError(extractApiErrorMessage(error, "Gagal memperbarui langganan."));
   } finally {
     saving.value = false;
   }
@@ -2522,7 +2546,7 @@ const handleAddAddonSubmit = async () => {
 
     loadTenantDetail();
   } catch (error: any) {
-    showError(error.response?.data?.message || "Gagal menambahkan addon.");
+    showError(extractApiErrorMessage(error, "Gagal menambahkan addon."));
   } finally {
     saving.value = false;
   }
@@ -2563,7 +2587,7 @@ const handleSaveAddon = async () => {
     showEditAddonModal.value = false;
     loadTenantDetail();
   } catch (error: any) {
-    showError(error.response?.data?.message || "Gagal memperbarui addon.");
+    showError(extractApiErrorMessage(error, "Gagal memperbarui addon."));
   } finally {
     saving.value = false;
   }
@@ -2593,7 +2617,7 @@ const handleDeactivateAddon = async (addon: any) => {
     showSuccess("Addon berhasil dinonaktifkan.");
     loadTenantDetail();
   } catch (error: any) {
-    showError(error.response?.data?.message || "Gagal menonaktifkan addon.");
+    showError(extractApiErrorMessage(error, "Gagal menonaktifkan addon."));
   }
 };
 
@@ -2641,7 +2665,7 @@ const handleToggleUserStatus = async (user: any) => {
     );
     loadTenantDetail();
   } catch (error: any) {
-    showError(error.response?.data?.message || "Gagal mengubah status user.");
+    showError(extractApiErrorMessage(error, "Gagal mengubah status user."));
   }
 };
 
@@ -2664,7 +2688,7 @@ const handleDeleteUser = async (user: any) => {
     showSuccess("User berhasil dihapus!");
     loadTenantDetail();
   } catch (error: any) {
-    showError(error.response?.data?.message || "Gagal menghapus user.");
+    showError(extractApiErrorMessage(error, "Gagal menghapus user."));
   }
 };
 
@@ -2689,7 +2713,7 @@ const handleToggleStoreStatus = async (store: any) => {
     );
     loadTenantDetail();
   } catch (error: any) {
-    showError(error.response?.data?.message || "Gagal mengubah status toko.");
+    showError(extractApiErrorMessage(error, "Gagal mengubah status toko."));
   }
 };
 
@@ -2894,7 +2918,7 @@ const handleSaveProfile = async () => {
     showEditProfileModal.value = false;
     loadTenantDetail();
   } catch (err: any) {
-    showError(err.response?.data?.message || "Gagal menyimpan profil");
+    showError(extractApiErrorMessage(err, "Gagal menyimpan profil"));
   } finally {
     saving.value = false;
   }
@@ -2941,7 +2965,7 @@ const handleAddUserSubmit = async () => {
     newUserForm.value = { name: "", email: "", role: "" };
     loadTenantDetail();
   } catch (err: any) {
-    showError(err.response?.data?.message || "Gagal menambah user");
+    showError(extractApiErrorMessage(err, "Gagal menambah user"));
   } finally {
     saving.value = false;
   }
@@ -2973,7 +2997,7 @@ const handleSaveUserFromModal = async (userData: any) => {
     editingUser.value = null;
     loadTenantDetail();
   } catch (err: any) {
-    showError(err.response?.data?.message || "Gagal menyimpan user");
+    showError(extractApiErrorMessage(err, "Gagal menyimpan user"));
   } finally {
     saving.value = false;
   }
@@ -3002,7 +3026,7 @@ const handleAddStore = async () => {
     showAddStoreModal.value = false;
     loadTenantDetail();
   } catch (err: any) {
-    showError(err.response?.data?.message || "Gagal menambah toko");
+    showError(extractApiErrorMessage(err, "Gagal menambah toko"));
   } finally {
     saving.value = false;
   }
@@ -3076,7 +3100,7 @@ const handleSaveStore = async () => {
     showEditStoreModal.value = false;
     loadTenantDetail();
   } catch (err: any) {
-    showError(err.response?.data?.message || "Gagal menyimpan toko");
+    showError(extractApiErrorMessage(err, "Gagal menyimpan toko"));
   } finally {
     saving.value = false;
   }
