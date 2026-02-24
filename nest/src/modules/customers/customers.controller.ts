@@ -36,6 +36,18 @@ export class CustomersController {
     return this.customersService.getCustomers(tenantId, query);
   }
 
+  @Get("export")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
+  async exportCustomers(@TenantId() tenantId: string) {
+    return this.customersService.exportCustomers(tenantId);
+  }
+
+  @Get("stats")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
+  async getCustomerStats(@TenantId() tenantId: string) {
+    return this.customersService.getCustomerStats(tenantId);
+  }
+
   @Get(":id")
   @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER")
   async getCustomerById(@Param("id") id: string, @TenantId() tenantId: string) {
@@ -118,17 +130,5 @@ export class CustomersController {
     @TenantId() tenantId: string,
   ) {
     return this.customersService.deactivateCustomer(id, tenantId);
-  }
-
-  @Get("export")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
-  async exportCustomers(@TenantId() tenantId: string) {
-    return this.customersService.exportCustomers(tenantId);
-  }
-
-  @Get("stats")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
-  async getCustomerStats(@TenantId() tenantId: string) {
-    return this.customersService.getCustomerStats(tenantId);
   }
 }

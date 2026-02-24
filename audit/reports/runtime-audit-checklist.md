@@ -6,7 +6,18 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 
 - Tenant page runtime verification completed and signed off in:
   - `audit/reports/page-tenants-signoff-2026-02-23.md`
+- API smoke verification expanded for non-tenant page (`/app/customers`) via:
+  - `client/cypress/e2e/customers-page-api.cy.ts`
+  - Latest remote smoke run result: `8 tests, 3 passing, 5 pending, 0 failing`.
+  - Pending tests are authenticated flows blocked only by missing env credentials (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`, `TENANT_ID`).
 - This checklist remains open for non-tenant page journeys.
+
+## Execution Update (2026-02-24)
+
+- Database connectivity checks executed from local workspace (`nest/`) using generated Prisma client.
+- Local database check status: failed to connect to `localhost:5432` (`ECONNREFUSED`), so local DB runtime verification is currently blocked.
+- Remote production health endpoint check: `https://warungin-api.faiznute.site/health` returns `200` with `services.database=connected`.
+- Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
 ## A. Database Connectivity
 

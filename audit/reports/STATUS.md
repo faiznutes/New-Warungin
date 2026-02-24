@@ -13,12 +13,15 @@
 - Phase 9: Sign-off blockers (`audit/reports/phase-09-signoff-blockers.md`).
 - Connectivity matrix (`audit/reports/connectivity-matrix.md`).
 - Tenant page sign-off (`audit/reports/page-tenants-signoff-2026-02-23.md`).
+- Customer page contract hardening pass (quick points endpoint alignment + static route precedence fix).
+- Coolify backend build hardening pass (`Dockerfile.backend` npm CI/retry tuning).
 
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`).
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
-- WG-AUD-0017: testing coverage expansion (added tenant API contract smoke spec).
+- WG-AUD-0017: testing coverage expansion (tenant + customers API smoke now include unauth guard assertions and env-driven Cypress base/API config).
+- Runtime/contract sweep for `/app/customers` (post-fix validation evidence being accumulated).
 
 ## Open Bug Count (Current)
 
