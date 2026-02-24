@@ -17,6 +17,7 @@
 - Coolify backend build hardening pass (`Dockerfile.backend` npm CI/retry tuning).
 - Coolify Warungin source mapping corrected to `faiznutes/New-Warungin.git` and redeployed to commit `73bf06d`.
 - Orders page contract hardening pass (query filters/search support, route precedence, and detail payload completeness).
+- Finance transactions page contract hardening pass (orders payload mapping and export flow alignment).
 
 ## In Progress
 
@@ -25,6 +26,7 @@
 - WG-AUD-0017: testing coverage expansion (tenant + customers + orders API smoke include unauth guard assertions and env-driven Cypress base/API config).
 - Runtime/contract sweep for `/app/customers` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/orders` (post-fix validation evidence being accumulated).
+- Runtime/contract sweep for `/app/finance/transactions` (post-fix validation evidence being accumulated).
 
 ## Open Bug Count (Current)
 
