@@ -4,10 +4,10 @@ import {
   ExecutionContext,
   CallHandler,
   Logger,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Observable } from "rxjs";
+import { tap } from "rxjs/operators";
+import { Request, Response } from "express";
 
 interface RequestMetrics {
   method: string;
@@ -20,7 +20,7 @@ interface RequestMetrics {
 
 @Injectable()
 export class PerformanceMonitoringInterceptor implements NestInterceptor {
-  private readonly logger = new Logger('Performance');
+  private readonly logger = new Logger("Performance");
   private readonly slowRequestThresholdMs = 1000; // Warn if > 1 second
   private readonly largeResponseSizeBytes = 1000000; // Warn if > 1MB
 
@@ -43,7 +43,8 @@ export class PerformanceMonitoringInterceptor implements NestInterceptor {
         (data) => {
           metrics.statusCode = response.statusCode;
           metrics.responseTimeMs = Date.now() - startTime;
-          metrics.responseSize = JSON.stringify(data).length;
+          const serialized = JSON.stringify(data);
+          metrics.responseSize = serialized ? serialized.length : 0;
 
           this.logMetrics(metrics);
         },
@@ -81,7 +82,7 @@ export class PerformanceMonitoringInterceptor implements NestInterceptor {
     }
 
     // Log all metrics if in debug mode
-    if (process.env.DEBUG_PERFORMANCE === 'true') {
+    if (process.env.DEBUG_PERFORMANCE === "true") {
       this.logger.debug(
         `METRICS: ${metrics.method} ${metrics.path} - ${metrics.responseTimeMs}ms, ${metrics.statusCode}, ${metrics.responseSize}B`,
       );

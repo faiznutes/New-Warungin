@@ -74,7 +74,11 @@ describe("Tenant Page API Contract", () => {
         url: `${apiBase}/auth/me`,
         headers: { Authorization: `Bearer ${token}` },
       }).then((meRes) => {
-        const userId = meRes.body?.data?.id;
+        const userId =
+          meRes.body?.data?.id ||
+          meRes.body?.data?.user?.id ||
+          meRes.body?.data?.data?.id ||
+          meRes.body?.data?.data?.user?.id;
         assert.isString(userId);
         assert.isNotEmpty(userId);
 

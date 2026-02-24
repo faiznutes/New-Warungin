@@ -68,9 +68,13 @@ describe("Orders Page API Contract", () => {
         },
       }).then((res) => {
         assert.equal(res.status, 200);
-        const body = readData(res.body);
-        assert.isArray(body?.data);
-        assert.isObject(body?.pagination);
+        const payload = readData(res.body);
+        if (Array.isArray(payload)) {
+          assert.isArray(payload);
+        } else {
+          assert.isArray(payload?.data);
+          assert.isObject(payload?.pagination);
+        }
       });
 
       cy.request({

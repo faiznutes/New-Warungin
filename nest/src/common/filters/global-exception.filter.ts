@@ -21,6 +21,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    if (response.headersSent || response.writableEnded) {
+      return;
+    }
+
     const path = request.url;
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -37,11 +41,28 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const exceptionResponse = exception.getResponse() as any;
       if (exceptionResponse.message) {
         if (Array.isArray(exceptionResponse.message)) {
-          errors = exceptionResponse.message.map((err: any) => ({
-            field: err.property,
-            message: Object.values(err.constraints || {}).join(", "),
-            code: "VALIDATION_ERROR",
-          }));
+          errors = exceptionResponse.message
+            .map((err: any) => {
+              if (typeof err === "string") {
+                return {
+                  message: err,
+                  code: "VALIDATION_ERROR",
+                };
+              }
+
+              const constraints =
+                err && typeof err === "object" && err.constraints
+                  ? Object.values(err.constraints).join(", ")
+                  : undefined;
+
+              return {
+                field:
+                  err && typeof err === "object" ? err.property : undefined,
+                message: constraints || "Validation error",
+                code: "VALIDATION_ERROR",
+              };
+            })
+            .filter((item) => item.message);
         } else if (typeof exceptionResponse.message === "string") {
           message = exceptionResponse.message;
         }
@@ -128,6 +149,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       errors,
     );
 
-    response.status(statusCode).json(errorResponse);
+    if (!response.headersSent && !response.writableEnded) {
+      response.status(statusCode).json(errorResponse);
+    }
   }
 }

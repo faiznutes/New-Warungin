@@ -1,16 +1,16 @@
 export enum ResponseCode {
-  SUCCESS = 'SUCCESS',
-  CREATED = 'CREATED',
-  UPDATED = 'UPDATED',
-  DELETED = 'DELETED',
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-  UNAUTHORIZED = 'UNAUTHORIZED',
-  FORBIDDEN = 'FORBIDDEN',
-  NOT_FOUND = 'NOT_FOUND',
-  CONFLICT = 'CONFLICT',
-  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
-  INTERNAL_ERROR = 'INTERNAL_ERROR',
-  SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE',
+  SUCCESS = "SUCCESS",
+  CREATED = "CREATED",
+  UPDATED = "UPDATED",
+  DELETED = "DELETED",
+  VALIDATION_ERROR = "VALIDATION_ERROR",
+  UNAUTHORIZED = "UNAUTHORIZED",
+  FORBIDDEN = "FORBIDDEN",
+  NOT_FOUND = "NOT_FOUND",
+  CONFLICT = "CONFLICT",
+  RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED",
+  INTERNAL_ERROR = "INTERNAL_ERROR",
+  SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE",
 }
 
 export class SuccessResponseDto<T = any> {
@@ -25,7 +25,7 @@ export class SuccessResponseDto<T = any> {
     code: ResponseCode,
     message: string,
     data?: T,
-    path: string = '',
+    path: string = "",
   ) {
     this.code = code;
     this.message = message;
@@ -52,22 +52,24 @@ export class ErrorResponseDto {
     code: ResponseCode,
     message: string,
     statusCode: number = 500,
-    path: string = '',
-    errors: Array<{ field?: string; message: string; code?: string }> = [],
+    path: string = "",
+    errors?: Array<{ field?: string; message: string; code?: string }> | null,
   ) {
+    const normalizedErrors = Array.isArray(errors) ? errors : [];
+
     this.code = code;
     this.message = message;
     this.statusCode = statusCode;
     this.timestamp = new Date().toISOString();
     this.path = path;
-    this.errors = errors.length > 0 ? errors : undefined;
+    this.errors = normalizedErrors.length > 0 ? normalizedErrors : undefined;
   }
 }
 
 export class PaginatedResponseDto<T = any> {
   success: boolean = true;
   code: ResponseCode = ResponseCode.SUCCESS;
-  message: string = 'Data retrieved successfully';
+  message: string = "Data retrieved successfully";
   data: T[];
   pagination: {
     page: number;
@@ -80,8 +82,13 @@ export class PaginatedResponseDto<T = any> {
 
   constructor(
     data: T[],
-    pagination: { page: number; limit: number; total: number; totalPages: number },
-    path: string = '',
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    },
+    path: string = "",
   ) {
     this.data = data;
     this.pagination = pagination;

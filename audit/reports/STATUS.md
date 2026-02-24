@@ -24,6 +24,7 @@
 - Tenant-detail runtime execution checklist prepared in `audit/reports/tenant-detail-runtime-execution-checklist-2026-02-24.md`.
 - Tenant-detail deploy-ready pack prepared in `audit/reports/tenant-detail-deploy-ready-pack-2026-02-24.md`.
 - Tenant-detail runtime verifier script prepared (`npm run verify:tenant-detail:runtime`, `scripts/verify-tenant-detail-runtime.js`).
+- Multi-page runtime verifier script prepared (`npm run verify:pages:runtime`, `scripts/verify-pages-runtime.js`) and executed for unauth/health baseline.
 
 ## In Progress
 
@@ -36,6 +37,8 @@
 - Runtime/contract sweep for `/app/settings/retention` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/reports` (post-fix validation evidence being accumulated).
 - Tenant-detail deep regression matrix executed in authenticated mode (`8/8 passing`) after Coolify deploy hotfix.
+- Runtime stabilization hardening applied in backend exception/proxy path (`response.dto`, `global-exception.filter`, `main.ts`) for intermittent 502/crash mitigation; authenticated multi-page rerun pending env credentials.
+- Authenticated rerun executed with provided credentials: tenant-page/orders/tenant-detail specs now pass, but customers loyalty-points path still triggers live `502`; crash root traced to performance interceptor response-size assumption and patched locally (pending deploy verification).
 
 ## Open Bug Count (Current)
 

@@ -32,6 +32,32 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
   - tenant-detail API spec executed with authenticated env (`8 tests, 8 passing, 0 failing`).
 - Hotfix deployment completed for outlets query validation alignment (`p4swgggcsk0woggsw4wcwk4s`, commit image `2154cee...`).
 - Re-run verifier after hotfix: pass (`8 tests, 8 passing, 0 failing`).
+- Runtime stabilization hardening applied in backend core:
+  - `ErrorResponseDto` now handles undefined/null `errors` safely (prevents `errors.length` crash path).
+  - `GlobalExceptionFilter` now skips write when headers already sent and normalizes array/string validation errors safely.
+  - Nest bootstrap now sets Express `trust proxy` from env (`TRUST_PROXY`, default `1`) before rate-limit middleware.
+- Added full page runtime verifier command:
+  - `npm run verify:pages:runtime`
+  - script: `scripts/verify-pages-runtime.js`
+  - executes sequential API smoke specs for tenant-page, customers, orders, retention, reports, analytics, and tenant-detail.
+- Latest verifier run (unauth+health, env credentials missing):
+  - health endpoint `ok`, database `connected`
+  - tenant-page: `4 tests, 1 passing, 3 pending, 0 failing`
+  - customers: `4 tests, 2 passing, 2 pending, 0 failing`
+  - orders: `3 tests, 2 passing, 1 pending, 0 failing`
+  - retention: `2 tests, 2 passing, 0 failing`
+  - reports: `2 tests, 2 passing, 0 failing`
+  - analytics: `3 tests, 3 passing, 0 failing`
+  - tenant-detail-user-edit: `8 tests, 2 passing, 6 pending, 0 failing`
+- Authenticated execution update (with superadmin env):
+  - `tenant-page-api.cy.ts`: pass (`4 passing`).
+  - `orders-page-api.cy.ts`: pass (`3 passing`) after `/auth/me` and orders payload assertion alignment in specs.
+  - `tenant-detail-user-edit-api.cy.ts`: pass (`8 passing`) on sequential rerun.
+  - `retention/reports/analytics`: unauth guard checks remain pass.
+  - `customers-page-api.cy.ts`: reproducible `502` on `POST /customers/:id/loyalty-points` (also causes cleanup delete to fail with `502`).
+- Crash root-cause identified in backend interceptor path:
+  - `performance-monitoring.interceptor.ts` used `JSON.stringify(data).length` and could throw when controller returns `undefined` (notably handlers using `@Res`).
+  - patch applied locally to safely compute response size when serialized payload is undefined.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
 ## A. Database Connectivity

@@ -10,6 +10,30 @@ import { PerformanceMonitoringInterceptor } from "./common/interceptors/performa
 import { EnhancedValidationPipe } from "./common/pipes/enhanced-validation.pipe";
 import { LoggerService } from "./common/logger/logger.service";
 
+function resolveTrustProxy(
+  rawValue?: string,
+): boolean | number | string | undefined {
+  if (!rawValue) {
+    return 1;
+  }
+
+  const normalized = rawValue.trim().toLowerCase();
+  if (normalized === "true") {
+    return true;
+  }
+
+  if (normalized === "false") {
+    return false;
+  }
+
+  const parsedNumber = Number(normalized);
+  if (!Number.isNaN(parsedNumber) && Number.isInteger(parsedNumber)) {
+    return parsedNumber;
+  }
+
+  return rawValue;
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
@@ -19,6 +43,9 @@ async function bootstrap() {
   const logger = app.get(LoggerService);
 
   app.useLogger(logger);
+
+  const trustProxy = resolveTrustProxy(config.get<string>("TRUST_PROXY"));
+  app.getHttpAdapter().getInstance().set("trust proxy", trustProxy);
 
   // Security: Helmet middleware
   app.use(helmet());
@@ -77,6 +104,7 @@ async function bootstrap() {
       "Authorization",
       "X-Requested-With",
       "X-Correlation-ID",
+      "X-Tenant-Id",
     ],
     exposedHeaders: ["Content-Disposition", "Content-Type", "Content-Length"],
   });
