@@ -90,7 +90,19 @@ api.interceptors.request.use(
       !isAuthRoute &&
       !isPdfRoute
     ) {
-      config.headers["x-tenant-id"] = selectedTenantId;
+      const existingHeaderTenant =
+        (config.headers as any)?.["x-tenant-id"] ||
+        (config.headers as any)?.["X-Tenant-Id"];
+      const existingParamTenant = config.params?.tenantId;
+
+      // Respect explicit tenant context from caller (e.g. TenantDetail scoped request).
+      if (existingHeaderTenant) {
+        config.headers["x-tenant-id"] = existingHeaderTenant;
+      } else if (existingParamTenant) {
+        config.headers["x-tenant-id"] = existingParamTenant;
+      } else {
+        config.headers["x-tenant-id"] = selectedTenantId;
+      }
 
       // Only add tenantId if not already in params or URL
 
