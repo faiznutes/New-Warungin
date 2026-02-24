@@ -21,6 +21,7 @@
 - Retention management contract pass (new `/retention` endpoints implemented and deployed for super admin cleanup flow).
 - Reports page contract hardening pass (`/reports/tenant` implementation aligned with reports and export consumers).
 - Tenant detail deep hardening pass (super-admin user/store/role-policy flow) documented in `audit/reports/page-tenant-detail-deep-audit-2026-02-24.md`.
+- Tenant-detail runtime execution checklist prepared in `audit/reports/tenant-detail-runtime-execution-checklist-2026-02-24.md`.
 
 ## In Progress
 
