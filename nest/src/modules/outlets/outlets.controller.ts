@@ -38,6 +38,12 @@ export class OutletsController {
     return this.outletsService.getOutlets(tenantId, query);
   }
 
+  @Get("active")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER")
+  async getActiveOutlets(@TenantId() tenantId: string) {
+    return this.outletsService.getActiveOutlets(tenantId);
+  }
+
   @Get(":id")
   @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER", "KITCHEN")
   async getOutletById(@Param("id") id: string, @TenantId() tenantId: string) {
@@ -98,11 +104,5 @@ export class OutletsController {
   @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
   async getOutletOrders(@Param("id") id: string, @TenantId() tenantId: string) {
     return this.outletsService.getOutletOrders(id, tenantId);
-  }
-
-  @Get("active")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER")
-  async getActiveOutlets(@TenantId() tenantId: string) {
-    return this.outletsService.getActiveOutlets(tenantId);
   }
 }

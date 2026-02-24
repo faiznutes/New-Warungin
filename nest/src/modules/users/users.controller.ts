@@ -44,6 +44,18 @@ export class UsersController {
     return this.usersService.getUsers(tenantId, pageNum, limitNum);
   }
 
+  @Get("export")
+  @Roles("ADMIN_TENANT", "SUPER_ADMIN")
+  async exportUsers(@TenantId() tenantId: string) {
+    return this.usersService.exportUsers(tenantId);
+  }
+
+  @Get("stats")
+  @Roles("ADMIN_TENANT", "SUPER_ADMIN")
+  async getUserStats(@TenantId() tenantId: string) {
+    return this.usersService.getUserStats(tenantId);
+  }
+
   @Get(":id")
   @Roles("ADMIN_TENANT", "SUPER_ADMIN", "SUPERVISOR")
   async getUserById(@Param("id") id: string, @TenantId() tenantId: string) {
@@ -83,18 +95,6 @@ export class UsersController {
     @TenantId() tenantId: string,
   ) {
     return this.usersService.changePassword(id, changePasswordDto, tenantId);
-  }
-
-  @Get("export")
-  @Roles("ADMIN_TENANT", "SUPER_ADMIN")
-  async exportUsers(@TenantId() tenantId: string) {
-    return this.usersService.exportUsers(tenantId);
-  }
-
-  @Get("stats")
-  @Roles("ADMIN_TENANT", "SUPER_ADMIN")
-  async getUserStats(@TenantId() tenantId: string) {
-    return this.usersService.getUserStats(tenantId);
   }
 
   @Post("reset-password")

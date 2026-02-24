@@ -483,6 +483,11 @@ const scopedRequestConfig = () =>
       }
     : undefined;
 
+const normalizeRole = (role?: string) => {
+  if (!role) return "CASHIER";
+  return role === "STAFF" ? "CASHIER" : role;
+};
+
 const form = ref<
   Partial<User & { password?: string; permissions?: UserPermissions }>
 >({
@@ -539,7 +544,7 @@ const activeAddons = ref<any[]>([]);
 
 const isCashierOrKitchen = computed(() => {
   const role = form.value.role;
-  return role === "CASHIER" || role === "KITCHEN";
+  return role === "CASHIER" || role === "KITCHEN" || role === "STAFF";
 });
 
 const hasSupervisorRole = computed(() => {
@@ -573,7 +578,7 @@ const selectAllStores = computed({
 
 const loadStores = async (force = false) => {
   // Load stores for SUPERVISOR, CASHIER, or KITCHEN
-  const role = form.value.role;
+  const role = normalizeRole(form.value.role);
   if (!role || !["SUPERVISOR", "CASHIER", "KITCHEN"].includes(role)) {
     stores.value = [];
     return;
@@ -602,7 +607,17 @@ const loadStores = async (force = false) => {
     loadingStores.value = true;
     try {
       const response = await api.get("/outlets", scopedRequestConfig());
-      stores.value = safeMap(response.data.data || [], (store: any) => ({
+      let rawStores = response.data?.data || [];
+
+      if (!Array.isArray(rawStores) || rawStores.length === 0) {
+        const activeRes = await api.get(
+          "/outlets/active",
+          scopedRequestConfig(),
+        );
+        rawStores = activeRes.data || [];
+      }
+
+      stores.value = safeMap(rawStores, (store: any) => ({
         id: store.id,
         name: store.name,
         isActive: store.isActive !== false,
@@ -677,11 +692,12 @@ watch(
     if (newUser) {
       // Reset stores cache when user changes
       storesLoaded.value = false;
+      const normalizedRole = normalizeRole(newUser.role);
 
       form.value = {
         name: newUser.name,
         email: newUser.email,
-        role: newUser.role,
+        role: normalizedRole,
         isActive: newUser.isActive,
         password: "",
         permissions: newUser.permissions || {
@@ -694,9 +710,9 @@ watch(
           canExportReports: false,
           canManageProducts: false,
           canManageCustomers: false,
-          allowedStoreIds: newUser.role === "SUPERVISOR" ? [] : undefined,
+          allowedStoreIds: normalizedRole === "SUPERVISOR" ? [] : undefined,
           assignedStoreId:
-            newUser.role === "CASHIER" || newUser.role === "KITCHEN"
+            normalizedRole === "CASHIER" || normalizedRole === "KITCHEN"
               ? ""
               : undefined,
         },
@@ -714,7 +730,7 @@ watch(
           setTimeout(async () => {
             try {
               await loadPassword();
-            } catch (error) {
+            } catch {
               // Silently fail - user can click "Lihat Password" manually
               console.log("Password not available yet, user can click to load");
             }
@@ -725,7 +741,7 @@ watch(
       }
 
       // Load stores if role requires it (SUPERVISOR, CASHIER, or KITCHEN)
-      if (["SUPERVISOR", "CASHIER", "KITCHEN"].includes(newUser.role)) {
+      if (["SUPERVISOR", "CASHIER", "KITCHEN"].includes(normalizedRole)) {
         loadStores(true); // Force reload when user changes
       }
     }
@@ -736,17 +752,26 @@ watch(
 watch(
   () => form.value.role,
   (newRole, oldRole) => {
+    const normalizedNewRole = normalizeRole(newRole);
+    const normalizedOldRole = normalizeRole(oldRole);
+
+    if (newRole === "STAFF") {
+      form.value.role = "CASHIER";
+      return;
+    }
+
     // Only reload stores if role changed to a role that needs stores
     const rolesNeedingStores = ["SUPERVISOR", "CASHIER", "KITCHEN"] as const;
     const oldNeededStores =
-      oldRole && rolesNeedingStores.includes(oldRole as any);
+      normalizedOldRole &&
+      rolesNeedingStores.includes(normalizedOldRole as any);
 
     // Ensure permissions object exists
     if (!form.value.permissions) {
       form.value.permissions = {};
     }
 
-    if (newRole === "SUPERVISOR") {
+    if (normalizedNewRole === "SUPERVISOR") {
       // Only load if not already loaded or role changed
       if (!oldNeededStores || !storesLoaded.value) {
         loadStores();
@@ -758,7 +783,10 @@ watch(
       if (permissions.value.assignedStoreId) {
         permissions.value.assignedStoreId = undefined;
       }
-    } else if (newRole === "CASHIER" || newRole === "KITCHEN") {
+    } else if (
+      normalizedNewRole === "CASHIER" ||
+      normalizedNewRole === "KITCHEN"
+    ) {
       // Only load if not already loaded or role changed
       if (!oldNeededStores || !storesLoaded.value) {
         loadStores();
@@ -850,7 +878,7 @@ const handleSubmit = () => {
   > = {
     name: form.value.name,
     email: form.value.email,
-    role: form.value.role,
+    role: normalizeRole(form.value.role),
     isActive: form.value.isActive,
   };
 

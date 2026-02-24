@@ -160,6 +160,7 @@ export class TenantsService {
             email: true,
             role: true,
             isActive: true,
+            permissions: true,
             createdAt: true,
             updatedAt: true,
           },
