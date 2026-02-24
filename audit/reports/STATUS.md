@@ -15,6 +15,7 @@
 - Tenant page sign-off (`audit/reports/page-tenants-signoff-2026-02-23.md`).
 - Customer page contract hardening pass (quick points endpoint alignment + static route precedence fix).
 - Coolify backend build hardening pass (`Dockerfile.backend` npm CI/retry tuning).
+- Coolify Warungin source mapping corrected to `faiznutes/New-Warungin.git` and redeployed to commit `73bf06d`.
 
 ## In Progress
 
