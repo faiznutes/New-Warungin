@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
+import { Response } from "express";
 import { AnalyticsService } from "./analytics.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { TenantGuard } from "../../common/guards/tenant.guard";
@@ -68,6 +78,28 @@ export class AnalyticsController {
   @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
   getCustomReports(@TenantId() tenantId: string) {
     return this.analyticsService.getCustomReports(tenantId);
+  }
+
+  @Post("custom-reports")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
+  createCustomReport(@TenantId() tenantId: string, @Body() body: any) {
+    return this.analyticsService.createCustomReport(tenantId, body);
+  }
+
+  @Get("custom-reports/:id/export")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
+  async exportCustomReport(
+    @TenantId() tenantId: string,
+    @Param("id") id: string,
+    @Res() res: Response,
+  ) {
+    const csv = await this.analyticsService.exportCustomReportCsv(tenantId, id);
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="custom-report-${id}.csv"`,
+    );
+    return res.send(csv);
   }
 
   @Get("revenue-by-hour")

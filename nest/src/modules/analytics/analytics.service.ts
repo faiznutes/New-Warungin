@@ -5,6 +5,15 @@ import { PrismaService } from "../../prisma/prisma.service";
 export class AnalyticsService {
   constructor(private prisma: PrismaService) {}
 
+  private dateRange(startDate?: string, endDate?: string) {
+    if (!startDate || !endDate) return undefined;
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    return { gte: start, lte: end };
+  }
+
   async getSalesAnalytics(tenantId: string, startDate: Date, endDate: Date) {
     const result = await this.prisma.order.aggregate({
       where: {
@@ -269,6 +278,126 @@ export class AnalyticsService {
     });
 
     return { data: formattedReports };
+  }
+
+  async createCustomReport(tenantId: string, payload: any) {
+    const report = await this.prisma.report.create({
+      data: {
+        tenantId,
+        type: "CUSTOM",
+        period: "custom",
+        data: {
+          name: payload?.name || "Untitled Report",
+          description: payload?.description || "",
+          dataType: payload?.dataType || "SALES",
+          metrics: Array.isArray(payload?.metrics) ? payload.metrics : [],
+          startDate: payload?.startDate || null,
+          endDate: payload?.endDate || null,
+        },
+      },
+    });
+
+    return {
+      id: report.id,
+      message: "Custom report created",
+    };
+  }
+
+  async exportCustomReportCsv(tenantId: string, reportId: string) {
+    const report = await this.prisma.report.findFirst({
+      where: { id: reportId, tenantId, type: "CUSTOM" },
+    });
+
+    if (!report) {
+      return "No data";
+    }
+
+    const data = (report.data as any) || {};
+    const dataType = String(data.dataType || "SALES").toUpperCase();
+    const createdAt = this.dateRange(data.startDate, data.endDate);
+    const where: any = { tenantId, status: "COMPLETED" };
+    if (createdAt) where.createdAt = createdAt;
+
+    if (dataType === "PRODUCTS") {
+      const rows = await this.prisma.orderItem.groupBy({
+        by: ["productId"],
+        where: { order: where },
+        _sum: { quantity: true, subtotal: true },
+      });
+      const products = await this.prisma.product.findMany({
+        where: { id: { in: rows.map((r) => r.productId) }, tenantId },
+        select: { id: true, name: true },
+      });
+      const map = new Map(products.map((p) => [p.id, p.name]));
+      const lines = ["Product,Quantity,Revenue"];
+      for (const r of rows) {
+        lines.push(
+          `${map.get(r.productId) || "Unknown"},${Number(r._sum.quantity || 0)},${Number(r._sum.subtotal || 0)}`,
+        );
+      }
+      return lines.join("\n");
+    }
+
+    if (dataType === "CUSTOMERS") {
+      const rows = await this.prisma.order.groupBy({
+        by: ["customerId"],
+        where: { ...where, customerId: { not: null } },
+        _sum: { total: true },
+        _count: { customerId: true },
+      });
+      const customers = await this.prisma.customer.findMany({
+        where: {
+          tenantId,
+          id: {
+            in: rows.map((r) => r.customerId).filter(Boolean) as string[],
+          },
+        },
+        select: { id: true, name: true },
+      });
+      const map = new Map(customers.map((c) => [c.id, c.name]));
+      const lines = ["Customer,Orders,TotalSpent"];
+      for (const r of rows) {
+        const id = r.customerId as string;
+        lines.push(
+          `${map.get(id) || "Unknown"},${r._count.customerId || 0},${Number(r._sum.total || 0)}`,
+        );
+      }
+      return lines.join("\n");
+    }
+
+    if (dataType === "INVENTORY") {
+      const products = await this.prisma.product.findMany({
+        where: { tenantId, isActive: true },
+        select: {
+          name: true,
+          stock: true,
+          minStock: true,
+          cost: true,
+          price: true,
+        },
+      });
+      const lines = ["Product,Stock,MinStock,StockValue"];
+      for (const p of products) {
+        const unit = Number(p.cost || p.price || 0);
+        const value = Number(p.stock || 0) * unit;
+        lines.push(`${p.name},${p.stock},${p.minStock},${value}`);
+      }
+      return lines.join("\n");
+    }
+
+    const orders = await this.prisma.order.findMany({
+      where,
+      select: { orderNumber: true, createdAt: true, total: true },
+      orderBy: { createdAt: "desc" },
+      take: 2000,
+    });
+    const lines = ["OrderNumber,Date,Total"];
+    for (const o of orders) {
+      lines.push(
+        `${o.orderNumber},${o.createdAt.toISOString().split("T")[0]},${Number(o.total || 0)}`,
+      );
+    }
+    return lines.join("\n");
   }
 
   async getRevenueByHour(tenantId: string, date?: string) {
