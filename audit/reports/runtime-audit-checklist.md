@@ -24,6 +24,8 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 - Finance transactions pass added: `/app/finance/transactions` now consumes `/orders` response shape correctly, status filters use valid enum values, and CSV export no longer depends on missing `/orders/export` endpoint.
 - Retention management pass added: `/app/settings/retention` endpoints now exist (`/retention/stats`, `/retention/*`, `/retention/apply-all`) with super-admin role protection and raw response shape aligned to current frontend consumption.
 - Retention smoke verification on live domain passed (`client/cypress/e2e/retention-page-api.cy.ts`: `2 tests, 2 passing, 0 failing`).
+- Reports pass added: `/reports/tenant` endpoint implemented for reports page and export modal contract (`sales|financial|product|customers|inventory`) including period/date filtering and optional product detail hydration.
+- Reports smoke verification on live domain passed (`client/cypress/e2e/reports-page-api.cy.ts`: `2 tests, 2 passing, 0 failing`).
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
 ## A. Database Connectivity

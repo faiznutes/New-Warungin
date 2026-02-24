@@ -19,16 +19,18 @@
 - Orders page contract hardening pass (query filters/search support, route precedence, and detail payload completeness).
 - Finance transactions page contract hardening pass (orders payload mapping and export flow alignment).
 - Retention management contract pass (new `/retention` endpoints implemented and deployed for super admin cleanup flow).
+- Reports page contract hardening pass (`/reports/tenant` implementation aligned with reports and export consumers).
 
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`).
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
-- WG-AUD-0017: testing coverage expansion (tenant + customers + orders + retention API smoke include unauth guard assertions and env-driven Cypress base/API config).
+- WG-AUD-0017: testing coverage expansion (tenant + customers + orders + retention + reports API smoke include unauth guard assertions and env-driven Cypress base/API config).
 - Runtime/contract sweep for `/app/customers` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/orders` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/finance/transactions` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/settings/retention` (post-fix validation evidence being accumulated).
+- Runtime/contract sweep for `/app/reports` (post-fix validation evidence being accumulated).
 
 ## Open Bug Count (Current)
 
