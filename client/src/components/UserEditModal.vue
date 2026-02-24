@@ -888,12 +888,29 @@ const copyPassword = async () => {
 };
 
 const handleSubmit = () => {
+  const normalizedRole = normalizeRole(form.value.role);
+
+  if (normalizedRole === "SUPERVISOR") {
+    const allowed = permissions.value.allowedStoreIds || [];
+    if (!Array.isArray(allowed) || allowed.length === 0) {
+      showError("Supervisor wajib memiliki minimal satu akses store.");
+      return;
+    }
+  }
+
+  if (normalizedRole === "CASHIER" || normalizedRole === "KITCHEN") {
+    if (!permissions.value.assignedStoreId) {
+      showError("Kasir/Dapur wajib ditugaskan ke satu store.");
+      return;
+    }
+  }
+
   const userData: Partial<
     User & { password?: string; permissions?: UserPermissions }
   > = {
     name: form.value.name,
     email: form.value.email,
-    role: normalizeRole(form.value.role),
+    role: normalizedRole,
     isActive: form.value.isActive,
   };
 

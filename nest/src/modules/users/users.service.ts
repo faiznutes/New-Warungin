@@ -18,6 +18,70 @@ import { parsePagination } from "../../common/utils/pagination.util";
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private normalizeRole(role?: string) {
+    if (!role) return role;
+    return role === "STAFF" ? "CASHIER" : role;
+  }
+
+  private async sanitizePermissions(
+    tenantId: string,
+    role: string,
+    permissions?: Record<string, any>,
+  ) {
+    if (!permissions || typeof permissions !== "object") {
+      return permissions;
+    }
+
+    const next = { ...permissions } as Record<string, any>;
+    const roleNormalized = this.normalizeRole(role) || role;
+
+    if (!["SUPERVISOR", "CASHIER", "KITCHEN"].includes(roleNormalized)) {
+      delete next.allowedStoreIds;
+      delete next.assignedStoreId;
+      return next;
+    }
+
+    const tenantOutlets = await this.prisma.outlet.findMany({
+      where: { tenantId },
+      select: { id: true },
+    });
+    const outletIds = new Set(tenantOutlets.map((o) => o.id));
+
+    if (roleNormalized === "SUPERVISOR") {
+      const allowedIds = Array.isArray(next.allowedStoreIds)
+        ? Array.from(
+            new Set(
+              next.allowedStoreIds.filter((id: any) => typeof id === "string"),
+            ),
+          )
+        : [];
+
+      const invalid = allowedIds.find((id) => !outletIds.has(id));
+      if (invalid) {
+        throw new BadRequestException("Invalid allowed store assignment");
+      }
+
+      next.allowedStoreIds = allowedIds;
+      delete next.assignedStoreId;
+      return next;
+    }
+
+    const assignedStoreId =
+      typeof next.assignedStoreId === "string" ? next.assignedStoreId : "";
+    if (!assignedStoreId) {
+      throw new BadRequestException(
+        "Assigned store is required for cashier/kitchen",
+      );
+    }
+    if (!outletIds.has(assignedStoreId)) {
+      throw new BadRequestException("Invalid assigned store");
+    }
+
+    next.assignedStoreId = assignedStoreId;
+    delete next.allowedStoreIds;
+    return next;
+  }
+
   private assertMutableUser(user: { role: string }, action: string) {
     if (user.role === "SUPER_ADMIN") {
       throw new ForbiddenException(
@@ -69,6 +133,7 @@ export class UsersService {
         email: true,
         role: true,
         isActive: true,
+        permissions: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -104,7 +169,7 @@ export class UsersService {
         name: data.name,
         email: data.email,
         password: hashedPassword,
-        role: data.role as any,
+        role: this.normalizeRole(data.role) as any,
         tenantId,
         isActive: true,
       },
@@ -123,6 +188,8 @@ export class UsersService {
 
   async updateUser(id: string, data: UpdateUserDto, tenantId: string) {
     const user = await this.getUserById(id, tenantId);
+    const effectiveRole =
+      this.normalizeRole(data.role || user.role) || user.role;
 
     if (
       user.role === "SUPER_ADMIN" &&
@@ -148,7 +215,20 @@ export class UsersService {
 
     const updateData: any = { ...data };
     if (data.role) {
-      updateData.role = data.role;
+      updateData.role = this.normalizeRole(data.role);
+    }
+    if (data.permissions) {
+      updateData.permissions = await this.sanitizePermissions(
+        tenantId,
+        effectiveRole,
+        data.permissions,
+      );
+    } else if (!["SUPERVISOR", "CASHIER", "KITCHEN"].includes(effectiveRole)) {
+      updateData.permissions = {
+        ...(user as any).permissions,
+        allowedStoreIds: undefined,
+        assignedStoreId: undefined,
+      };
     }
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);
