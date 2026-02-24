@@ -20,6 +20,7 @@
 - Finance transactions page contract hardening pass (orders payload mapping and export flow alignment).
 - Retention management contract pass (new `/retention` endpoints implemented and deployed for super admin cleanup flow).
 - Reports page contract hardening pass (`/reports/tenant` implementation aligned with reports and export consumers).
+- Tenant detail deep hardening pass (super-admin user/store/role-policy flow) documented in `audit/reports/page-tenant-detail-deep-audit-2026-02-24.md`.
 
 ## In Progress
 
@@ -31,6 +32,7 @@
 - Runtime/contract sweep for `/app/finance/transactions` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/settings/retention` (post-fix validation evidence being accumulated).
 - Runtime/contract sweep for `/app/reports` (post-fix validation evidence being accumulated).
+- Authenticated runtime verification for tenant-detail deep pass is pending deployment + env credentials.
 
 ## Open Bug Count (Current)
 
