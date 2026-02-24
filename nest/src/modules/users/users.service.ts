@@ -108,6 +108,16 @@ export class UsersService {
     return next;
   }
 
+  private clearStoreScopePermissions(
+    permissions?: Record<string, any> | null,
+  ): Record<string, any> {
+    const next =
+      permissions && typeof permissions === "object" ? { ...permissions } : {};
+    delete next.allowedStoreIds;
+    delete next.assignedStoreId;
+    return next;
+  }
+
   private assertMutableUser(user: { role: string }, action: string) {
     if (user.role === "SUPER_ADMIN") {
       throw new ForbiddenException(
@@ -267,11 +277,9 @@ export class UsersService {
         basePermissions,
       );
     } else if (!["SUPERVISOR", "CASHIER", "KITCHEN"].includes(effectiveRole)) {
-      updateData.permissions = {
-        ...(user as any).permissions,
-        allowedStoreIds: undefined,
-        assignedStoreId: undefined,
-      };
+      updateData.permissions = this.clearStoreScopePermissions(
+        (user as any).permissions,
+      );
     }
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);

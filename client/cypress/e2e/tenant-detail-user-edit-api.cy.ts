@@ -294,6 +294,122 @@ describe("Tenant Detail User Edit API Contract", () => {
       });
     });
 
+    it("clears store-scoped permissions when downgraded to admin", () => {
+      const authHeaders = {
+        Authorization: `Bearer ${token}`,
+        "x-tenant-id": tenantId,
+      };
+      const testEmail = `tenant-user-downgrade-${Date.now()}@warungin.test`;
+      let createdUserId = "";
+      let assignedStoreId = "";
+
+      cy.request({
+        method: "GET",
+        url: `${apiBase}/outlets`,
+        headers: authHeaders,
+        qs: { tenantId, page: 1, limit: 500 },
+      }).then((outletRes) => {
+        assert.equal(outletRes.status, 200);
+        const outlets = readData(outletRes.body)?.data || [];
+        if (Array.isArray(outlets) && outlets.length > 0) {
+          assignedStoreId = outlets[0].id;
+          return;
+        }
+
+        return cy
+          .request({
+            method: "GET",
+            url: `${apiBase}/outlets/active`,
+            headers: authHeaders,
+            qs: { tenantId },
+          })
+          .then((activeRes) => {
+            assert.equal(activeRes.status, 200);
+            const activeOutlets = readData(activeRes.body) || [];
+            assert.isArray(activeOutlets);
+            assert.isNotEmpty(activeOutlets);
+            assignedStoreId = activeOutlets[0].id;
+          });
+      });
+
+      cy.then(() => {
+        cy.request({
+          method: "POST",
+          url: `${apiBase}/tenants/${tenantId}/users`,
+          headers: authHeaders,
+          body: {
+            name: "Tenant Downgrade QA",
+            email: testEmail,
+            role: "CASHIER",
+          },
+        }).then((createRes) => {
+          assert.include([200, 201], createRes.status);
+          createdUserId = readData(createRes.body)?.id;
+          assert.isNotEmpty(createdUserId);
+        });
+      });
+
+      cy.then(() => {
+        cy.request({
+          method: "PUT",
+          url: `${apiBase}/users/${createdUserId}`,
+          headers: authHeaders,
+          qs: { tenantId },
+          body: {
+            role: "CASHIER",
+            permissions: {
+              assignedStoreId,
+              canViewReports: true,
+            },
+          },
+        }).then((setStoreRes) => {
+          assert.equal(setStoreRes.status, 200);
+        });
+      });
+
+      cy.then(() => {
+        cy.request({
+          method: "PUT",
+          url: `${apiBase}/users/${createdUserId}`,
+          headers: authHeaders,
+          qs: { tenantId },
+          body: {
+            role: "ADMIN_TENANT",
+          },
+        }).then((downgradeRes) => {
+          assert.equal(downgradeRes.status, 200);
+        });
+      });
+
+      cy.request({
+        method: "GET",
+        url: `${apiBase}/tenants/${tenantId}/detail`,
+        headers: authHeaders,
+        qs: { tenantId },
+      }).then((detailRes) => {
+        assert.equal(detailRes.status, 200);
+        const users = readData(detailRes.body)?.users || [];
+        const updatedUser = users.find((u: any) => u.id === createdUserId);
+        assert.isOk(updatedUser);
+        assert.equal(updatedUser?.role, "ADMIN_TENANT");
+        assert.isUndefined(updatedUser?.permissions?.assignedStoreId);
+        assert.isUndefined(updatedUser?.permissions?.allowedStoreIds);
+      });
+
+      cy.then(() => {
+        if (!createdUserId) return;
+        cy.request({
+          method: "DELETE",
+          url: `${apiBase}/users/${createdUserId}`,
+          headers: authHeaders,
+          qs: { tenantId },
+          failOnStatusCode: false,
+        }).then((deleteRes) => {
+          assert.include([200, 204], deleteRes.status);
+        });
+      });
+    });
+
     it("enforces supervisor role addon policy on user creation", () => {
       const authHeaders = {
         Authorization: `Bearer ${token}`,
