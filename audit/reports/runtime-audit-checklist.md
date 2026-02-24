@@ -78,6 +78,9 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
   - `customers-page-ui.cy.ts`: `3/3 passing` (unauth redirect, authenticated load/search, quick-points modal)
   - `orders-page-ui.cy.ts`: `3/3 passing` (unauth redirect, authenticated load/filter, detail modal)
   - `tenant-detail-page-ui.cy.ts`: `2/2 passing` (unauth redirect, authenticated users-tab flow)
+- Stability rerun after auth-state isolation updates in UI specs:
+  - full UI smoke matrix pass again (`payment-callback`, `finance`, `customers`, `orders`, `tenant-detail`).
+  - full authenticated API matrix pass again (`tenant`, `customers`, `orders`, `finance`, `retention`, `reports`, `analytics`, `tenant-detail`).
 - Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 

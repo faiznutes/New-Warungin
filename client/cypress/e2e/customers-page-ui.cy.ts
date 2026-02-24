@@ -51,6 +51,11 @@ describe("Customers Page UI", () => {
     });
   };
 
+  beforeEach(() => {
+    cy.clearCookies();
+    cy.clearLocalStorage();
+  });
+
   it("redirects unauthenticated users to login", () => {
     cy.visit("/app/customers", { failOnStatusCode: false });
     cy.url().should("include", "/login");

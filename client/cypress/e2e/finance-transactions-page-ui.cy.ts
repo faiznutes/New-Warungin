@@ -51,6 +51,11 @@ describe("Finance Transactions Page UI", () => {
     });
   };
 
+  beforeEach(() => {
+    cy.clearCookies();
+    cy.clearLocalStorage();
+  });
+
   it("redirects unauthenticated users to login", () => {
     cy.visit("/app/finance/transactions", { failOnStatusCode: false });
     cy.url().should("include", "/login");

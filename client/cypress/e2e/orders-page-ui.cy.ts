@@ -51,6 +51,11 @@ describe("Orders Page UI", () => {
     });
   };
 
+  beforeEach(() => {
+    cy.clearCookies();
+    cy.clearLocalStorage();
+  });
+
   it("redirects unauthenticated users to login", () => {
     cy.visit("/app/orders", { failOnStatusCode: false });
     cy.url().should("include", "/login");

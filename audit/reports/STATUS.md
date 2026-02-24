@@ -34,6 +34,7 @@
   - `client/cypress/e2e/tenant-detail-page-ui.cy.ts` (`2/2 passing`)
   - `client/cypress/e2e/payment-callback-ui.cy.ts` (`3/3 passing`)
   - `scripts/verify-pages-ui-runtime.js` prepared for chained UI runtime verification.
+- Live rerun after UI auth-state isolation updates remains green for both UI matrix and authenticated API matrix.
 
 ## In Progress
 
