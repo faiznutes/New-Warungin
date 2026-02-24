@@ -1,5 +1,13 @@
-import { IsOptional, IsEnum, IsNumber, Min, Max, IsString, IsPositive } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  Min,
+  Max,
+  IsString,
+  IsPositive,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class GetOrdersDto {
   @IsOptional()
@@ -16,7 +24,11 @@ export class GetOrdersDto {
   limit: number = 10;
 
   @IsOptional()
-  @IsEnum(['PENDING', 'PROCESSING', 'COMPLETED', 'CANCELLED', 'REFUNDED'])
+  @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsEnum(["PENDING", "PROCESSING", "COMPLETED", "CANCELLED", "REFUNDED"])
   status?: string;
 
   @IsOptional()
@@ -36,12 +48,12 @@ export class GetOrdersDto {
   endDate?: string;
 
   @IsOptional()
-  @IsEnum(['createdAt', 'total', 'orderNumber'])
-  sortBy: string = 'createdAt';
+  @IsEnum(["createdAt", "total", "orderNumber"])
+  sortBy: string = "createdAt";
 
   @IsOptional()
-  @IsEnum(['asc', 'desc'])
-  sortOrder: string = 'desc';
+  @IsEnum(["asc", "desc"])
+  sortOrder: string = "desc";
 
   @IsOptional()
   @IsString()

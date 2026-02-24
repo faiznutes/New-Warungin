@@ -41,6 +41,21 @@ export class OrdersController {
     return this.ordersService.getOrderStats(tenantId, startDate, endDate);
   }
 
+  @Get("search")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER")
+  async searchOrders(@TenantId() tenantId: string, @Query("q") query: string) {
+    return this.ordersService.searchOrders(tenantId, query);
+  }
+
+  @Get("by-status")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
+  async getOrdersByStatus(
+    @TenantId() tenantId: string,
+    @Query("status") status: string,
+  ) {
+    return this.ordersService.getOrdersByStatus(tenantId, status);
+  }
+
   @Get(":id")
   async getOrderById(@Param("id") id: string, @TenantId() tenantId: string) {
     return this.ordersService.getOrderById(id, tenantId);
@@ -157,21 +172,6 @@ export class OrdersController {
   @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
   async deleteOrder(@Param("id") id: string, @TenantId() tenantId: string) {
     return this.ordersService.deleteOrder(id, tenantId);
-  }
-
-  @Get("search")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR", "CASHIER")
-  async searchOrders(@TenantId() tenantId: string, @Query("q") query: string) {
-    return this.ordersService.searchOrders(tenantId, query);
-  }
-
-  @Get("by-status")
-  @Roles("SUPER_ADMIN", "ADMIN_TENANT", "SUPERVISOR")
-  async getOrdersByStatus(
-    @TenantId() tenantId: string,
-    @Query("status") status: string,
-  ) {
-    return this.ordersService.getOrdersByStatus(tenantId, status);
   }
 
   @Post("batch-status")

@@ -19,6 +19,8 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 - Remote production health endpoint check: `https://warungin-api.faiznute.site/health` returns `200` with `services.database=connected`.
 - Coolify deployment route fixed: app `warungin` was pointing to `faiznutes/Warungins.git`; updated to `faiznutes/New-Warungin.git` and redeployed (`w4k08k88wgc4kkcgoook00o8`).
 - Post-redeploy smoke verification on live domain passed for unauth guard checks (`tenant/customers API smoke: 8 tests, 3 passing, 5 pending, 0 failing`).
+- Orders runtime contract pass added: `/orders` now honors filter/search query contract, `/orders/search` route precedence fixed, and `/orders/:id` returns detail relations (items/customer/member/transaction).
+- Orders API smoke added and verified on live domain (`client/cypress/e2e/orders-page-api.cy.ts`: `3 tests, 2 passing, 1 pending, 0 failing`).
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
 ## A. Database Connectivity

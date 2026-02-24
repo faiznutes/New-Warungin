@@ -41,15 +41,78 @@ export class OrdersService {
     this.validateTenantId(tenantId);
 
     const { page, limit, skip } = parsePagination(query.page, query.limit);
+    const where: any = { tenantId };
+
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    if (query.customerId) {
+      where.customerId = query.customerId;
+    }
+
+    if (query.outletId) {
+      where.outletId = query.outletId;
+    }
+
+    if (query.sendToKitchen !== undefined) {
+      where.sendToKitchen = query.sendToKitchen === "true";
+    }
+
+    if (query.kitchenStatus) {
+      where.kitchenStatus = query.kitchenStatus;
+    }
+
+    if (query.startDate || query.endDate) {
+      where.createdAt = {
+        ...(query.startDate && { gte: new Date(query.startDate) }),
+        ...(query.endDate && { lte: new Date(query.endDate) }),
+      };
+    }
+
+    if (query.search?.trim()) {
+      const search = query.search.trim();
+      where.OR = [
+        { orderNumber: { contains: search, mode: "insensitive" } },
+        { temporaryCustomerName: { contains: search, mode: "insensitive" } },
+        { customer: { name: { contains: search, mode: "insensitive" } } },
+        { member: { name: { contains: search, mode: "insensitive" } } },
+      ];
+    }
 
     const [orders, total] = await Promise.all([
       this.prisma.order.findMany({
-        where: { tenantId },
+        where,
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
+        orderBy: {
+          [query.sortBy || "createdAt"]: query.sortOrder || "desc",
+        },
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          member: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          transaction: {
+            select: {
+              id: true,
+              paymentMethod: true,
+              servedBy: true,
+            },
+          },
+        },
       }),
-      this.prisma.order.count({ where: { tenantId } }),
+      this.prisma.order.count({ where }),
     ]);
 
     return {
@@ -63,6 +126,39 @@ export class OrdersService {
 
     const order = await this.prisma.order.findFirst({
       where: { id, tenantId },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        member: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        transaction: {
+          select: {
+            id: true,
+            paymentMethod: true,
+            servedBy: true,
+          },
+        },
+      },
     });
 
     if (!order) {
@@ -131,7 +227,8 @@ export class OrdersService {
       const quantity = Number(item.quantity);
       const subtotal = snapshotPrice * quantity;
       const unitCost = product.cost ? Number(product.cost) : null;
-      const profit = unitCost !== null ? (snapshotPrice - unitCost) * quantity : null;
+      const profit =
+        unitCost !== null ? (snapshotPrice - unitCost) * quantity : null;
 
       return {
         productId: item.productId,
@@ -143,7 +240,10 @@ export class OrdersService {
       };
     });
 
-    const subtotal = orderItemsData.reduce((sum, item) => sum + item.subtotal, 0);
+    const subtotal = orderItemsData.reduce(
+      (sum, item) => sum + item.subtotal,
+      0,
+    );
     const discount = Math.max(0, Math.min(Number(dto.discount || 0), subtotal));
     const total = Math.max(0, subtotal - discount);
 
@@ -478,35 +578,60 @@ export class OrdersService {
   }
 
   async bulkRefund(orderIds: string[], tenantId: string) {
-    const orders = await this.prisma.order.findMany({
+    const eligible = await this.prisma.order.findMany({
       where: {
         id: { in: orderIds },
         tenantId,
         status: "COMPLETED",
       },
+      select: { id: true },
     });
 
-    if (orders.length !== orderIds.length) {
-      throw new BadRequestException(
-        "Some orders not found or not eligible for refund",
-      );
+    const eligibleIds = eligible.map((o) => o.id);
+
+    if (!eligibleIds.length) {
+      return {
+        message: "No eligible orders to refund",
+        refunded: 0,
+        failed: orderIds.length,
+        errors: ["No completed orders found in selection"],
+      };
     }
 
-    await this.prisma.order.updateMany({
-      where: { id: { in: orderIds }, tenantId },
+    const updated = await this.prisma.order.updateMany({
+      where: { id: { in: eligibleIds }, tenantId },
       data: { status: "REFUNDED" as any },
     });
 
-    return { message: "Orders refunded", count: orderIds.length };
+    const failed = Math.max(0, orderIds.length - updated.count);
+
+    return {
+      message: "Orders refund processed",
+      refunded: updated.count,
+      failed,
+      errors:
+        failed > 0
+          ? ["Some orders were not found or not eligible for refund"]
+          : [],
+      count: updated.count,
+    };
   }
 
   async bulkDelete(orderIds: string[], tenantId: string) {
-    await this.prisma.order.updateMany({
+    const updated = await this.prisma.order.updateMany({
       where: { id: { in: orderIds }, tenantId },
       data: { status: "CANCELLED" as any },
     });
 
-    return { message: "Orders deleted", count: orderIds.length };
+    const failed = Math.max(0, orderIds.length - updated.count);
+
+    return {
+      message: "Orders delete processed",
+      deleted: updated.count,
+      failed,
+      errors: failed > 0 ? ["Some orders were not found"] : [],
+      count: updated.count,
+    };
   }
 
   async deleteOrder(id: string, tenantId: string) {
