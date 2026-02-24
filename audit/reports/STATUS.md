@@ -26,12 +26,13 @@
 - Tenant-detail runtime verifier script prepared (`npm run verify:tenant-detail:runtime`, `scripts/verify-tenant-detail-runtime.js`).
 - Multi-page runtime verifier script prepared (`npm run verify:pages:runtime`, `scripts/verify-pages-runtime.js`) and executed for unauth/health baseline.
 - Finance transactions API runtime spec added (`client/cypress/e2e/finance-transactions-page-api.cy.ts`) and included in verifier command chain.
+- Finance transactions UI runtime smoke spec added and verified (`client/cypress/e2e/finance-transactions-page-ui.cy.ts`, `3/3 passing`).
 
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`) is in closure phase.
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
-- WG-AUD-0017: testing coverage expansion (tenant + customers + orders + retention + reports + tenant-detail-user-edit API smoke include unauth guard assertions and env-driven Cypress base/API config).
+- WG-AUD-0017: testing coverage expansion (API sweep complete for current pages; UI-driven smoke started with finance transactions page).
 - Post-deploy verification completed for commit `e8c4c7a` with authenticated API sweep green (`tenant-page`, `customers`, `orders`, `finance-transactions`, `retention`, `reports`, `analytics`, `tenant-detail-user-edit`).
 
 ## Open Bug Count (Current)

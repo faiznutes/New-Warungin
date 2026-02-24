@@ -69,6 +69,8 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
   - `analytics-page-api.cy.ts`: `3/3 passing`
   - `tenant-detail-user-edit-api.cy.ts`: `8/8 passing`
 - Full authenticated chained sweep rerun completed with all specs passing in a single sequential run.
+- UI-driven finance verification added and passed:
+  - `finance-transactions-page-ui.cy.ts`: `3/3 passing` (unauth redirect, authenticated load/filter, detail modal).
 - Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
