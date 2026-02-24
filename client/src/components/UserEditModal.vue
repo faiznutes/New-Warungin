@@ -483,6 +483,18 @@ const scopedRequestConfig = () =>
       }
     : undefined;
 
+const scopedRequestWithParams = (extraParams: Record<string, unknown>) => {
+  const scoped = scopedRequestConfig();
+  if (!scoped) return { params: extraParams };
+  return {
+    ...scoped,
+    params: {
+      ...(scoped.params || {}),
+      ...extraParams,
+    },
+  };
+};
+
 const normalizeRole = (role?: string) => {
   if (!role) return "CASHIER";
   return role === "STAFF" ? "CASHIER" : role;
@@ -606,7 +618,10 @@ const loadStores = async (force = false) => {
     isLoadingStores = true;
     loadingStores.value = true;
     try {
-      const response = await api.get("/outlets", scopedRequestConfig());
+      const response = await api.get(
+        "/outlets",
+        scopedRequestWithParams({ page: 1, limit: 500 }),
+      );
       let rawStores = response.data?.data || [];
 
       if (!Array.isArray(rawStores) || rawStores.length === 0) {
