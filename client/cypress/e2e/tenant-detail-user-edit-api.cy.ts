@@ -241,6 +241,59 @@ describe("Tenant Detail User Edit API Contract", () => {
       });
     });
 
+    it("rejects role switch to cashier without store permissions", () => {
+      const authHeaders = {
+        Authorization: `Bearer ${token}`,
+        "x-tenant-id": tenantId,
+      };
+      const testEmail = `tenant-user-missing-perms-${Date.now()}@warungin.test`;
+      let createdUserId = "";
+
+      cy.request({
+        method: "POST",
+        url: `${apiBase}/tenants/${tenantId}/users`,
+        headers: authHeaders,
+        body: {
+          name: "Tenant Edit QA Missing Permissions",
+          email: testEmail,
+          role: "ADMIN_TENANT",
+        },
+      }).then((createRes) => {
+        assert.include([200, 201], createRes.status);
+        createdUserId = readData(createRes.body)?.id;
+        assert.isString(createdUserId);
+        assert.isNotEmpty(createdUserId);
+      });
+
+      cy.then(() => {
+        cy.request({
+          method: "PUT",
+          url: `${apiBase}/users/${createdUserId}`,
+          headers: authHeaders,
+          qs: { tenantId },
+          failOnStatusCode: false,
+          body: {
+            role: "CASHIER",
+          },
+        }).then((updateRes) => {
+          assert.equal(updateRes.status, 400);
+        });
+      });
+
+      cy.then(() => {
+        if (!createdUserId) return;
+        cy.request({
+          method: "DELETE",
+          url: `${apiBase}/users/${createdUserId}`,
+          headers: authHeaders,
+          qs: { tenantId },
+          failOnStatusCode: false,
+        }).then((deleteRes) => {
+          assert.include([200, 204], deleteRes.status);
+        });
+      });
+    });
+
     it("enforces supervisor role addon policy on user creation", () => {
       const authHeaders = {
         Authorization: `Bearer ${token}`,

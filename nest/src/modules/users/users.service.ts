@@ -76,6 +76,12 @@ export class UsersService {
           )
         : [];
 
+      if (allowedIds.length === 0) {
+        throw new BadRequestException(
+          "At least one allowed store is required for supervisor",
+        );
+      }
+
       const invalid = allowedIds.find((id) => !outletIds.has(id));
       if (invalid) {
         throw new BadRequestException("Invalid allowed store assignment");
@@ -241,11 +247,24 @@ export class UsersService {
     if (data.role) {
       updateData.role = this.normalizeRole(data.role);
     }
-    if (data.permissions) {
+
+    const storeScopedRoles = ["SUPERVISOR", "CASHIER", "KITCHEN"];
+    const roleChanged =
+      typeof data.role === "string" && data.role !== user.role;
+
+    if (data.permissions || roleChanged) {
+      const basePermissions = data.permissions || (user as any).permissions;
+
+      if (storeScopedRoles.includes(effectiveRole) && !basePermissions) {
+        throw new BadRequestException(
+          "Permissions are required for supervisor/cashier/kitchen role",
+        );
+      }
+
       updateData.permissions = await this.sanitizePermissions(
         tenantId,
         effectiveRole,
-        data.permissions,
+        basePermissions,
       );
     } else if (!["SUPERVISOR", "CASHIER", "KITCHEN"].includes(effectiveRole)) {
       updateData.permissions = {
