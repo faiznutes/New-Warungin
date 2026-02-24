@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import {
@@ -387,7 +388,7 @@ export class TenantsService {
       });
 
       if (!supervisorAddon) {
-        throw new ConflictException(
+        throw new BadRequestException(
           "Supervisor Role addon belum aktif untuk tenant ini",
         );
       }
