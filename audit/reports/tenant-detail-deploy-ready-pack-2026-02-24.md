@@ -32,6 +32,7 @@ Scope: super-admin Tenant Detail hardening (no deploy performed yet)
 
 - API health: `https://warungin-api.faiznute.site/health`
 - App availability: `https://warungin.faiznute.site`
+- One-command verifier from repo root: `npm run verify:tenant-detail:runtime`
 - Execute `audit/reports/tenant-detail-runtime-execution-checklist-2026-02-24.md` end-to-end.
 
 ## Rollback reference

@@ -10,6 +10,7 @@ Purpose: post-deploy verification for deep user/store/role-policy hardening.
   - `SUPERADMIN_EMAIL`
   - `SUPERADMIN_PASSWORD`
   - `TENANT_ID`
+- Optional template: copy `client/cypress.env.example.json` to `client/cypress.env.json` and fill real values.
 - Confirm target tenant has at least one outlet.
 - Confirm addon state for `SUPERVISOR_ROLE` is known (active/inactive).
 
@@ -19,6 +20,12 @@ Run from `client/`:
 
 ```bash
 npm run test:tenant-detail:api -- --config baseUrl=https://warungin.faiznute.site --env API_BASE=https://warungin-api.faiznute.site/api
+```
+
+Or run the packaged verifier from repo root:
+
+```bash
+npm run verify:tenant-detail:runtime
 ```
 
 Expected baseline after env is set:

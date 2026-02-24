@@ -23,6 +23,7 @@
 - Tenant detail deep hardening pass (super-admin user/store/role-policy flow) documented in `audit/reports/page-tenant-detail-deep-audit-2026-02-24.md`.
 - Tenant-detail runtime execution checklist prepared in `audit/reports/tenant-detail-runtime-execution-checklist-2026-02-24.md`.
 - Tenant-detail deploy-ready pack prepared in `audit/reports/tenant-detail-deploy-ready-pack-2026-02-24.md`.
+- Tenant-detail runtime verifier script prepared (`npm run verify:tenant-detail:runtime`, `scripts/verify-tenant-detail-runtime.js`).
 
 ## In Progress
 
