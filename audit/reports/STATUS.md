@@ -27,6 +27,7 @@
 - Multi-page runtime verifier script prepared (`npm run verify:pages:runtime`, `scripts/verify-pages-runtime.js`) and executed for unauth/health baseline.
 - Finance transactions API runtime spec added (`client/cypress/e2e/finance-transactions-page-api.cy.ts`) and included in verifier command chain.
 - Finance transactions UI runtime smoke spec added and verified (`client/cypress/e2e/finance-transactions-page-ui.cy.ts`, `3/3 passing`).
+- Final explicit-env authenticated chained rerun completed green across all current page API specs (`tenant/customers/orders/finance/retention/reports/analytics/tenant-detail`).
 
 ## In Progress
 
