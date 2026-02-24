@@ -28,12 +28,18 @@
 - Finance transactions API runtime spec added (`client/cypress/e2e/finance-transactions-page-api.cy.ts`) and included in verifier command chain.
 - Finance transactions UI runtime smoke spec added and verified (`client/cypress/e2e/finance-transactions-page-ui.cy.ts`, `3/3 passing`).
 - Final explicit-env authenticated chained rerun completed green across all current page API specs (`tenant/customers/orders/finance/retention/reports/analytics/tenant-detail`).
+- UI smoke expansion phase completed for key pages:
+  - `client/cypress/e2e/customers-page-ui.cy.ts` (`3/3 passing`)
+  - `client/cypress/e2e/orders-page-ui.cy.ts` (`3/3 passing`)
+  - `client/cypress/e2e/tenant-detail-page-ui.cy.ts` (`2/2 passing`)
+  - `client/cypress/e2e/payment-callback-ui.cy.ts` (`3/3 passing`)
+  - `scripts/verify-pages-ui-runtime.js` prepared for chained UI runtime verification.
 
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`) is in closure phase.
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
-- WG-AUD-0017: testing coverage expansion (API sweep complete for current pages; UI-driven smoke started with finance transactions page).
+- WG-AUD-0017: testing coverage expansion (API sweep complete; UI smoke now covers finance/customers/orders/tenant-detail/payment-callback).
 - Post-deploy verification completed for commit `e8c4c7a` with authenticated API sweep green (`tenant-page`, `customers`, `orders`, `finance-transactions`, `retention`, `reports`, `analytics`, `tenant-detail-user-edit`).
 
 ## Open Bug Count (Current)

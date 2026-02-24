@@ -46,6 +46,7 @@
     "test:addons:guide": "echo 'See docs/QUICK_ADDON_TEST.md for testing guide'",
     "verify:tenant-detail:runtime": "node scripts/verify-tenant-detail-runtime.js",
     "verify:pages:runtime": "node scripts/verify-pages-runtime.js",
+    "verify:pages:ui-runtime": "node scripts/verify-pages-ui-runtime.js",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "check": "node scripts/check-compatibility.js",
