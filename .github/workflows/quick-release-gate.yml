@@ -1,0 +1,65 @@
+name: Quick Release Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+jobs:
+  quick-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      APP_BASE_URL: https://warungin.faiznute.site
+      API_BASE: https://warungin-api.faiznute.site/api
+      HEALTH_URL: https://warungin-api.faiznute.site/health
+      SUPERADMIN_EMAIL: ${{ secrets.SUPERADMIN_EMAIL }}
+      SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+      TENANT_ID: ${{ secrets.TENANT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Verify required secrets
+        run: |
+          missing=0
+          for key in SUPERADMIN_EMAIL SUPERADMIN_PASSWORD TENANT_ID; do
+            if [ -z "${!key}" ]; then
+              echo "Missing required secret: $key"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Health identity gate
+        run: npm run verify:health:identity
+
+      - name: API sanity trio
+        working-directory: client
+        run: |
+          npm run test:customers:api -- --config baseUrl=$APP_BASE_URL --env API_BASE=$API_BASE,SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL,SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD,TENANT_ID=$TENANT_ID
+          npm run test:orders:api -- --config baseUrl=$APP_BASE_URL --env API_BASE=$API_BASE,SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL,SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD,TENANT_ID=$TENANT_ID
+          npm run test:tenant-detail:api -- --config baseUrl=$APP_BASE_URL --env API_BASE=$API_BASE,SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL,SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD,TENANT_ID=$TENANT_ID
+
+      - name: UI sanity trio
+        working-directory: client
+        run: |
+          npm run test:customers:ui -- --config baseUrl=$APP_BASE_URL --env API_BASE=$API_BASE,SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL,SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD,TENANT_ID=$TENANT_ID
+          npm run test:orders:ui -- --config baseUrl=$APP_BASE_URL --env API_BASE=$API_BASE,SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL,SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD,TENANT_ID=$TENANT_ID
+          npm run test:tenant-detail:ui -- --config baseUrl=$APP_BASE_URL --env API_BASE=$API_BASE,SUPERADMIN_EMAIL=$SUPERADMIN_EMAIL,SUPERADMIN_PASSWORD=$SUPERADMIN_PASSWORD,TENANT_ID=$TENANT_ID

@@ -8,6 +8,19 @@ describe("Payment Webhook API Contract", () => {
   const password = Cypress.env("SUPERADMIN_PASSWORD");
 
   const readData = (body: any) => body?.data ?? body;
+  const signedPayload = {
+    order_id: "SMOKE-SIGNED-NOTFOUND",
+    transaction_status: "settlement",
+    transaction_id: "txn-signed-smoke-001",
+  };
+
+  const sha512Hex = async (payload: unknown) => {
+    const input = new TextEncoder().encode(JSON.stringify(payload));
+    const digest = await crypto.subtle.digest("SHA-512", input);
+    return Array.from(new Uint8Array(digest))
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
+  };
 
   it("rejects payment status without auth token", () => {
     cy.request({
@@ -50,6 +63,23 @@ describe("Payment Webhook API Contract", () => {
       },
     }).then((res) => {
       assert.notEqual(res.status, 401);
+    });
+  });
+
+  it("accepts correctly signed callback payload (not forbidden)", () => {
+    cy.wrap(sha512Hex(signedPayload)).then((signature) => {
+      cy.request({
+        method: "POST",
+        url: `${apiBase}/payments/callback`,
+        failOnStatusCode: false,
+        body: signedPayload,
+        headers: {
+          "x-midtrans-signature": signature,
+        },
+      }).then((res) => {
+        assert.notEqual(res.status, 401);
+        assert.notEqual(res.status, 403);
+      });
     });
   });
 

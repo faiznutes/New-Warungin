@@ -27,6 +27,7 @@
 - **Post-deploy quick reconfirm:** still green.
   - UI trio: customers `4/4`, orders `4/4`, tenant-detail `3/3`
   - API trio: customers `4/4`, orders `3/3`, tenant-detail-user-edit `8/8`
+  - payment-webhook API contract (with signed callback path): `5/5`
 
 ## Risks Remaining (Non-Blocking)
 
@@ -38,6 +39,7 @@
 - Keep env-backed authenticated verifier runs in CI/release gate for regression prevention.
 - Continue UI smoke expansion by business-critical journeys, but current coverage is sufficient for audited scope.
 - Keep `/health` identity fields monitored (`appCommitSha`, `commitSource`, `configuredAppCommitSha`) to catch future deployment-env drift quickly.
+- CI quick gate is now prepared at `.github/workflows/quick-release-gate.yml` to enforce health identity + API/UI sanity trios (secret-backed).
 
 ## Closure
 

@@ -49,6 +49,10 @@
   - UI trio: customers `4/4`, orders `4/4`, tenant-detail `3/3`
   - API trio: customers `4/4`, orders `3/3`, tenant-detail-user-edit `8/8`
 - Additional lint cleanup pass completed on shared components/table primitives, reducing focused warning baseline from `28` to `22` (0 errors).
+- Phase 3 completed: focused lint scope for audited modules/components now reports `0 warnings, 0 errors`.
+- Phase 5 completed: payment webhook contract now includes signed callback verification (`payment-webhook-api.cy.ts` updated to `5/5 passing`).
+- Phase 6 completed: CI quick gate added at `.github/workflows/quick-release-gate.yml` (health identity + API/UI sanity trios with required secrets).
+- Phase 7 verification (pre-deploy closure) completed: health identity script and payment webhook spec pass on live.
 
 ## In Progress
 

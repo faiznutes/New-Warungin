@@ -15,7 +15,10 @@
         :style="tooltipStyle"
       >
         <div class="flex items-start gap-3">
-          <span class="material-symbols-outlined text-blue-400 text-[20px] flex-shrink-0">lightbulb</span>
+          <span
+            class="material-symbols-outlined text-blue-400 text-[20px] flex-shrink-0"
+            >lightbulb</span
+          >
           <div class="flex-1">
             <h4 class="font-bold text-sm mb-1">{{ title }}</h4>
             <p class="text-xs text-slate-300 leading-relaxed">{{ content }}</p>
@@ -27,7 +30,9 @@
             <span class="material-symbols-outlined text-[16px]">close</span>
           </button>
         </div>
-        <div class="mt-3 pt-3 border-t border-slate-700 flex items-center justify-between">
+        <div
+          class="mt-3 pt-3 border-t border-slate-700 flex items-center justify-between"
+        >
           <button
             @click="dismiss"
             class="text-xs font-bold text-blue-400 hover:text-emerald-300 transition-colors pointer-events-auto"
@@ -52,20 +57,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 
 interface Props {
   show: boolean;
   target: HTMLElement | null;
   title: string;
   content: string;
-  placement?: 'top' | 'bottom' | 'left' | 'right';
+  placement?: "top" | "bottom" | "left" | "right";
   tooltipId?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placement: 'bottom',
-  tooltipId: '',
+  placement: "bottom",
+  tooltipId: "",
 });
 
 const emit = defineEmits<{
@@ -78,43 +83,32 @@ const visible = ref(false);
 
 const tooltipStyle = computed(() => {
   if (!props.target || !tooltipRef.value) return {};
-  
+
   const targetRect = props.target.getBoundingClientRect();
   const tooltipRect = tooltipRef.value.getBoundingClientRect();
   const gap = 8;
-  
+
   let top = 0;
   let left = 0;
-  let arrowTop = '';
-  let arrowLeft = '';
-  
   switch (props.placement) {
-    case 'top':
+    case "top":
       top = targetRect.top - tooltipRect.height - gap;
-      left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
-      arrowTop = '100%';
-      arrowLeft = '50%';
+      left = targetRect.left + targetRect.width / 2 - tooltipRect.width / 2;
       break;
-    case 'bottom':
+    case "bottom":
       top = targetRect.bottom + gap;
-      left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
-      arrowTop = '-4px';
-      arrowLeft = '50%';
+      left = targetRect.left + targetRect.width / 2 - tooltipRect.width / 2;
       break;
-    case 'left':
-      top = targetRect.top + (targetRect.height / 2) - (tooltipRect.height / 2);
+    case "left":
+      top = targetRect.top + targetRect.height / 2 - tooltipRect.height / 2;
       left = targetRect.left - tooltipRect.width - gap;
-      arrowTop = '50%';
-      arrowLeft = '100%';
       break;
-    case 'right':
-      top = targetRect.top + (targetRect.height / 2) - (tooltipRect.height / 2);
+    case "right":
+      top = targetRect.top + targetRect.height / 2 - tooltipRect.height / 2;
       left = targetRect.right + gap;
-      arrowTop = '50%';
-      arrowLeft = '-4px';
       break;
   }
-  
+
   // Keep within viewport
   const padding = 16;
   if (left < padding) left = padding;
@@ -125,7 +119,7 @@ const tooltipStyle = computed(() => {
   if (top + tooltipRect.height > window.innerHeight - padding) {
     top = window.innerHeight - tooltipRect.height - padding;
   }
-  
+
   return {
     top: `${top}px`,
     left: `${left}px`,
@@ -133,17 +127,31 @@ const tooltipStyle = computed(() => {
 });
 
 const arrowStyle = computed(() => {
-  const arrowOffset = '8px';
-  
   switch (props.placement) {
-    case 'top':
-      return { bottom: '-4px', left: '50%', transform: 'translateX(-50%) rotate(45deg)' };
-    case 'bottom':
-      return { top: '-4px', left: '50%', transform: 'translateX(-50%) rotate(45deg)' };
-    case 'left':
-      return { right: '-4px', top: '50%', transform: 'translateY(-50%) rotate(45deg)' };
-    case 'right':
-      return { left: '-4px', top: '50%', transform: 'translateY(-50%) rotate(45deg)' };
+    case "top":
+      return {
+        bottom: "-4px",
+        left: "50%",
+        transform: "translateX(-50%) rotate(45deg)",
+      };
+    case "bottom":
+      return {
+        top: "-4px",
+        left: "50%",
+        transform: "translateX(-50%) rotate(45deg)",
+      };
+    case "left":
+      return {
+        right: "-4px",
+        top: "50%",
+        transform: "translateY(-50%) rotate(45deg)",
+      };
+    case "right":
+      return {
+        left: "-4px",
+        top: "50%",
+        transform: "translateY(-50%) rotate(45deg)",
+      };
     default:
       return {};
   }
@@ -151,27 +159,35 @@ const arrowStyle = computed(() => {
 
 const dismiss = () => {
   visible.value = false;
-  emit('dismiss');
+  emit("dismiss");
 };
 
 const dontShowAgain = () => {
   visible.value = false;
-  emit('dontShowAgain');
+  emit("dontShowAgain");
 };
 
-watch(() => props.show, async (newShow) => {
-  if (newShow) {
-    await nextTick();
-    visible.value = true;
-  } else {
-    visible.value = false;
-  }
-});
+watch(
+  () => props.show,
+  async (newShow) => {
+    if (newShow) {
+      await nextTick();
+      visible.value = true;
+    } else {
+      visible.value = false;
+    }
+  },
+);
 
 // Close on click outside
 const handleClickOutside = (e: MouseEvent) => {
-  if (props.show && tooltipRef.value && !tooltipRef.value.contains(e.target as Node) && 
-      props.target && !props.target.contains(e.target as Node)) {
+  if (
+    props.show &&
+    tooltipRef.value &&
+    !tooltipRef.value.contains(e.target as Node) &&
+    props.target &&
+    !props.target.contains(e.target as Node)
+  ) {
     dismiss();
   }
 };
@@ -182,11 +198,10 @@ onMounted(() => {
       visible.value = true;
     });
   }
-  document.addEventListener('click', handleClickOutside);
+  document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
-

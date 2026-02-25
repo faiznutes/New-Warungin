@@ -104,6 +104,12 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
   - `customers-page-ui.cy.ts`: `4/4 passing` (includes detail->edit modal path).
   - `orders-page-ui.cy.ts`: `4/4 passing` (includes status-control visibility path).
   - `tenant-detail-page-ui.cy.ts`: `3/3 passing` (includes add-user modal required-field path).
+- Payment callback/webhook contract deepening:
+  - `payment-webhook-api.cy.ts` extended with correctly signed callback payload verification.
+  - live run: `5/5 passing`.
+- Health identity operational gate:
+  - new script `npm run verify:health:identity` validates health status, DB connectivity, and commit identity source.
+  - latest run pass: `appCommitSha=b453257...`, `commitSource=SOURCE_COMMIT`, DB `connected`.
 - Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
