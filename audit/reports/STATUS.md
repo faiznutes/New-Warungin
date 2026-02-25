@@ -45,6 +45,9 @@
   - customers UI `4/4`
   - orders UI `4/4`
   - tenant-detail UI `3/3`
+- Latest post-deploy quick reconfirm remains green:
+  - UI trio: customers `4/4`, orders `4/4`, tenant-detail `3/3`
+  - API trio: customers `4/4`, orders `3/3`, tenant-detail-user-edit `8/8`
 
 ## In Progress
 

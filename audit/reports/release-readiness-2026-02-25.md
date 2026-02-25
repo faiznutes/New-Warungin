@@ -19,11 +19,14 @@
 - **UI smoke matrix:** all green.
   - payment-callback `3/3`
   - finance-transactions `3/3`
-  - customers `3/3`
-  - orders `3/3`
-  - tenant-detail `2/2`
+  - customers `4/4`
+  - orders `4/4`
+  - tenant-detail `3/3`
 - **Runtime health:** `200`, database connected.
 - **Identity observability:** fixed; `/health` now reports active deployed commit via `commitSource=SOURCE_COMMIT`.
+- **Post-deploy quick reconfirm:** still green.
+  - UI trio: customers `4/4`, orders `4/4`, tenant-detail `3/3`
+  - API trio: customers `4/4`, orders `3/3`, tenant-detail-user-edit `8/8`
 
 ## Risks Remaining (Non-Blocking)
 
