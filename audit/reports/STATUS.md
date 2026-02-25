@@ -35,6 +35,7 @@
   - `client/cypress/e2e/payment-callback-ui.cy.ts` (`3/3 passing`)
   - `scripts/verify-pages-ui-runtime.js` prepared for chained UI runtime verification.
 - Live rerun after UI auth-state isolation updates remains green for both UI matrix and authenticated API matrix.
+- Post-deploy rerun remains green on both matrices (UI + authenticated API), confirming current release state is stable for audited flows.
 
 ## In Progress
 
