@@ -48,6 +48,7 @@
 - Latest post-deploy quick reconfirm remains green:
   - UI trio: customers `4/4`, orders `4/4`, tenant-detail `3/3`
   - API trio: customers `4/4`, orders `3/3`, tenant-detail-user-edit `8/8`
+- Additional lint cleanup pass completed on shared components/table primitives, reducing focused warning baseline from `28` to `22` (0 errors).
 
 ## In Progress
 

@@ -1,7 +1,9 @@
 <template>
-  <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+  <div
+    class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+  >
     <slot></slot>
-    
+
     <template v-if="!$slots.default">
       <button
         v-if="view"
@@ -11,7 +13,7 @@
       >
         <span class="material-symbols-outlined text-[18px]">visibility</span>
       </button>
-      
+
       <button
         v-if="edit"
         @click="$emit('edit', $event)"
@@ -20,7 +22,7 @@
       >
         <span class="material-symbols-outlined text-[18px]">edit</span>
       </button>
-      
+
       <button
         v-if="del"
         @click="$emit('delete', $event)"
@@ -34,13 +36,13 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits } from "vue";
 
-const props = defineProps<{
+defineProps<{
   view?: boolean;
   edit?: boolean;
   del?: boolean;
 }>();
 
-defineEmits(['view', 'edit', 'delete']);
+defineEmits(["view", "edit", "delete"]);
 </script>

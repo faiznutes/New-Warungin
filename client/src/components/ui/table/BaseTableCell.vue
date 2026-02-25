@@ -2,7 +2,11 @@
   <td
     :class="[
       'px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors duration-200',
-      align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left',
+      align === 'right'
+        ? 'text-right'
+        : align === 'center'
+          ? 'text-center'
+          : 'text-left',
     ]"
   >
     <slot></slot>
@@ -10,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { defineProps } from "vue";
 
-const props = defineProps<{
-  align?: 'left' | 'center' | 'right';
+defineProps<{
+  align?: "left" | "center" | "right";
 }>();
 </script>

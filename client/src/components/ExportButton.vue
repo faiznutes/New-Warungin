@@ -4,8 +4,18 @@
       @click="showMenu = !showMenu"
       class="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition flex items-center space-x-2"
     >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
       </svg>
       <span>Ekspor</span>
     </button>
@@ -48,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from "vue";
 
 interface Props {
   data: any[];
@@ -57,21 +67,21 @@ interface Props {
   headers?: string[];
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  title: 'Data Export',
+withDefaults(defineProps<Props>(), {
+  title: "Data Export",
   headers: undefined,
 });
 
 const emit = defineEmits<{
-  (e: 'export', format: 'csv' | 'excel' | 'pdf' | 'email'): void;
+  (e: "export", format: "csv" | "excel" | "pdf" | "email"): void;
 }>();
 
 const showMenu = ref(false);
 const menuRef = ref<HTMLElement | null>(null);
 
-const handleExport = (format: 'csv' | 'excel' | 'pdf' | 'email') => {
+const handleExport = (format: "csv" | "excel" | "pdf" | "email") => {
   showMenu.value = false;
-  emit('export', format);
+  emit("export", format);
 };
 
 // Handle click outside
@@ -82,11 +92,10 @@ const handleClickOutside = (event: MouseEvent) => {
 };
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
+  document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
-
