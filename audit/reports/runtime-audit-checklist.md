@@ -89,6 +89,10 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
   - validated that `/payments/callback` and `/payments/webhook/n8n` remain public (not `401`) while `/payments/status/:orderId` stays auth-protected.
 - Health identity observability hardening prepared in backend:
   - `HealthService` now resolves commit SHA from multiple deployment env keys and exposes `deploymentId` / `containerId` in identity payload for easier runtime provenance tracing.
+- Post-deploy check after commit `f4ce851`:
+  - `/health` remains `200` with `database=connected`.
+  - payment callback/webhook contract spec still pass (`payment-webhook-api.cy.ts`: `4/4`).
+  - identity still reports stale `appCommitSha=ce6c21a` and `deploymentId` is absent, so observability drift is narrowed to runtime env wiring rather than application fallback logic.
 - Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 

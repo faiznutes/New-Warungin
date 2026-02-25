@@ -37,6 +37,7 @@
 - Live rerun after UI auth-state isolation updates remains green for both UI matrix and authenticated API matrix.
 - Post-deploy rerun remains green on both matrices (UI + authenticated API), confirming current release state is stable for audited flows.
 - Payment callback/webhook API contract smoke added and passing (`client/cypress/e2e/payment-webhook-api.cy.ts`, `4/4 passing`).
+- Post-deploy check for commit `f4ce851`: webhook contract remains green, but `/health` identity still reports stale commit SHA and missing deployment id (observability env wiring issue remains).
 
 ## In Progress
 
