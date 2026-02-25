@@ -38,6 +38,7 @@
 - Post-deploy rerun remains green on both matrices (UI + authenticated API), confirming current release state is stable for audited flows.
 - Payment callback/webhook API contract smoke added and passing (`client/cypress/e2e/payment-webhook-api.cy.ts`, `4/4 passing`).
 - Post-deploy check for commit `f4ce851`: webhook contract remains green, but `/health` identity still reports stale commit SHA and missing deployment id (observability env wiring issue remains).
+- Observability identity drift resolved in deployed commit `c6e6d80`: `/health` now reports active `appCommitSha` with `commitSource=SOURCE_COMMIT`.
 
 ## In Progress
 
@@ -45,7 +46,6 @@
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
 - WG-AUD-0017: testing coverage expansion (API sweep complete; UI smoke now covers finance/customers/orders/tenant-detail/payment-callback).
 - WG-AUD-0026: health identity observability drift hardening implemented locally (`health.service` commit source fallback + deployment/container identity), pending deployment verification.
-- WG-AUD-0026: second hardening pass implemented locally to avoid stale static `APP_COMMIT_SHA` dominance (dynamic commit-source precedence + `commitSource`/`configuredAppCommitSha` visibility), pending deployment verification.
 - Post-deploy verification completed for commit `e8c4c7a` with authenticated API sweep green (`tenant-page`, `customers`, `orders`, `finance-transactions`, `retention`, `reports`, `analytics`, `tenant-detail-user-edit`).
 
 ## Open Bug Count (Current)
