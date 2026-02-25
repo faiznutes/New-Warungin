@@ -1,10 +1,8 @@
-import { ref, computed, watch } from 'vue';
-import { useAuthStore } from '../stores/auth';
-import { useRouter } from 'vue-router';
+import { ref, computed, watch } from "vue";
+import { useAuthStore } from "../stores/auth";
 
 export const useTenantCheck = () => {
   const authStore = useAuthStore();
-  const router = useRouter();
   const showTenantModal = ref(false);
 
   const needsTenantSelection = computed(() => {
@@ -36,11 +34,11 @@ export const useTenantCheck = () => {
         try {
           await authStore.fetchTenants();
         } catch (error) {
-          console.error('Error fetching tenants:', error);
+          console.error("Error fetching tenants:", error);
         }
       }
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   // Watch for selectedTenantId changes and auto-close modal
@@ -50,7 +48,7 @@ export const useTenantCheck = () => {
       if (newTenantId && showTenantModal.value) {
         showTenantModal.value = false;
       }
-    }
+    },
   );
 
   return {
@@ -60,4 +58,3 @@ export const useTenantCheck = () => {
     handleTenantSelected,
   };
 };
-

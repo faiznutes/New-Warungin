@@ -1,25 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '../stores/auth';
-import MarketingLayout from '../layouts/MarketingLayout.vue';
-import api from '../api';
-import { addonRoutes } from './addon.routes';
-import { checkStoreAccess } from './supervisor-store-guard';
-
-// Helper function to get layout based on role
-const getLayoutForRole = (role: string | undefined) => {
-  switch (role) {
-    case 'SUPER_ADMIN':
-      return () => import('../layouts/SuperAdminLayout.vue');
-    case 'ADMIN_TENANT':
-      return () => import('../layouts/TenantLayout.vue');
-    case 'CASHIER':
-      return () => import('../layouts/KasirLayout.vue');
-    case 'KITCHEN':
-      return () => import('../layouts/KitchenLayout.vue');
-    default:
-      return () => import('../layouts/AppLayout.vue');
-  }
-};
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth";
+import MarketingLayout from "../layouts/MarketingLayout.vue";
+import api from "../api";
+import { addonRoutes } from "./addon.routes";
+import { checkStoreAccess } from "./supervisor-store-guard";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,508 +11,568 @@ const router = createRouter({
     if (savedPosition) {
       return savedPosition;
     }
-    return { top: 0, behavior: 'smooth' };
+    return { top: 0, behavior: "smooth" };
   },
   routes: [
     {
-      path: '/',
+      path: "/",
       component: MarketingLayout,
       children: [
         {
-          path: '',
-          name: 'home',
-          component: () => import('../views/marketing/Home.vue'),
+          path: "",
+          name: "home",
+          component: () => import("../views/marketing/Home.vue"),
         },
         {
-          path: 'demo',
-          name: 'demo',
-          component: () => import('../views/marketing/Demo.vue'),
+          path: "demo",
+          name: "demo",
+          component: () => import("../views/marketing/Demo.vue"),
         },
         {
-          path: 'contact',
-          name: 'contact',
-          component: () => import('../views/marketing/Contact.vue'),
+          path: "contact",
+          name: "contact",
+          component: () => import("../views/marketing/Contact.vue"),
         },
         {
-          path: 'terms',
-          name: 'terms',
-          component: () => import('../views/marketing/Terms.vue'),
+          path: "terms",
+          name: "terms",
+          component: () => import("../views/marketing/Terms.vue"),
         },
         {
-          path: 'pricing',
-          name: 'pricing',
-          component: () => import('../views/marketing/Pricing.vue'),
+          path: "pricing",
+          name: "pricing",
+          component: () => import("../views/marketing/Pricing.vue"),
         },
         {
-          path: 'help',
-          name: 'help',
-          component: () => import('../views/marketing/Help.vue'),
+          path: "help",
+          name: "help",
+          component: () => import("../views/marketing/Help.vue"),
         },
         {
-          path: 'help/:slug',
-          name: 'help-article',
-          component: () => import('../views/marketing/HelpArticle.vue'),
+          path: "help/:slug",
+          name: "help-article",
+          component: () => import("../views/marketing/HelpArticle.vue"),
         },
         {
-          path: 'help/category/:categoryId',
-          name: 'help-category',
-          component: () => import('../views/marketing/HelpCategory.vue'),
+          path: "help/category/:categoryId",
+          name: "help-category",
+          component: () => import("../views/marketing/HelpCategory.vue"),
         },
       ],
     },
     {
-      path: '/forgot-password',
-      name: 'forgot-password',
-      component: () => import('../views/auth/ForgotPassword.vue'),
+      path: "/forgot-password",
+      name: "forgot-password",
+      component: () => import("../views/auth/ForgotPassword.vue"),
     },
     {
-      path: '/contact/success',
-      name: 'contact-success',
-      component: () => import('../views/marketing/ContactSuccess.vue'),
+      path: "/contact/success",
+      name: "contact-success",
+      component: () => import("../views/marketing/ContactSuccess.vue"),
     },
     {
-      path: '/login',
-      name: 'login',
-      component: () => import('../views/auth/Login.vue'),
+      path: "/login",
+      name: "login",
+      component: () => import("../views/auth/Login.vue"),
     },
     // Payment callback routes (public, no auth required)
     {
-      path: '/payment/success',
-      name: 'payment-success',
-      component: () => import('../views/payment/PaymentCallback.vue'),
-      props: (route) => ({ status: 'success', ...route.query }),
+      path: "/payment/success",
+      name: "payment-success",
+      component: () => import("../views/payment/PaymentCallback.vue"),
+      props: (route) => ({ status: "success", ...route.query }),
     },
     {
-      path: '/payment/error',
-      name: 'payment-error',
-      component: () => import('../views/payment/PaymentCallback.vue'),
-      props: (route) => ({ status: 'error', ...route.query }),
+      path: "/payment/error",
+      name: "payment-error",
+      component: () => import("../views/payment/PaymentCallback.vue"),
+      props: (route) => ({ status: "error", ...route.query }),
     },
     {
-      path: '/payment/pending',
-      name: 'payment-pending',
-      component: () => import('../views/payment/PaymentCallback.vue'),
-      props: (route) => ({ status: 'pending', ...route.query }),
+      path: "/payment/pending",
+      name: "payment-pending",
+      component: () => import("../views/payment/PaymentCallback.vue"),
+      props: (route) => ({ status: "pending", ...route.query }),
     },
     // Fullscreen POS Route (no layout wrapper for optimal POS experience)
     {
-      path: '/pos',
-      name: 'pos-fullscreen',
-      component: () => import('../views/pos/POS.vue'),
+      path: "/pos",
+      name: "pos-fullscreen",
+      component: () => import("../views/pos/POS.vue"),
       meta: {
         requiresAuth: true,
-        roles: ['CASHIER', 'SUPERVISOR', 'ADMIN_TENANT'],
-        fullscreen: true
+        roles: ["CASHIER", "SUPERVISOR", "ADMIN_TENANT"],
+        fullscreen: true,
       },
     },
     // Fullscreen Open Shift Route (no nav, dedicated shift opening page)
     {
-      path: '/open-shift',
-      name: 'open-shift',
-      component: () => import('../views/cashier/OpenShift.vue'),
+      path: "/open-shift",
+      name: "open-shift",
+      component: () => import("../views/cashier/OpenShift.vue"),
       meta: {
         requiresAuth: true,
-        roles: ['CASHIER', 'SUPERVISOR'],
-        fullscreen: true
+        roles: ["CASHIER", "SUPERVISOR"],
+        fullscreen: true,
       },
     },
     // Fullscreen Kitchen Display Route
     {
-      path: '/kitchen',
-      name: 'kitchen-display',
-      component: () => import('../views/kitchen/KitchenOrders.vue'),
+      path: "/kitchen",
+      name: "kitchen-display",
+      component: () => import("../views/kitchen/KitchenOrders.vue"),
       meta: {
         requiresAuth: true,
-        roles: ['KITCHEN', 'SUPERVISOR', 'SUPER_ADMIN'],
-        fullscreen: true
+        roles: ["KITCHEN", "SUPERVISOR", "SUPER_ADMIN"],
+        fullscreen: true,
       },
     },
     // App Routes - Dynamic Layout based on role
     {
-      path: '/app',
-      component: () => import('../layouts/DynamicLayout.vue'),
-      redirect: '/app', // Will be handled by beforeEach guard to redirect to appropriate dashboard
+      path: "/app",
+      component: () => import("../layouts/DynamicLayout.vue"),
+      redirect: "/app", // Will be handled by beforeEach guard to redirect to appropriate dashboard
       meta: { requiresAuth: true },
       children: [
         {
-          path: 'dashboard',
-          name: 'dashboard',
-          component: () => import('../views/dashboard/Dashboard.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
+          path: "dashboard",
+          name: "dashboard",
+          component: () => import("../views/dashboard/Dashboard.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "CASHIER", "KITCHEN"] },
         },
 
         {
-          path: 'cashier/cash-shift',
-          name: 'cash-shift',
-          component: () => import('../views/cashier/CashShift.vue'),
-          meta: { roles: ['CASHIER'] },
+          path: "cashier/cash-shift",
+          name: "cash-shift",
+          component: () => import("../views/cashier/CashShift.vue"),
+          meta: { roles: ["CASHIER"] },
         },
         {
-          path: 'super-dashboard',
-          name: 'super-dashboard',
-          component: () => import('../views/superadmin/SuperDashboard.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "super-dashboard",
+          name: "super-dashboard",
+          component: () => import("../views/superadmin/SuperDashboard.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         // Super Admin only
         {
-          path: 'tenants',
-          name: 'tenants',
-          component: () => import('../views/tenants/Tenants.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "tenants",
+          name: "tenants",
+          component: () => import("../views/tenants/Tenants.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'tenants/:id',
-          name: 'tenant-detail',
-          component: () => import('../views/tenants/TenantDetail.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "tenants/:id",
+          name: "tenant-detail",
+          component: () => import("../views/tenants/TenantDetail.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'tenants/support',
-          redirect: '/app/superadmin/contact-messages',
+          path: "tenants/support",
+          redirect: "/app/superadmin/contact-messages",
         },
         {
-          path: 'support',
-          name: 'client-support',
-          component: () => import('../views/support/ClientSupport.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'] },
+          path: "support",
+          name: "client-support",
+          component: () => import("../views/support/ClientSupport.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "CASHIER"] },
         },
         {
-          path: 'reports/global',
-          name: 'global-reports',
-          component: () => import('../views/reports/GlobalReports.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "reports/global",
+          name: "global-reports",
+          component: () => import("../views/reports/GlobalReports.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'superadmin/contact-messages',
-          name: 'contact-messages',
-          component: () => import('../views/superadmin/ContactMessages.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "superadmin/contact-messages",
+          name: "contact-messages",
+          component: () => import("../views/superadmin/ContactMessages.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'superadmin/server-monitor',
-          name: 'server-monitor',
-          component: () => import('../views/superadmin/ServerMonitor.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "superadmin/server-monitor",
+          name: "server-monitor",
+          component: () => import("../views/superadmin/ServerMonitor.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'superadmin/system-info',
-          name: 'system-info',
-          component: () => import('../views/superadmin/SystemInfo.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "superadmin/system-info",
+          name: "system-info",
+          component: () => import("../views/superadmin/SystemInfo.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'settings/system',
-          name: 'system-settings',
-          component: () => import('../views/settings/SystemSettings.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/system",
+          name: "system-settings",
+          component: () => import("../views/settings/SystemSettings.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'settings/style-guide',
-          name: 'style-guide',
-          component: () => import('../views/settings/FormStyleGuide.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/style-guide",
+          name: "style-guide",
+          component: () => import("../views/settings/FormStyleGuide.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'settings/table-style-guide',
-          name: 'table-style-guide',
-          component: () => import('../views/settings/TableStyleGuide.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/table-style-guide",
+          name: "table-style-guide",
+          component: () => import("../views/settings/TableStyleGuide.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'settings/loading-states-guide',
-          name: 'loading-states-guide',
-          component: () => import('../views/settings/LoadingStatesGuide.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/loading-states-guide",
+          name: "loading-states-guide",
+          component: () => import("../views/settings/LoadingStatesGuide.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'settings/advanced-components-guide',
-          name: 'advanced-components-guide',
-          component: () => import('../views/settings/AdvancedComponentsGuide.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/advanced-components-guide",
+          name: "advanced-components-guide",
+          component: () =>
+            import("../views/settings/AdvancedComponentsGuide.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'settings/additional-components-guide',
-          name: 'additional-components-guide',
-          component: () => import('../views/settings/AdditionalComponentsGuide.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/additional-components-guide",
+          name: "additional-components-guide",
+          component: () =>
+            import("../views/settings/AdditionalComponentsGuide.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         // Tenant & Super Admin
         {
-          path: 'products',
-          name: 'products',
-          component: () => import('../views/products/Products.vue'),
+          path: "products",
+          name: "products",
+          component: () => import("../views/products/Products.vue"),
           meta: {
-            roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'SUPER_ADMIN'],
-            requiresPermission: { role: 'CASHIER', permission: 'canManageProducts' }
+            roles: ["ADMIN_TENANT", "SUPERVISOR", "CASHIER", "SUPER_ADMIN"],
+            requiresPermission: {
+              role: "CASHIER",
+              permission: "canManageProducts",
+            },
           },
         },
         {
-          path: 'orders',
-          name: 'orders',
-          component: () => import('../views/orders/Orders.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN', 'SUPER_ADMIN'] },
-        },
-        {
-          path: 'customers',
-          name: 'customers',
-          component: () => import('../views/customers/Customers.vue'),
+          path: "orders",
+          name: "orders",
+          component: () => import("../views/orders/Orders.vue"),
           meta: {
-            roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'SUPER_ADMIN'],
-            requiresPermission: { role: 'CASHIER', permission: 'canManageCustomers' }
+            roles: [
+              "ADMIN_TENANT",
+              "SUPERVISOR",
+              "CASHIER",
+              "KITCHEN",
+              "SUPER_ADMIN",
+            ],
           },
         },
         {
-          path: 'reports',
-          name: 'reports',
-          component: () => import('../views/reports/Reports.vue'),
+          path: "customers",
+          name: "customers",
+          component: () => import("../views/customers/Customers.vue"),
           meta: {
-            roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'SUPER_ADMIN'],
-            requiresPermission: { role: 'CASHIER', permission: 'canViewReports' }
+            roles: ["ADMIN_TENANT", "SUPERVISOR", "CASHIER", "SUPER_ADMIN"],
+            requiresPermission: {
+              role: "CASHIER",
+              permission: "canManageCustomers",
+            },
           },
         },
         {
-          path: 'users',
-          name: 'users',
-          component: () => import('../views/users/Users.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "reports",
+          name: "reports",
+          component: () => import("../views/reports/Reports.vue"),
+          meta: {
+            roles: ["ADMIN_TENANT", "SUPERVISOR", "CASHIER", "SUPER_ADMIN"],
+            requiresPermission: {
+              role: "CASHIER",
+              permission: "canViewReports",
+            },
+          },
         },
         {
-          path: 'stores',
-          name: 'stores',
-          component: () => import('../views/stores/Stores.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "users",
+          name: "users",
+          component: () => import("../views/users/Users.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
         },
         {
-          path: 'stores/:id',
-          name: 'store-detail',
-          component: () => import('../views/stores/StoreDetail.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "stores",
+          name: "stores",
+          component: () => import("../views/stores/Stores.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
         },
         {
-          path: 'stores/:id/edit',
-          name: 'edit-store',
-          component: () => import('../views/stores/EditStore.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "stores/:id",
+          name: "store-detail",
+          component: () => import("../views/stores/StoreDetail.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
         },
         {
-          path: 'subscription',
-          name: 'subscription',
-          component: () => import('../views/subscription/Subscription.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "stores/:id/edit",
+          name: "edit-store",
+          component: () => import("../views/stores/EditStore.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'addons',
-          name: 'addons',
-          component: () => import('../views/addons/Addons.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "subscription",
+          name: "subscription",
+          component: () => import("../views/subscription/Subscription.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'rewards',
-          name: 'rewards',
-          component: () => import('../views/rewards/Rewards.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "addons",
+          name: "addons",
+          component: () => import("../views/addons/Addons.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'reward-view',
-          name: 'reward-view',
-          component: () => import('../views/rewards/RewardView.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "rewards",
+          name: "rewards",
+          component: () => import("../views/rewards/Rewards.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
         },
         {
-          path: 'discounts',
-          name: 'discounts',
-          component: () => import('../views/discounts/Discounts.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "reward-view",
+          name: "reward-view",
+          component: () => import("../views/rewards/RewardView.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
+        },
+        {
+          path: "discounts",
+          name: "discounts",
+          component: () => import("../views/discounts/Discounts.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         // Addon Features
         ...addonRoutes,
         // Inventory Management
         // Inventory Management
         {
-          path: 'inventory/suppliers',
-          name: 'suppliers',
-          component: () => import('../views/inventory/Suppliers.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "inventory/suppliers",
+          name: "suppliers",
+          component: () => import("../views/inventory/Suppliers.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'inventory/purchase-orders',
-          name: 'purchase-orders',
-          component: () => import('../views/inventory/PurchaseOrders.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "inventory/purchase-orders",
+          name: "purchase-orders",
+          component: () => import("../views/inventory/PurchaseOrders.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'inventory/stock-alerts',
-          name: 'stock-alerts',
-          component: () => import('../views/inventory/StockAlerts.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "inventory/stock-alerts",
+          name: "stock-alerts",
+          component: () => import("../views/inventory/StockAlerts.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'inventory/restock-suggestions',
-          name: 'restock-suggestions',
-          component: () => import('../views/inventory/RestockSuggestions.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "inventory/restock-suggestions",
+          name: "restock-suggestions",
+          component: () => import("../views/inventory/RestockSuggestions.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'inventory/stock-transfers',
-          name: 'stock-transfers',
-          component: () => import('../views/inventory/StockTransfers.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "inventory/stock-transfers",
+          name: "stock-transfers",
+          component: () => import("../views/inventory/StockTransfers.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         // Advanced Reporting
         {
-          path: 'reports/advanced',
-          name: 'advanced-reporting',
-          component: () => import('../views/reports/AdvancedReporting.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          path: "reports/advanced",
+          name: "advanced-reporting",
+          component: () => import("../views/reports/AdvancedReporting.vue"),
+          meta: {
+            roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"],
+            requiresAddon: "BUSINESS_ANALYTICS",
+          },
         },
         // Financial Management Enhancement
         {
-          path: 'finance/management',
-          name: 'financial-management',
-          component: () => import('../views/finance/FinancialManagement.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          path: "finance/management",
+          name: "financial-management",
+          component: () => import("../views/finance/FinancialManagement.vue"),
+          meta: {
+            roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"],
+            requiresAddon: "BUSINESS_ANALYTICS",
+          },
         },
         {
-          path: 'analytics',
-          name: 'analytics',
-          component: () => import('../views/analytics/AdvancedAnalytics.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          path: "analytics",
+          name: "analytics",
+          component: () => import("../views/analytics/AdvancedAnalytics.vue"),
+          meta: {
+            roles: ["ADMIN_TENANT", "SUPER_ADMIN"],
+            requiresAddon: "BUSINESS_ANALYTICS",
+          },
         },
         {
-          path: 'finance',
-          name: 'finance',
-          component: () => import('../views/finance/AccountingFinance.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          path: "finance",
+          name: "finance",
+          component: () => import("../views/finance/AccountingFinance.vue"),
+          meta: {
+            roles: ["ADMIN_TENANT", "SUPER_ADMIN"],
+            requiresAddon: "BUSINESS_ANALYTICS",
+          },
         },
         {
-          path: 'finance/transactions',
-          name: 'transactions',
-          component: () => import('../views/finance/Transactions.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "finance/transactions",
+          name: "transactions",
+          component: () => import("../views/finance/Transactions.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'profit-loss',
-          name: 'profit-loss',
-          component: () => import('../views/finance/ProfitLossReport.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          path: "profit-loss",
+          name: "profit-loss",
+          component: () => import("../views/finance/ProfitLossReport.vue"),
+          meta: {
+            roles: ["ADMIN_TENANT", "SUPER_ADMIN"],
+            requiresAddon: "BUSINESS_ANALYTICS",
+          },
         },
         {
-          path: 'settings/preferences',
-          name: 'preferences',
-          component: () => import('../views/settings/Preferences.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN', 'SUPER_ADMIN'] },
+          path: "settings/preferences",
+          name: "preferences",
+          component: () => import("../views/settings/Preferences.vue"),
+          meta: {
+            roles: [
+              "ADMIN_TENANT",
+              "SUPERVISOR",
+              "CASHIER",
+              "KITCHEN",
+              "SUPER_ADMIN",
+            ],
+          },
         },
         {
-          path: 'settings/store',
-          name: 'store-settings',
-          component: () => import('../views/settings/StoreSettings.vue'),
-          meta: { roles: ['ADMIN_TENANT'] },
+          path: "settings/store",
+          name: "store-settings",
+          component: () => import("../views/settings/StoreSettings.vue"),
+          meta: { roles: ["ADMIN_TENANT"] },
         },
         {
-          path: 'settings/2fa',
-          name: 'two-factor-auth',
-          component: () => import('../views/settings/TwoFactorAuth.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "settings/2fa",
+          name: "two-factor-auth",
+          component: () => import("../views/settings/TwoFactorAuth.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
         },
         {
-          path: 'settings/webhooks',
-          name: 'webhooks',
-          component: () => import('../views/settings/Webhooks.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "settings/webhooks",
+          name: "webhooks",
+          component: () => import("../views/settings/Webhooks.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'settings/webhooks/tester',
-          name: 'webhook-tester',
-          component: () => import('../views/settings/WebhookTester.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "settings/webhooks/tester",
+          name: "webhook-tester",
+          component: () => import("../views/settings/WebhookTester.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'settings/sessions',
-          name: 'sessions',
-          component: () => import('../views/settings/Sessions.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "settings/sessions",
+          name: "sessions",
+          component: () => import("../views/settings/Sessions.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
         },
         {
-          path: 'settings/password',
-          name: 'password-settings',
-          component: () => import('../views/settings/PasswordSettings.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN', 'SUPER_ADMIN'] },
+          path: "settings/password",
+          name: "password-settings",
+          component: () => import("../views/settings/PasswordSettings.vue"),
+          meta: {
+            roles: [
+              "ADMIN_TENANT",
+              "SUPERVISOR",
+              "CASHIER",
+              "KITCHEN",
+              "SUPER_ADMIN",
+            ],
+          },
         },
         {
-          path: 'settings/gdpr',
-          name: 'gdpr-settings',
-          component: () => import('../views/settings/GDPRSettings.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN', 'SUPER_ADMIN'] },
+          path: "settings/gdpr",
+          name: "gdpr-settings",
+          component: () => import("../views/settings/GDPRSettings.vue"),
+          meta: {
+            roles: [
+              "ADMIN_TENANT",
+              "SUPERVISOR",
+              "CASHIER",
+              "KITCHEN",
+              "SUPER_ADMIN",
+            ],
+          },
         },
         {
-          path: 'settings/archive',
-          name: 'archive-management',
-          component: () => import('../views/settings/ArchiveManagement.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/archive",
+          name: "archive-management",
+          component: () => import("../views/settings/ArchiveManagement.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'settings/retention',
-          name: 'retention-management',
-          component: () => import('../views/settings/RetentionManagement.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "settings/retention",
+          name: "retention-management",
+          component: () => import("../views/settings/RetentionManagement.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'superadmin/backups',
-          name: 'superadmin-backups',
-          component: () => import('../views/superadmin/BackupManagement.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          path: "superadmin/backups",
+          name: "superadmin-backups",
+          component: () => import("../views/superadmin/BackupManagement.vue"),
+          meta: { roles: ["SUPER_ADMIN"] },
         },
         {
-          path: 'products/adjustments',
-          name: 'product-adjustments',
-          component: () => import('../views/products/ProductAdjustments.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "products/adjustments",
+          name: "product-adjustments",
+          component: () => import("../views/products/ProductAdjustments.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'receipts/templates',
-          name: 'receipt-templates',
-          component: () => import('../views/receipts/ReceiptTemplates.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "receipts/templates",
+          name: "receipt-templates",
+          component: () => import("../views/receipts/ReceiptTemplates.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
         {
-          path: 'reports/stores',
-          name: 'store-reports',
-          component: () => import('../views/reports/StoreReports.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "reports/stores",
+          name: "store-reports",
+          component: () => import("../views/reports/StoreReports.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"] },
         },
         {
-          path: 'settings/subscription',
-          name: 'subscription-plans',
-          component: () => import('../views/settings/SubscriptionPlans.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          path: "settings/subscription",
+          name: "subscription-plans",
+          component: () => import("../views/settings/SubscriptionPlans.vue"),
+          meta: { roles: ["ADMIN_TENANT", "SUPER_ADMIN"] },
         },
 
         // Failed Sync Review (for offline orders that failed to sync)
         {
-          path: 'pos/failed-syncs',
-          name: 'failed-sync-review',
-          component: () => import('../views/pos/FailedSyncReview.vue'),
-          meta: { roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          path: "pos/failed-syncs",
+          name: "failed-sync-review",
+          component: () => import("../views/pos/FailedSyncReview.vue"),
+          meta: {
+            roles: ["CASHIER", "ADMIN_TENANT", "SUPERVISOR", "SUPER_ADMIN"],
+          },
         },
         // Kitchen only
         {
-          path: 'orders/kitchen',
-          name: 'kitchen-orders',
-          component: () => import('../views/kitchen/KitchenOrders.vue'),
-          meta: { roles: ['KITCHEN', 'SUPERVISOR'] },
+          path: "orders/kitchen",
+          name: "kitchen-orders",
+          component: () => import("../views/kitchen/KitchenOrders.vue"),
+          meta: { roles: ["KITCHEN", "SUPERVISOR"] },
         },
       ],
     },
     // Unauthorized page
     {
-      path: '/unauthorized',
-      name: 'unauthorized',
-      component: () => import('../views/Unauthorized.vue'),
+      path: "/unauthorized",
+      name: "unauthorized",
+      component: () => import("../views/Unauthorized.vue"),
     },
     {
-      path: '/:pathMatch(.*)*',
-      name: 'not-found',
-      component: () => import('../views/NotFound.vue'),
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: () => import("../views/NotFound.vue"),
     },
   ],
 });
@@ -538,10 +582,11 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
   // Check token first (synchronous) to avoid flash during logout
-  const hasToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const hasToken =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
 
   // If going to login page, skip all checks to avoid flash
-  if (to.name === 'login') {
+  if (to.name === "login") {
     // If already authenticated, redirect to appropriate dashboard
     if (hasToken && authStore.isAuthenticated) {
       // Ensure user data is loaded before checking role
@@ -549,7 +594,7 @@ router.beforeEach(async (to, from, next) => {
         try {
           await authStore.fetchMe();
         } catch (error) {
-          console.error('Failed to restore session:', error);
+          console.error("Failed to restore session:", error);
           authStore.clearAuth();
           next();
           return;
@@ -557,9 +602,9 @@ router.beforeEach(async (to, from, next) => {
       }
       // Redirect super admin to super-dashboard, others to dashboard
       if (authStore.isSuperAdmin) {
-        next({ name: 'super-dashboard' });
+        next({ name: "super-dashboard" });
       } else {
-        next({ name: 'dashboard' });
+        next({ name: "dashboard" });
       }
       return;
     }
@@ -569,13 +614,13 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // M-2 FIX: Redirect authenticated users away from forgot-password page
-  if (to.name === 'forgot-password' && hasToken && authStore.isAuthenticated) {
+  if (to.name === "forgot-password" && hasToken && authStore.isAuthenticated) {
     // User is already authenticated, redirect to dashboard
     if (!authStore.user) {
       try {
         await authStore.fetchMe();
       } catch (error) {
-        console.error('Failed to restore session:', error);
+        console.error("Failed to restore session:", error);
         authStore.clearAuth();
         next();
         return;
@@ -583,9 +628,9 @@ router.beforeEach(async (to, from, next) => {
     }
     // Redirect to appropriate dashboard
     if (authStore.isSuperAdmin) {
-      next({ name: 'super-dashboard' });
+      next({ name: "super-dashboard" });
     } else {
-      next({ name: 'dashboard' });
+      next({ name: "dashboard" });
     }
     return;
   }
@@ -593,15 +638,15 @@ router.beforeEach(async (to, from, next) => {
   // IMPORTANT: Load user data if not available before checking role-based redirects
   // This ensures isSuperAdmin is correctly determined
   if (to.meta.requiresAuth && hasToken && !authStore.user) {
-    const rememberMe = localStorage.getItem('rememberMe') === 'true';
+    const rememberMe = localStorage.getItem("rememberMe") === "true";
     if (rememberMe) {
       try {
         await authStore.fetchMe();
       } catch (error) {
-        console.error('Failed to restore session:', error);
+        console.error("Failed to restore session:", error);
         authStore.clearAuth();
-        localStorage.removeItem('rememberMe');
-        next({ name: 'login', query: { redirect: to.fullPath } });
+        localStorage.removeItem("rememberMe");
+        next({ name: "login", query: { redirect: to.fullPath } });
         return;
       }
     }
@@ -609,29 +654,29 @@ router.beforeEach(async (to, from, next) => {
 
   // Redirect /app to appropriate dashboard based on role
   // IMPORTANT: Check user role AFTER authentication is confirmed
-  if (to.path === '/app' || to.path === '/app/') {
+  if (to.path === "/app" || to.path === "/app/") {
     // Ensure user data is loaded
     if (hasToken && !authStore.user) {
       try {
         await authStore.fetchMe();
       } catch (error) {
-        console.error('Failed to restore session:', error);
+        console.error("Failed to restore session:", error);
         authStore.clearAuth();
-        next({ name: 'login', query: { redirect: to.fullPath } });
+        next({ name: "login", query: { redirect: to.fullPath } });
         return;
       }
     }
 
     // Now check role after user data is loaded
     if (authStore.user && authStore.isSuperAdmin) {
-      next({ name: 'super-dashboard' });
+      next({ name: "super-dashboard" });
       return;
     } else if (authStore.user) {
-      next({ name: 'dashboard' });
+      next({ name: "dashboard" });
       return;
     } else {
       // If no user data, redirect to login
-      next({ name: 'login', query: { redirect: to.fullPath } });
+      next({ name: "login", query: { redirect: to.fullPath } });
       return;
     }
   }
@@ -639,15 +684,15 @@ router.beforeEach(async (to, from, next) => {
   // If route requires auth but no token, redirect immediately without async operations
   if (to.meta.requiresAuth && !hasToken) {
     authStore.clearAuth();
-    next({ name: 'login', query: { redirect: to.fullPath } });
+    next({ name: "login", query: { redirect: to.fullPath } });
     return;
   }
 
   // FORCE CASHIER TO OPEN SHIFT - Check active shift for CASHIER role
   // Uses cached shift status to prevent excessive API calls
-  if (hasToken && authStore.user?.role === 'CASHIER') {
+  if (hasToken && authStore.user?.role === "CASHIER") {
     // If trying to access anything OTHER than open-shift or login
-    if (to.name !== 'open-shift' && to.name !== 'login') {
+    if (to.name !== "open-shift" && to.name !== "login") {
       try {
         // Use the cached shift status from auth store
         // This prevents multiple simultaneous API calls and reduces server load
@@ -655,17 +700,17 @@ router.beforeEach(async (to, from, next) => {
 
         if (!shiftStatus || shiftStatus.shiftEnd) {
           // NO ACTIVE SHIFT - redirect to open-shift
-          next({ name: 'open-shift' });
+          next({ name: "open-shift" });
           return;
         }
 
         // IF HAS ACTIVE SHIFT, CONTINUE NORMAL FLOW
         // Cashier can now access POS, dashboard, etc.
       } catch (err) {
-        console.error('Guard shift check error:', err);
+        console.error("Guard shift check error:", err);
         // On error, err on the side of caution and redirect to open-shift
         // This prevents access if shift status cannot be determined
-        next({ name: 'open-shift' });
+        next({ name: "open-shift" });
         return;
       }
     }
@@ -674,15 +719,15 @@ router.beforeEach(async (to, from, next) => {
   // If route requires auth and has token, check authentication
   if (to.meta.requiresAuth && hasToken) {
     // If user object is missing, try to restore session (only if not already clearing)
-    const rememberMe = localStorage.getItem('rememberMe') === 'true';
+    const rememberMe = localStorage.getItem("rememberMe") === "true";
     if (!authStore.user && rememberMe) {
       try {
         await authStore.fetchMe();
       } catch (error) {
-        console.error('Failed to restore session:', error);
+        console.error("Failed to restore session:", error);
         authStore.clearAuth();
-        localStorage.removeItem('rememberMe');
-        next({ name: 'login', query: { redirect: to.fullPath } });
+        localStorage.removeItem("rememberMe");
+        next({ name: "login", query: { redirect: to.fullPath } });
         return;
       }
     }
@@ -690,28 +735,38 @@ router.beforeEach(async (to, from, next) => {
     // Final check: if still not authenticated after restore, redirect
     if (!authStore.isAuthenticated) {
       authStore.clearAuth();
-      next({ name: 'login', query: { redirect: to.fullPath } });
+      next({ name: "login", query: { redirect: to.fullPath } });
       return;
     }
 
     // IMPORTANT: After authentication is confirmed, check if Super Admin is trying to access dashboard
     // This must be done AFTER user data is loaded
-    if (authStore.user && authStore.isSuperAdmin && to.name === 'dashboard') {
-      next({ name: 'super-dashboard' });
+    if (authStore.user && authStore.isSuperAdmin && to.name === "dashboard") {
+      next({ name: "super-dashboard" });
       return;
     }
   }
 
   // Redirect super admin from dashboard to super-dashboard
   // IMPORTANT: Check after user data is loaded and authentication is confirmed
-  if (hasToken && authStore.user && authStore.isSuperAdmin && to.name === 'dashboard') {
-    next({ name: 'super-dashboard' });
+  if (
+    hasToken &&
+    authStore.user &&
+    authStore.isSuperAdmin &&
+    to.name === "dashboard"
+  ) {
+    next({ name: "super-dashboard" });
     return;
   }
 
   // Redirect non-super admin from super-dashboard to dashboard
-  if (hasToken && authStore.user && !authStore.isSuperAdmin && to.name === 'super-dashboard') {
-    next({ name: 'dashboard' });
+  if (
+    hasToken &&
+    authStore.user &&
+    !authStore.isSuperAdmin &&
+    to.name === "super-dashboard"
+  ) {
+    next({ name: "dashboard" });
     return;
   }
 
@@ -727,16 +782,17 @@ router.beforeEach(async (to, from, next) => {
       // Redirect to appropriate dashboard based on role instead of unauthorized for better UX
       // Supervisor should not see unauthorized page
       if (authStore.isSuperAdmin) {
-        next({ name: 'super-dashboard' });
+        next({ name: "super-dashboard" });
       } else {
-        next({ name: 'dashboard' });
+        next({ name: "dashboard" });
       }
       return;
     }
 
     // Permission-based access control for specific roles (e.g., CASHIER)
     if (to.meta.requiresPermission && authStore.user) {
-      const { role: requiredRole, permission: requiredPermission } = to.meta.requiresPermission as { role: string; permission: string };
+      const { role: requiredRole, permission: requiredPermission } = to.meta
+        .requiresPermission as { role: string; permission: string };
 
       // Only check permission if user role matches required role
       if (userRole === requiredRole) {
@@ -746,9 +802,9 @@ router.beforeEach(async (to, from, next) => {
         if (!hasPermission) {
           // Redirect to appropriate dashboard based on role if permission not granted
           if (authStore.isSuperAdmin) {
-            next({ name: 'super-dashboard' });
+            next({ name: "super-dashboard" });
           } else {
-            next({ name: 'dashboard' });
+            next({ name: "dashboard" });
           }
           return;
         }
@@ -757,12 +813,16 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // Legacy admin check (for backward compatibility)
-  if (to.meta.requiresAdmin && authStore.user?.role !== 'ADMIN_TENANT' && authStore.user?.role !== 'SUPER_ADMIN') {
+  if (
+    to.meta.requiresAdmin &&
+    authStore.user?.role !== "ADMIN_TENANT" &&
+    authStore.user?.role !== "SUPER_ADMIN"
+  ) {
     // Redirect to appropriate dashboard based on role
     if (authStore.isSuperAdmin) {
-      next({ name: 'super-dashboard' });
+      next({ name: "super-dashboard" });
     } else {
-      next({ name: 'dashboard' });
+      next({ name: "dashboard" });
     }
     return;
   }
@@ -775,32 +835,37 @@ router.beforeEach(async (to, from, next) => {
 
     // H-4 FIX: Define which addons are "basic" (included for AdminTenant)
     // These addons should not require paid subscription for AdminTenant
-    const BASIC_ADDONS_FOR_ADMIN_TENANT = ['BUSINESS_ANALYTICS'];
+    const BASIC_ADDONS_FOR_ADMIN_TENANT = ["BUSINESS_ANALYTICS"];
     const isBasicAddon = BASIC_ADDONS_FOR_ADMIN_TENANT.includes(requiredAddon);
 
     // Super Admin bypass all addon checks (for testing/demo)
-    if (userRole === 'SUPER_ADMIN') {
+    if (userRole === "SUPER_ADMIN") {
       next();
       return;
     }
 
     // Admin Tenant bypass addon check for basic addons
     // CONSISTENCY: Only bypass for explicitly defined basic addons
-    if (userRole === 'ADMIN_TENANT' && isBasicAddon) {
-      console.log(`[Router] AdminTenant accessing basic addon: ${requiredAddon}`);
+    if (userRole === "ADMIN_TENANT" && isBasicAddon) {
+      console.log(
+        `[Router] AdminTenant accessing basic addon: ${requiredAddon}`,
+      );
       next();
       return;
     }
 
     // For other roles or non-basic addons, check if addon is active
     try {
-      const response = await api.get('/addons');
+      const response = await api.get("/addons");
       const addonsData = response.data?.data || response.data || [];
       const activeAddons = Array.isArray(addonsData) ? addonsData : [];
 
       // Double-check before using array methods
       if (!Array.isArray(activeAddons) || activeAddons.length === 0) {
-        next({ name: 'unauthorized', query: { reason: 'addon', addon: requiredAddon } });
+        next({
+          name: "unauthorized",
+          query: { reason: "addon", addon: requiredAddon },
+        });
         return;
       }
 
@@ -808,40 +873,50 @@ router.beforeEach(async (to, from, next) => {
       let hasAddon = false;
       try {
         // LOGGING: Log untuk debugging
-        console.log('[Router] Checking addon requirement:', {
+        console.log("[Router] Checking addon requirement:", {
           requiredAddon,
           activeAddonsType: typeof activeAddons,
           activeAddonsIsArray: Array.isArray(activeAddons),
-          activeAddonsLength: Array.isArray(activeAddons) ? activeAddons.length : 0
+          activeAddonsLength: Array.isArray(activeAddons)
+            ? activeAddons.length
+            : 0,
         });
 
         // GUARD CLAUSE: Double-check sebelum .some()
         if (!Array.isArray(activeAddons)) {
-          console.warn('[Router] activeAddons is not array in addon guard, setting to empty array');
+          console.warn(
+            "[Router] activeAddons is not array in addon guard, setting to empty array",
+          );
           hasAddon = false;
         } else {
           hasAddon = activeAddons.some(
-            (addon: any) => addon && addon.addonType === requiredAddon && addon.status === 'active'
+            (addon: any) =>
+              addon &&
+              addon.addonType === requiredAddon &&
+              addon.status === "active",
           );
         }
       } catch (error: any) {
-        console.error('[Router] Error checking addon in router guard:', error);
+        console.error("[Router] Error checking addon in router guard:", error);
         hasAddon = false;
       }
 
       if (!hasAddon) {
-        next({ name: 'unauthorized', query: { reason: 'addon', addon: requiredAddon } });
+        next({
+          name: "unauthorized",
+          query: { reason: "addon", addon: requiredAddon },
+        });
         return;
       }
     } catch (error: any) {
       // If error loading addons, allow access (will be handled by backend)
-      console.error('Error checking addon:', error);
+      console.error("Error checking addon:", error);
     }
   }
 
   // Store previous route for navigation tracking
   if (from.path) {
-    sessionStorage.setItem('previousRoute', from.path);
+    sessionStorage.setItem("previousRoute", from.path);
   }
 
   next();

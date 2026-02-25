@@ -1,25 +1,25 @@
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import App from './App.vue';
-import router from './router';
-import './styles/main.css';
-import { offlineStorage } from './utils/offline-storage';
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import App from "./App.vue";
+import router from "./router";
+import "./styles/main.css";
+import { offlineStorage } from "./utils/offline-storage";
 
 let updateSW: ((reloadPage?: boolean) => Promise<void>) | undefined;
 try {
-  const { registerSW } = await import('virtual:pwa-register');
+  const { registerSW } = await import("virtual:pwa-register");
   updateSW = registerSW({
     onNeedRefresh() {
-      if (confirm('Aplikasi versi baru tersedia. Muat ulang sekarang?')) {
+      if (confirm("Aplikasi versi baru tersedia. Muat ulang sekarang?")) {
         updateSW?.(true);
       }
     },
     onOfflineReady() {
-      console.log('Aplikasi siap digunakan secara offline');
+      console.log("Aplikasi siap digunakan secara offline");
     },
   });
 } catch (e) {
-  console.warn('PWA registration skipped:', e);
+  console.warn("PWA registration skipped:", e);
 }
 
 const app = createApp(App);
@@ -29,13 +29,13 @@ app.use(pinia);
 app.use(router);
 
 // Development mode: Show all errors for debugging
-const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
+const isDevelopment =
+  import.meta.env.DEV || import.meta.env.MODE === "development";
 const SHOW_ALL_ERRORS = isDevelopment; // Set to true to see all errors in development
 
 // Suppress CORS errors in console for PDF generation (only in production)
 const originalError = window.console.error;
 const originalWarn = window.console.warn;
-const originalLog = window.console.log;
 
 window.console.error = (...args: any[]) => {
   // In development, show all errors for debugging
@@ -44,14 +44,17 @@ window.console.error = (...args: any[]) => {
     return;
   }
 
-  const message = args[0]?.toString() || '';
+  const message = args[0]?.toString() || "";
   // Don't log CORS errors for PDF generation (production only)
-  if (message.includes('CORS') ||
-    message.includes('Access-Control') ||
-    message.includes('ERR_NETWORK') ||
-    message.includes('ERR_FAILED') ||
-    message.includes('blocked by CORS policy') ||
-    (message.includes('pdf/generate') && (message.includes('blocked') || message.includes('failed')))) {
+  if (
+    message.includes("CORS") ||
+    message.includes("Access-Control") ||
+    message.includes("ERR_NETWORK") ||
+    message.includes("ERR_FAILED") ||
+    message.includes("blocked by CORS policy") ||
+    (message.includes("pdf/generate") &&
+      (message.includes("blocked") || message.includes("failed")))
+  ) {
     // Silently ignore CORS errors for PDF generation
     return;
   }
@@ -65,50 +68,58 @@ window.console.warn = (...args: any[]) => {
     return;
   }
 
-  const message = args[0]?.toString() || '';
+  const message = args[0]?.toString() || "";
   // Don't log CORS warnings for PDF generation (production only)
-  if (message.includes('CORS') ||
-    message.includes('Access-Control') ||
-    (message.includes('pdf/generate') && message.includes('blocked'))) {
+  if (
+    message.includes("CORS") ||
+    message.includes("Access-Control") ||
+    (message.includes("pdf/generate") && message.includes("blocked"))
+  ) {
     return;
   }
   originalWarn.apply(window.console, args);
 };
 
 // Global error handler - show all errors in development
-window.addEventListener('error', (event) => {
-  // In development, log all errors for debugging
-  if (SHOW_ALL_ERRORS) {
-    console.error('🔴 Global Error:', {
-      message: event.message,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno,
-      error: event.error,
-      stack: event.error?.stack,
-    });
-    return;
-  }
+window.addEventListener(
+  "error",
+  (event) => {
+    // In development, log all errors for debugging
+    if (SHOW_ALL_ERRORS) {
+      console.error("🔴 Global Error:", {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error,
+        stack: event.error?.stack,
+      });
+      return;
+    }
 
-  // In production, suppress CORS errors for PDF generation
-  const message = event.message || event.error?.message || '';
-  if (message.includes('CORS') ||
-    message.includes('Access-Control') ||
-    message.includes('blocked by CORS policy') ||
-    (message.includes('pdf/generate') && message.includes('blocked'))) {
-    event.preventDefault();
-    event.stopPropagation();
-    return false;
-  }
-}, true);
+    // In production, suppress CORS errors for PDF generation
+    const message = event.message || event.error?.message || "";
+    if (
+      message.includes("CORS") ||
+      message.includes("Access-Control") ||
+      message.includes("blocked by CORS policy") ||
+      (message.includes("pdf/generate") && message.includes("blocked"))
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    }
+  },
+  true,
+);
 
 // Unhandled promise rejection handler - show all errors in development
-window.addEventListener('unhandledrejection', (event) => {
+window.addEventListener("unhandledrejection", (event) => {
   const error = event.reason;
 
   // In development, log all unhandled rejections for debugging
   if (SHOW_ALL_ERRORS) {
-    console.error('🔴 Unhandled Promise Rejection:', {
+    console.error("🔴 Unhandled Promise Rejection:", {
       reason: error,
       message: error?.message,
       stack: error?.stack,
@@ -119,17 +130,19 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 
   // In production, suppress CORS errors for PDF generation
-  const errorMessage = error?.message || error?.toString() || '';
-  const errorCode = error?.code || '';
+  const errorMessage = error?.message || error?.toString() || "";
+  const errorCode = error?.code || "";
 
   // Check if it's a CORS error for PDF generation
-  if ((errorMessage.includes('CORS') ||
-    errorMessage.includes('Access-Control') ||
-    errorMessage.includes('blocked by CORS policy') ||
-    errorCode === 'ERR_NETWORK' ||
-    errorCode === 'ERR_FAILED') &&
-    (error?.config?.url?.includes('/pdf/generate') ||
-      errorMessage.includes('pdf/generate'))) {
+  if (
+    (errorMessage.includes("CORS") ||
+      errorMessage.includes("Access-Control") ||
+      errorMessage.includes("blocked by CORS policy") ||
+      errorCode === "ERR_NETWORK" ||
+      errorCode === "ERR_FAILED") &&
+    (error?.config?.url?.includes("/pdf/generate") ||
+      errorMessage.includes("pdf/generate"))
+  ) {
     // Prevent the error from being logged
     event.preventDefault();
     return;
@@ -138,14 +151,15 @@ window.addEventListener('unhandledrejection', (event) => {
 
 // Log development mode status
 if (SHOW_ALL_ERRORS) {
-  console.log('🔍 Development Mode: All errors will be displayed');
-  console.log('📝 Check browser console, network tab, and backend logs for detailed error information');
+  console.log("🔍 Development Mode: All errors will be displayed");
+  console.log(
+    "📝 Check browser console, network tab, and backend logs for detailed error information",
+  );
 }
 
 // Initialize offline storage
 offlineStorage.init().catch((error) => {
-  console.error('Failed to initialize offline storage:', error);
+  console.error("Failed to initialize offline storage:", error);
 });
 
-app.mount('#app');
-
+app.mount("#app");

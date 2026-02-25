@@ -1,7 +1,7 @@
-import { formatCurrency, formatDate, formatDateTime } from './formatters';
+import { formatCurrency, formatDate } from "./formatters";
 
 interface ExportData {
-  type: 'report' | 'analytics' | 'both';
+  type: "report" | "analytics" | "both";
   reportData?: any;
   analyticsData?: any;
   reportType?: string;
@@ -13,34 +13,52 @@ interface ExportData {
 /**
  * Generate PDF using flexbox layout (no HTML templates)
  */
-import { downloadPDFFromHTMLIframe } from './pdf-download';
+import { downloadPDFFromHTMLIframe } from "./pdf-download";
 
 export async function generateFlexboxExport(data: ExportData) {
   const html = generateFlexboxHTML(data);
-  
+
   // Generate filename
   const { type, reportType, startDate, endDate } = data;
-  const reportTypeLabel = reportType === 'sales' ? 'Penjualan' :
-                          reportType === 'product' ? 'Produk' :
-                          reportType === 'customers' ? 'Pelanggan' :
-                          reportType === 'inventory' ? 'Inventori' :
-                          reportType === 'financial' ? 'Keuangan' : 'Laporan';
-  
-  const exportTypeLabel = type === 'report' ? 'Laporan' :
-                          type === 'analytics' ? 'Analytics' :
-                          'Laporan-Analytics';
-  
+  const reportTypeLabel =
+    reportType === "sales"
+      ? "Penjualan"
+      : reportType === "product"
+        ? "Produk"
+        : reportType === "customers"
+          ? "Pelanggan"
+          : reportType === "inventory"
+            ? "Inventori"
+            : reportType === "financial"
+              ? "Keuangan"
+              : "Laporan";
+
+  const exportTypeLabel =
+    type === "report"
+      ? "Laporan"
+      : type === "analytics"
+        ? "Analytics"
+        : "Laporan-Analytics";
+
   const filename = `${exportTypeLabel}_${reportTypeLabel}_${startDate}_${endDate}.pdf`;
-  
+
   await downloadPDFFromHTMLIframe(html, filename);
 }
 
 function generateFlexboxHTML(data: ExportData): string {
-  const { type, reportData, analyticsData, reportType, startDate, endDate, tenantName } = data;
-  const currentDate = new Date().toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const {
+    type,
+    reportData,
+    analyticsData,
+    reportType,
+    startDate,
+    endDate,
+    tenantName,
+  } = data;
+  const currentDate = new Date().toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return `
@@ -48,7 +66,7 @@ function generateFlexboxHTML(data: ExportData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Export ${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</title>
+  <title>Export ${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</title>
   <style>
     @page {
       size: A4;
@@ -206,13 +224,13 @@ function generateFlexboxHTML(data: ExportData): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title">${type === 'report' ? 'Laporan' : type === 'analytics' ? 'Analytics' : 'Laporan & Analytics'}</h1>
-      <p class="subtitle">${tenantName || 'Tenant'} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
+      <h1 class="title">${type === "report" ? "Laporan" : type === "analytics" ? "Analytics" : "Laporan & Analytics"}</h1>
+      <p class="subtitle">${tenantName || "Tenant"} | ${formatDate(startDate)} - ${formatDate(endDate)} | ${currentDate}</p>
     </div>
     
     <div class="content">
-      ${type === 'report' || type === 'both' ? generateReportSection(reportData, reportType) : ''}
-      ${type === 'analytics' || type === 'both' ? generateAnalyticsSection(analyticsData) : ''}
+      ${type === "report" || type === "both" ? generateReportSection(reportData, reportType) : ""}
+      ${type === "analytics" || type === "both" ? generateAnalyticsSection(analyticsData) : ""}
     </div>
     
     <div class="footer">
@@ -225,29 +243,33 @@ function generateFlexboxHTML(data: ExportData): string {
 }
 
 function generateReportSection(reportData: any, reportType?: string): string {
-  if (!reportData) return '';
-  
-  let summaryStats = '';
-  let tableContent = '';
-  
+  if (!reportData) return "";
+
+  let summaryStats = "";
+  let tableContent = "";
+
   // Generate summary stats
   if (reportData.summary) {
     const stats = Object.entries(reportData.summary).slice(0, 4);
     summaryStats = `
       <div class="stats-grid">
-        ${stats.map(([key, value]) => `
+        ${stats
+          .map(
+            ([key, value]) => `
           <div class="stat-card">
             <div class="stat-label">${formatLabel(key)}</div>
             <div class="stat-value">${formatValue(value)}</div>
           </div>
-        `).join('')}
+        `,
+          )
+          .join("")}
       </div>
     `;
   }
-  
+
   // Generate table based on report type
   switch (reportType) {
-    case 'sales':
+    case "sales":
       if (reportData.byDate && reportData.byDate.length > 0) {
         tableContent = `
           <div class="table-container">
@@ -261,22 +283,26 @@ function generateReportSection(reportData: any, reportType?: string): string {
                 </tr>
               </thead>
               <tbody>
-                ${reportData.byDate.map((item: any) => `
+                ${reportData.byDate
+                  .map(
+                    (item: any) => `
                   <tr>
                     <td>${formatDate(item.date)}</td>
                     <td class="text-right">${formatCurrency(item.revenue || 0)}</td>
                     <td class="text-right">${item.count || 0}</td>
                     <td class="text-right">${formatCurrency((item.revenue || 0) / (item.count || 1))}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
         `;
       }
       break;
-      
-    case 'product':
+
+    case "product":
       if (reportData.products && reportData.products.length > 0) {
         tableContent = `
           <div class="table-container">
@@ -291,23 +317,28 @@ function generateReportSection(reportData: any, reportType?: string): string {
                 </tr>
               </thead>
               <tbody>
-                ${reportData.products.slice(0, 50).map((item: any) => `
+                ${reportData.products
+                  .slice(0, 50)
+                  .map(
+                    (item: any) => `
                   <tr>
-                    <td>${item.product?.name || item.name || '-'}</td>
-                    <td>${item.product?.category || item.category || '-'}</td>
+                    <td>${item.product?.name || item.name || "-"}</td>
+                    <td>${item.product?.category || item.category || "-"}</td>
                     <td class="text-right">${item.totalSold || 0}</td>
                     <td class="text-right">${formatCurrency(item.totalRevenue || 0)}</td>
                     <td class="text-right">${item.stockLevel || item.stock || 0}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
         `;
       }
       break;
-      
-    case 'customers':
+
+    case "customers":
       const allCustomers = [
         ...(reportData.customers || []),
         ...(reportData.members || []),
@@ -326,23 +357,28 @@ function generateReportSection(reportData: any, reportType?: string): string {
                 </tr>
               </thead>
               <tbody>
-                ${allCustomers.slice(0, 50).map((item: any) => `
+                ${allCustomers
+                  .slice(0, 50)
+                  .map(
+                    (item: any) => `
                   <tr>
-                    <td>${item.customer?.name || item.member?.name || '-'}</td>
-                    <td>${item.customer?.email || item.member?.email || '-'}</td>
+                    <td>${item.customer?.name || item.member?.name || "-"}</td>
+                    <td>${item.customer?.email || item.member?.email || "-"}</td>
                     <td class="text-right">${item.totalOrders || 0}</td>
                     <td class="text-right">${formatCurrency(item.totalSpent || 0)}</td>
                     <td class="text-right">${formatCurrency(item.averageOrder || 0)}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
         `;
       }
       break;
-      
-    case 'inventory':
+
+    case "inventory":
       if (reportData.inventory && reportData.inventory.length > 0) {
         tableContent = `
           <div class="table-container">
@@ -358,24 +394,29 @@ function generateReportSection(reportData: any, reportType?: string): string {
                 </tr>
               </thead>
               <tbody>
-                ${reportData.inventory.slice(0, 50).map((item: any) => `
+                ${reportData.inventory
+                  .slice(0, 50)
+                  .map(
+                    (item: any) => `
                   <tr>
-                    <td>${item.product?.name || item.name || '-'}</td>
-                    <td>${item.product?.category || item.category || '-'}</td>
+                    <td>${item.product?.name || item.name || "-"}</td>
+                    <td>${item.product?.category || item.category || "-"}</td>
                     <td class="text-right">${item.currentStock || 0}</td>
                     <td class="text-right">${item.minStock || 0}</td>
                     <td class="text-right">${formatCurrency(item.stockValue || 0)}</td>
-                    <td>${item.isLowStock ? 'Stok Rendah' : 'Normal'}</td>
+                    <td>${item.isLowStock ? "Stok Rendah" : "Normal"}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
         `;
       }
       break;
-      
-    case 'financial':
+
+    case "financial":
       if (reportData.byDate && reportData.byDate.length > 0) {
         tableContent = `
           <div class="table-container">
@@ -390,7 +431,9 @@ function generateReportSection(reportData: any, reportType?: string): string {
                 </tr>
               </thead>
               <tbody>
-                ${reportData.byDate.map((item: any) => `
+                ${reportData.byDate
+                  .map(
+                    (item: any) => `
                   <tr>
                     <td>${formatDate(item.date)}</td>
                     <td class="text-right">${formatCurrency(reportData.revenue || 0)}</td>
@@ -398,7 +441,9 @@ function generateReportSection(reportData: any, reportType?: string): string {
                     <td class="text-right">${formatCurrency(reportData.grossProfit || 0)}</td>
                     <td class="text-right">${(reportData.profitMargin || 0).toFixed(2)}%</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -437,7 +482,7 @@ function generateReportSection(reportData: any, reportType?: string): string {
         `;
       }
       break;
-      
+
     default:
       // Fallback for unknown types
       if (reportData.byDate && reportData.byDate.length > 0) {
@@ -452,31 +497,35 @@ function generateReportSection(reportData: any, reportType?: string): string {
                 </tr>
               </thead>
               <tbody>
-                ${reportData.byDate.map((item: any) => `
+                ${reportData.byDate
+                  .map(
+                    (item: any) => `
                   <tr>
                     <td>${formatDate(item.date)}</td>
                     <td class="text-right">${formatCurrency(item.revenue || 0)}</td>
                     <td class="text-right">${item.count || 0}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
         `;
       }
   }
-  
+
   const reportTypeLabels: Record<string, string> = {
-    sales: 'Penjualan',
-    product: 'Produk',
-    customers: 'Pelanggan',
-    inventory: 'Inventori',
-    financial: 'Keuangan',
+    sales: "Penjualan",
+    product: "Produk",
+    customers: "Pelanggan",
+    inventory: "Inventori",
+    financial: "Keuangan",
   };
-  
+
   return `
     <div class="section">
-      <h2 class="section-title">Laporan ${reportTypeLabels[reportType || ''] || reportType || 'Penjualan'}</h2>
+      <h2 class="section-title">Laporan ${reportTypeLabels[reportType || ""] || reportType || "Penjualan"}</h2>
       ${summaryStats}
       ${tableContent}
     </div>
@@ -484,10 +533,10 @@ function generateReportSection(reportData: any, reportType?: string): string {
 }
 
 function generateAnalyticsSection(analyticsData: any): string {
-  if (!analyticsData) return '';
-  
-  let content = '';
-  
+  if (!analyticsData) return "";
+
+  let content = "";
+
   if (analyticsData.predictions) {
     content += `
       <div class="analytics-section">
@@ -499,8 +548,8 @@ function generateAnalyticsSection(analyticsData: any): string {
           </div>
           <div class="analytics-card">
             <div class="analytics-label">Trend Penjualan</div>
-            <div class="analytics-value ${(analyticsData.predictions.trend || 0) >= 0 ? 'positive' : 'negative'}">
-              ${(analyticsData.predictions.trend || 0) >= 0 ? '+' : ''}${(analyticsData.predictions.trend || 0).toFixed(2)}%
+            <div class="analytics-value ${(analyticsData.predictions.trend || 0) >= 0 ? "positive" : "negative"}">
+              ${(analyticsData.predictions.trend || 0) >= 0 ? "+" : ""}${(analyticsData.predictions.trend || 0).toFixed(2)}%
             </div>
           </div>
           <div class="analytics-card">
@@ -511,7 +560,7 @@ function generateAnalyticsSection(analyticsData: any): string {
       </div>
     `;
   }
-  
+
   if (analyticsData.topProducts && analyticsData.topProducts.length > 0) {
     content += `
       <div class="section">
@@ -526,50 +575,53 @@ function generateAnalyticsSection(analyticsData: any): string {
               </tr>
             </thead>
             <tbody>
-              ${analyticsData.topProducts.map((product: any, index: number) => `
+              ${analyticsData.topProducts
+                .map(
+                  (product: any, index: number) => `
                 <tr>
                   <td class="text-center">${index + 1}</td>
                   <td>${product.name}</td>
                   <td class="text-right">${product.sales || 0}</td>
                 </tr>
-              `).join('')}
+              `,
+                )
+                .join("")}
             </tbody>
           </table>
         </div>
       </div>
     `;
   }
-  
+
   return content;
 }
 
 function formatLabel(key: string): string {
   const labels: Record<string, string> = {
-    totalRevenue: 'Total Pendapatan',
-    totalOrders: 'Total Pesanan',
-    averageOrderValue: 'Rata-rata per Pesanan',
-    totalItems: 'Total Item Terjual',
-    totalProducts: 'Total Produk',
-    totalSold: 'Total Terjual',
-    lowStockCount: 'Stok Rendah',
-    totalCustomers: 'Total Pelanggan',
-    totalMembers: 'Total Member',
-    totalStockValue: 'Nilai Stok',
-    revenue: 'Pendapatan',
-    costOfGoods: 'Biaya Pokok',
-    grossProfit: 'Laba Kotor',
-    profitMargin: 'Margin Laba',
+    totalRevenue: "Total Pendapatan",
+    totalOrders: "Total Pesanan",
+    averageOrderValue: "Rata-rata per Pesanan",
+    totalItems: "Total Item Terjual",
+    totalProducts: "Total Produk",
+    totalSold: "Total Terjual",
+    lowStockCount: "Stok Rendah",
+    totalCustomers: "Total Pelanggan",
+    totalMembers: "Total Member",
+    totalStockValue: "Nilai Stok",
+    revenue: "Pendapatan",
+    costOfGoods: "Biaya Pokok",
+    grossProfit: "Laba Kotor",
+    profitMargin: "Margin Laba",
   };
   return labels[key] || key;
 }
 
 function formatValue(value: any): string {
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     if (value > 1000000) {
       return formatCurrency(value);
     }
-    return value.toLocaleString('id-ID');
+    return value.toLocaleString("id-ID");
   }
   return String(value);
 }
-

@@ -31,7 +31,7 @@
 
 ## Risks Remaining (Non-Blocking)
 
-- `WG-AUD-0007` (P2): frontend lint warning burn-down still ongoing.
+- `WG-AUD-0007` (P2): frontend lint warning burn-down still ongoing (latest global run: `112 warnings, 0 errors`; audited high-traffic scope is clean).
 - `WG-AUD-0017` (P2): test coverage expansion still incremental (current high-value API + key UI smoke complete).
 
 ## Operational Notes

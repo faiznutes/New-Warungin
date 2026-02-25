@@ -53,11 +53,16 @@
 - Phase 5 completed: payment webhook contract now includes signed callback verification (`payment-webhook-api.cy.ts` updated to `5/5 passing`).
 - Phase 6 completed: CI quick gate added at `.github/workflows/quick-release-gate.yml` (health identity + API/UI sanity trios with required secrets).
 - Phase 7 verification (pre-deploy closure) completed: health identity script and payment webhook spec pass on live.
+- Phase continuation (no-deploy batch) completed:
+  - global frontend lint reduced from `131 -> 112` warnings (0 errors),
+  - payment callback UI hardened with malformed-query safety check (`4/4`),
+  - payment webhook signed-contract check remains green (`5/5`),
+  - health identity gate remains green.
 
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`) is in closure phase.
-- WG-AUD-0007: frontend lint burn-down continues for global repo scope; audited high-traffic scope is now `0 warnings, 0 errors`.
+- WG-AUD-0007: frontend lint burn-down continues for global repo scope; latest global run is `112 warnings, 0 errors` (down from 131 in this phase continuation).
 - WG-AUD-0017: testing coverage expansion continues; deep UI journeys and signed payment webhook contract checks are now included in passing matrix.
 - CI quick gate is prepared and requires repository secrets (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`, `TENANT_ID`) to be set for automated enforcement.
 

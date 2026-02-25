@@ -1,3 +1,5 @@
+import { assert } from "chai";
+
 describe("Payment Callback Public Routes", () => {
   it("renders success callback state", () => {
     cy.visit(
@@ -30,5 +32,22 @@ describe("Payment Callback Public Routes", () => {
 
     cy.contains("Menunggu Pembayaran").should("be.visible");
     cy.contains("Cek Status Subscription").should("be.visible");
+  });
+
+  it("renders callback page safely with malformed query values", () => {
+    cy.visit(
+      "/payment/success?order_id=%3Cscript%3Ebad%3C%2Fscript%3E&transaction_status=unknown",
+      {
+        failOnStatusCode: false,
+      },
+    );
+
+    cy.contains("Pembayaran Berhasil!").should("be.visible");
+    cy.get("script").then(($scripts) => {
+      const hasInjectedPayload = Array.from(
+        $scripts as unknown as HTMLScriptElement[],
+      ).some((script) => (script.textContent || "").includes("bad"));
+      assert.isFalse(hasInjectedPayload);
+    });
   });
 });

@@ -107,6 +107,10 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 - Payment callback/webhook contract deepening:
   - `payment-webhook-api.cy.ts` extended with correctly signed callback payload verification.
   - live run: `5/5 passing`.
+- Additional hardening rerun (no-deploy batch):
+  - `payment-callback-ui.cy.ts` expanded with malformed-query safety check and now passes `4/4`.
+  - `payment-webhook-api.cy.ts` reconfirmed pass `5/5`.
+  - `verify:health:identity` reconfirmed pass on deployed commit `befb419`.
 - Health identity operational gate:
   - new script `npm run verify:health:identity` validates health status, DB connectivity, and commit identity source.
   - latest run pass: `appCommitSha=b453257...`, `commitSource=SOURCE_COMMIT`, DB `connected`.

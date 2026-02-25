@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, formatDateTime } from "./formatters";
+import { formatCurrency, formatDate } from "./formatters";
 import { downloadPDFFromHTMLIframe } from "./pdf-download";
 
 interface ExportData {
@@ -179,14 +179,14 @@ export async function generateFlexboxExport(data: ExportData) {
       // If response is not ok, fallback to HTML to PDF
       const html = generateTemplateHTML(data, template);
       await downloadPDFFromHTMLIframe(html, filename);
-    } catch (requestError: any) {
+    } catch {
       restoreConsole();
 
       // Silently fallback to HTML to PDF for any error
       const html = generateTemplateHTML(data, template);
       await downloadPDFFromHTMLIframe(html, filename);
     }
-  } catch (error: any) {
+  } catch {
     // Outer catch - should rarely happen, but handle it silently
     const html = generateTemplateHTML(data, template);
     await downloadPDFFromHTMLIframe(html, filename);
