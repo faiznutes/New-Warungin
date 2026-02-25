@@ -5,6 +5,10 @@ import { PrismaService } from "../../prisma/prisma.service";
 export class HealthService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private isLikelyCommitSha(value?: string): boolean {
+    return Boolean(value && /^[a-f0-9]{7,40}$/i.test(value.trim()));
+  }
+
   private getFirstDefinedEnv(keys: string[], fallback = "unknown"): string {
     for (const key of keys) {
       const value = process.env[key];
@@ -21,14 +25,21 @@ export class HealthService {
     const status = dbOk ? "ok" : "degraded";
     const appName = process.env.APP_NAME || "warungin-backend";
     const appVersion = process.env.APP_VERSION || "unknown";
-    const appCommitSha = this.getFirstDefinedEnv([
-      "APP_COMMIT_SHA",
-      "SOURCE_COMMIT",
-      "COOLIFY_GIT_COMMIT_SHA",
-      "GITHUB_SHA",
-      "COMMIT_SHA",
-      "VERCEL_GIT_COMMIT_SHA",
-    ]);
+    const commitCandidates: Array<[string, string | undefined]> = [
+      ["SOURCE_COMMIT", process.env.SOURCE_COMMIT],
+      ["COOLIFY_GIT_COMMIT_SHA", process.env.COOLIFY_GIT_COMMIT_SHA],
+      ["GITHUB_SHA", process.env.GITHUB_SHA],
+      ["COMMIT_SHA", process.env.COMMIT_SHA],
+      ["VERCEL_GIT_COMMIT_SHA", process.env.VERCEL_GIT_COMMIT_SHA],
+    ];
+
+    const selectedCommit = commitCandidates.find(([, value]) =>
+      this.isLikelyCommitSha(value),
+    );
+    const appCommitSha = selectedCommit?.[1]?.trim() || "unknown";
+    const commitSource = selectedCommit?.[0] || "none";
+    const configuredAppCommitSha =
+      process.env.APP_COMMIT_SHA?.trim() || undefined;
     const appEnvironment = process.env.NODE_ENV || "development";
     const deploymentId = this.getFirstDefinedEnv(
       ["COOLIFY_DEPLOYMENT_ID", "DEPLOYMENT_ID"],
@@ -47,6 +58,8 @@ export class HealthService {
           appName,
           appVersion,
           appCommitSha,
+          commitSource,
+          configuredAppCommitSha,
           deploymentId: deploymentId || undefined,
           containerId,
           apiPrefix: "/api",

@@ -93,6 +93,9 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
   - `/health` remains `200` with `database=connected`.
   - payment callback/webhook contract spec still pass (`payment-webhook-api.cy.ts`: `4/4`).
   - identity still reports stale `appCommitSha=ce6c21a` and `deploymentId` is absent, so observability drift is narrowed to runtime env wiring rather than application fallback logic.
+- Additional local hardening prepared (not yet deployed):
+  - `health.service` now only treats dynamic deployment commit env keys as authoritative for `appCommitSha` and reports `commitSource`.
+  - static `APP_COMMIT_SHA` is exposed as `configuredAppCommitSha` for diagnostics without overriding live commit provenance.
 - Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 
