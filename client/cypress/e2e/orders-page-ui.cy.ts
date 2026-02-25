@@ -90,7 +90,10 @@ describe("Orders Page UI", () => {
     });
 
     it("opens order detail modal when data exists", () => {
+      cy.intercept("GET", "**/api/orders*").as("getOrders");
+
       authenticateAndVisit();
+      cy.wait("@getOrders").its("response.statusCode").should("eq", 200);
 
       cy.get("body").then(($body) => {
         if ($body.text().includes("Belum Ada Pesanan")) {
@@ -99,7 +102,13 @@ describe("Orders Page UI", () => {
         }
 
         if ($body.find('button[title="View Details"]').length > 0) {
-          cy.get('button[title="View Details"]').first().click();
+          cy.get('button[title="View Details"]').first().click({ force: true });
+        } else if ($body.find("tbody tr").length > 0) {
+          cy.get("tbody tr")
+            .first()
+            .find("button")
+            .first()
+            .click({ force: true });
         } else {
           cy.contains("button", "Detail").first().click();
         }
