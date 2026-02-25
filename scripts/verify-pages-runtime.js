@@ -18,6 +18,7 @@ const specs = [
   { name: "reports", command: "npm run test:reports:api" },
   { name: "analytics", command: "npm run test:analytics:api" },
   { name: "tenant-detail", command: "npm run test:tenant-detail:api" },
+  { name: "payment-webhook", command: "npm run test:payment-webhook:api" },
 ];
 
 async function checkHealth() {

@@ -36,12 +36,14 @@
   - `scripts/verify-pages-ui-runtime.js` prepared for chained UI runtime verification.
 - Live rerun after UI auth-state isolation updates remains green for both UI matrix and authenticated API matrix.
 - Post-deploy rerun remains green on both matrices (UI + authenticated API), confirming current release state is stable for audited flows.
+- Payment callback/webhook API contract smoke added and passing (`client/cypress/e2e/payment-webhook-api.cy.ts`, `4/4 passing`).
 
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`) is in closure phase.
 - WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
 - WG-AUD-0017: testing coverage expansion (API sweep complete; UI smoke now covers finance/customers/orders/tenant-detail/payment-callback).
+- WG-AUD-0026: health identity observability drift hardening implemented locally (`health.service` commit source fallback + deployment/container identity), pending deployment verification.
 - Post-deploy verification completed for commit `e8c4c7a` with authenticated API sweep green (`tenant-page`, `customers`, `orders`, `finance-transactions`, `retention`, `reports`, `analytics`, `tenant-detail-user-edit`).
 
 ## Open Bug Count (Current)

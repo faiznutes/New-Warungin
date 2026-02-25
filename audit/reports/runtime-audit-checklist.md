@@ -84,6 +84,11 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
 - Post-deploy verification rerun (latest deployment window) remains green:
   - UI: payment callback `3/3`, finance `3/3`, customers `3/3`, orders `3/3`, tenant-detail `2/2`.
   - API: tenant `4/4`, customers `4/4`, orders `3/3`, finance `4/4`, retention `2/2`, reports `2/2`, analytics `3/3`, tenant-detail-user-edit `8/8`.
+- Payment callback/webhook API contract verification added:
+  - `payment-webhook-api.cy.ts`: `4/4 passing`
+  - validated that `/payments/callback` and `/payments/webhook/n8n` remain public (not `401`) while `/payments/status/:orderId` stays auth-protected.
+- Health identity observability hardening prepared in backend:
+  - `HealthService` now resolves commit SHA from multiple deployment env keys and exposes `deploymentId` / `containerId` in identity payload for easier runtime provenance tracing.
 - Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 

@@ -20,7 +20,8 @@
     "test:retention:api": "cypress run --spec \"cypress/e2e/retention-page-api.cy.ts\"",
     "test:reports:api": "cypress run --spec \"cypress/e2e/reports-page-api.cy.ts\"",
     "test:analytics:api": "cypress run --spec \"cypress/e2e/analytics-page-api.cy.ts\"",
-    "test:tenant-detail:api": "cypress run --spec \"cypress/e2e/tenant-detail-user-edit-api.cy.ts\""
+    "test:tenant-detail:api": "cypress run --spec \"cypress/e2e/tenant-detail-user-edit-api.cy.ts\"",
+    "test:payment-webhook:api": "cypress run --spec \"cypress/e2e/payment-webhook-api.cy.ts\""
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.17",
