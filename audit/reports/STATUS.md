@@ -57,9 +57,9 @@
 ## In Progress
 
 - Runtime verification planning and checklist execution for non-tenant pages (`audit/reports/runtime-audit-checklist.md`) is in closure phase.
-- WG-AUD-0007: frontend lint warning burn-down (latest: 173 warnings, 0 errors).
-- WG-AUD-0017: testing coverage expansion (API sweep complete; UI smoke now covers finance/customers/orders/tenant-detail/payment-callback).
-- Post-deploy verification completed for commit `e8c4c7a` with authenticated API sweep green (`tenant-page`, `customers`, `orders`, `finance-transactions`, `retention`, `reports`, `analytics`, `tenant-detail-user-edit`).
+- WG-AUD-0007: frontend lint burn-down continues for global repo scope; audited high-traffic scope is now `0 warnings, 0 errors`.
+- WG-AUD-0017: testing coverage expansion continues; deep UI journeys and signed payment webhook contract checks are now included in passing matrix.
+- CI quick gate is prepared and requires repository secrets (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`, `TENANT_ID`) to be set for automated enforcement.
 
 ## Open Bug Count (Current)
 
