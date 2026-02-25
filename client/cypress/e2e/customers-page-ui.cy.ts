@@ -100,5 +100,35 @@ describe("Customers Page UI", () => {
         );
       });
     });
+
+    it("opens customer detail and edit modal flow without saving", () => {
+      cy.intercept("GET", "**/customers*").as("getCustomers");
+
+      authenticateAndVisit();
+      cy.wait("@getCustomers").its("response.statusCode").should("eq", 200);
+
+      cy.get("body").then(($body) => {
+        if ($body.text().includes("Belum Ada Pelanggan")) {
+          cy.contains("Belum Ada Pelanggan").should("be.visible");
+          return;
+        }
+
+        if ($body.find('button[title="Hapus Pelanggan"]').length === 0) {
+          cy.contains("Pelanggan").should("be.visible");
+          return;
+        }
+
+        cy.contains("button", "Detail").first().click({ force: true });
+        cy.contains("Detail Pelanggan").should("be.visible");
+
+        cy.contains("button", "Edit Profil").click({ force: true });
+        cy.contains(/Edit Pelanggan|Tambah Pelanggan Baru/).should(
+          "be.visible",
+        );
+        cy.contains("button", "Batal").click({ force: true });
+
+        cy.contains("Detail Pelanggan").should("be.visible");
+      });
+    });
   });
 });

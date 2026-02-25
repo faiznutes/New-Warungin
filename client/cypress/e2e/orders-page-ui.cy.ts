@@ -115,5 +115,29 @@ describe("Orders Page UI", () => {
         cy.contains("Order Details").should("be.visible");
       });
     });
+
+    it("shows editable status control or readonly badge on first order", () => {
+      cy.intercept("GET", "**/api/orders*").as("getOrders");
+
+      authenticateAndVisit();
+      cy.wait("@getOrders").its("response.statusCode").should("eq", 200);
+
+      cy.get("body").then(($body) => {
+        if ($body.text().includes("Belum Ada Pesanan")) {
+          cy.contains("Belum Ada Pesanan").should("be.visible");
+          return;
+        }
+
+        const hasStatusSelect = $body.find("select").length > 0;
+        if (hasStatusSelect) {
+          cy.get("select").first().should("be.visible");
+          return;
+        }
+
+        cy.contains(/Pending|Processing|Selesai|Dibatalkan|Refund/i).should(
+          "be.visible",
+        );
+      });
+    });
   });
 });

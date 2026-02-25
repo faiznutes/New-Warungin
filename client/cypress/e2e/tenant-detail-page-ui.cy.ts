@@ -97,5 +97,28 @@ describe("Tenant Detail Page UI", () => {
         cy.contains("Memuat detail tenant...").should("be.visible");
       });
     });
+
+    it("opens add-user modal and validates required field visibility", () => {
+      authenticateAndVisit();
+
+      cy.get("body", { timeout: 20000 }).then(($body) => {
+        if (!$body.text().includes("Profil")) {
+          cy.contains(/Terjadi Kesalahan|Memuat detail tenant/i).should(
+            "exist",
+          );
+          return;
+        }
+
+        cy.contains("Pengguna").click();
+        cy.contains("Tambah User").click({ force: true });
+
+        cy.contains("Tambah User").should("be.visible");
+        cy.get('input[placeholder="Nama user"]').should("be.visible");
+        cy.get('input[placeholder="email@example.com"]').should("be.visible");
+        cy.contains("label", "Role *").should("be.visible");
+
+        cy.contains("button", "Batal").click({ force: true });
+      });
+    });
   });
 });

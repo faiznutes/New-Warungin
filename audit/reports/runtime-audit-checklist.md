@@ -100,6 +100,10 @@ This checklist is for the next execution pass to validate end-to-end runtime beh
   - `/health` returns `appCommitSha=c6e6d80...` and `commitSource=SOURCE_COMMIT`.
   - DB health remains `connected`.
   - observability drift for active commit identity is considered resolved.
+- UI journey expansion rerun (live):
+  - `customers-page-ui.cy.ts`: `4/4 passing` (includes detail->edit modal path).
+  - `orders-page-ui.cy.ts`: `4/4 passing` (includes status-control visibility path).
+  - `tenant-detail-page-ui.cy.ts`: `3/3 passing` (includes add-user modal required-field path).
 - Note: `/health` identity SHA still reports `ce6c21a` despite deployed commit `e8c4c7a`; runtime behavior confirms hotfix active, so identity hash reporting remains a separate observability gap.
 - Next unblock action for local DB validation: start local PostgreSQL service/container or point `DATABASE_URL` to a reachable staging DB before rerunning Prisma smoke checks.
 

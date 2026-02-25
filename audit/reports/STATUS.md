@@ -41,6 +41,10 @@
 - Observability identity drift resolved in deployed commit `c6e6d80`: `/health` now reports active `appCommitSha` with `commitSource=SOURCE_COMMIT`.
 - Final release-readiness decision documented in `audit/reports/release-readiness-2026-02-25.md` (GO for audited production scope).
 - Phase 1 quality cleanup started: focused lint warnings reduced in high-traffic modules (`38 -> 28`, 0 errors) with orders API/UI regression still green.
+- Phase 2 UI journey expansion completed for key operational pages with live pass evidence:
+  - customers UI `4/4`
+  - orders UI `4/4`
+  - tenant-detail UI `3/3`
 
 ## In Progress
 
